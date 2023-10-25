@@ -105,12 +105,13 @@ WSGI_APPLICATION = "evaluation_registry.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": env.str("POSTGRES_DB"),
-        "USER": env.str("POSTGRES_USER"),
-        "PASSWORD": env.str("POSTGRES_PASSWORD"),
-        "HOST": env.str("POSTGRES_HOST"),
-        "PORT": env.str("POSTGRES_PORT"),
-        **{"ATOMIC_REQUESTS": True},
+        "NAME": env.str("DB_NAME"),
+        "USER": env.str("DB_USER"),
+        "PASSWORD": env.str("DB_PASSWORD"),
+        "HOST": env.str("DB_HOST"),
+        "PORT": env.str("DB_PORT"),
+        "ATOMIC_REQUESTS": True,
+        "DISABLE_SERVER_SIDE_CURSORS": True,
     }
 }
 
@@ -227,9 +228,7 @@ PERMISSIONS_POLICY = {
 CSP_DEFAULT_SRC = ("'self'",)
 # SHA of the location of the stylesheet (main.css)
 
-CSP_STYLE_SRC = (
-    "'self'",
-)
+CSP_STYLE_SRC = ("'self'",)
 
 OTP_TOTP_ISSUER = ""  # TODO: Add issuer name
 OTP_TOTP_AUTOCONF = True

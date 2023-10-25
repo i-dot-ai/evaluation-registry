@@ -9,8 +9,16 @@ Migrations are run automatically at startup, and suppliers are added automatical
 
 ## Running tests
 
-    make test
+```commandline
+docker compose up -d db
+DB_HOST=localhost pytest tests
+```
 
+or
+
+```commandline
+make test
+```
 
 ## Checking code
 

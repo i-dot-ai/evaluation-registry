@@ -24,10 +24,10 @@ services:
     env_file:
       - ./envs/web
     ports:
-      - "5432"
+      - "5432:5432"
 
   requirements:
-    image: python:3.9-buster
+    image: python:3.11-buster
     profiles:
       - utils
     volumes:

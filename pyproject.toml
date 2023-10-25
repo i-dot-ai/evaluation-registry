@@ -9,10 +9,27 @@ force_grid_wrap = 0
 use_parentheses = true
 ensure_newline_before_comments = true
 
+
+[tool.poetry]
+name = "evaluation-registry"
+version = "0.1.0"
+description = ""
+authors = ["Your Name <you@example.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "evaluation_registry.settings"
 env = [
     "DJANGO_SECRET_KEY=1n53cur3K3y",
+    "BASE_URL=http://localhost:8020/",
     "DB_PORT=5432",
     "DB_NAME=evaluation-registry",
     "DB_USER=evaluation-registry",

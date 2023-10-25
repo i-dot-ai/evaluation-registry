@@ -1,9 +1,8 @@
 import uuid
+from typing import Any
 
 from django.db import models
 from django_use_email_as_username.models import BaseUser, BaseUserManager
-
-from typing import Any
 
 
 class UUIDPrimaryKeyBase(models.Model):
@@ -25,7 +24,7 @@ class ChoicesModel(models.Model):
     code = models.SlugField(
         max_length=128,
         unique=True,
-        help_text="unique identifier, containing only letters, numbers, underscores or hyphens"
+        help_text="unique identifier, containing only letters, numbers, underscores or hyphens",
     )
     display = models.CharField(max_length=128, help_text="display name")
 
@@ -35,6 +34,9 @@ class ChoicesModel(models.Model):
 
     def __str__(self):
         return self.display
+
+    class Meta:
+        abstract = True
 
 
 class User(BaseUser, UUIDPrimaryKeyBase):
@@ -63,7 +65,7 @@ class Evaluation(UUIDPrimaryKeyBase, TimeStampedModel):
 
     title = models.CharField(max_length=1024, blank=True, null=True)
     lead_department = models.ForeignKey(Department, on_delete=models.CASCADE)
-    departments = models.ManyToManyField(Department, blank=True, null=True)
+    departments = models.ManyToManyField(Department, blank=True, null=True, related_name="+")
 
     evaluation_type = models.ManyToManyField(EvaluationType)
     evaluation_type_other = models.CharField(max_length=256, blank=True, null=True)

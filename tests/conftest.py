@@ -1,14 +1,11 @@
-import base64
-import json
-from datetime import datetime
-
 import pytest
 import pytz
-from django.conf import settings
-from freezegun import freeze_time
 
-from ask_ai.conversation import models
-from ask_ai.conversation.models import User
+from evaluation_registry.evaluations.models import (
+    Department,
+    EvaluationVisibility,
+    User,
+)
 
 UTC = pytz.timezone("UTC")
 
@@ -25,3 +22,13 @@ def create_user():
 @pytest.fixture
 def alice(create_user):
     return create_user("alice@example.com")
+
+
+@pytest.fixture
+def cabinet_office():
+    yield Department.objects.create(code="co", display="Cabinet Office")
+
+
+@pytest.fixture
+def public():
+    yield EvaluationVisibility.objects.create(code="public", display="Public")
