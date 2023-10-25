@@ -26,13 +26,6 @@ services:
     ports:
       - "5432:5432"
 
-  requirements:
-    image: python:3.11-buster
-    profiles:
-      - utils
-    volumes:
-      - ./:/app/:z
-
   tests-evaluation_registry:
     build:
       context: .
@@ -43,12 +36,5 @@ services:
     profiles:
       - testing
     depends_on:
-      - evaluation_registry-test-db
+      - db
 
-  evaluation_registry-test-db:
-    image: postgres:13
-    container_name: evaluation_registry_test_postgres
-    env_file:
-      - ./envs/tests
-    expose:
-      - "5432"
