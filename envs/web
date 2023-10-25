@@ -1,0 +1,13 @@
+DJANGO_SETTINGS_MODULE=evaluation_registry.settings
+PORT=8020
+DEBUG=True
+DJANGO_SECRET_KEY='1n53cur3K3y'
+POSTGRES_HOST=db
+POSTGRES_PORT=5432
+POSTGRES_DB=evaluation-registry
+POSTGRES_USER=evaluation-registry
+POSTGRES_PASSWORD=insecure
+PGPASSWORD=insecure
+DATABASE_URL="postgres://evaluation-registry:insecure@db:5432/evaluation-registry"
+EMAIL_BACKEND_TYPE=CONSOLE
+ENVIRONMENT=LOCAL

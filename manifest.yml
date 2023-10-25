@@ -1,0 +1,6 @@
+---
+applications:
+- name: evaluation-registry-develop
+  memory: 512M
+  buildpacks:
+  - python_buildpack

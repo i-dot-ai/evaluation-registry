@@ -1,0 +1,54 @@
+version: '3'
+
+volumes:
+  local_postgres_data: {}
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: ./docker/web/Dockerfile
+    depends_on:
+      - db
+    env_file:
+      - ./envs/web
+    volumes:
+      - ./:/app/:z
+    ports:
+      - "8020:8020"
+
+  db:
+    image: postgres:13
+    volumes:
+      - local_postgres_data:/var/lib/postgresql/data:Z
+    env_file:
+      - ./envs/web
+    ports:
+      - "5432"
+
+  requirements:
+    image: python:3.9-buster
+    profiles:
+      - utils
+    volumes:
+      - ./:/app/:z
+
+  tests-evaluation_registry:
+    build:
+      context: .
+      dockerfile: ./docker/tests/Dockerfile
+    image: tests_evaluation_registry
+    env_file:
+      - ./envs/tests
+    profiles:
+      - testing
+    depends_on:
+      - evaluation_registry-test-db
+
+  evaluation_registry-test-db:
+    image: postgres:13
+    container_name: evaluation_registry_test_postgres
+    env_file:
+      - ./envs/tests
+    expose:
+      - "5432"

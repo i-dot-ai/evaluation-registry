@@ -1,0 +1,24 @@
+django<3.3
+django-cors-headers
+django-allow-cidr
+whitenoise
+watchdog[watchmedo]
+jinja2
+django-environ
+django-allauth
+django_use_email_as_username
+gunicorn
+psycopg2-binary
+pyyaml
+markdown-it-py
+pytz
+django-csp
+django-permissions-policy
+marshmallow~=3.19.0
+humanize~=4.7.0
+sentry-sdk
+
+# TOTP
+pyotp
+qrcode[pil]
+django-otp
