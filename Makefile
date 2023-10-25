@@ -1,7 +1,7 @@
 include envs/web
 
 define _update_requirements
-	docker-compose run requirements bash -c "pip install -U pip setuptools && pip install -U -r /app/$(1).txt && pip freeze > /app/$(1).lock"
+	docker compose run requirements bash -c "pip install -U pip setuptools && pip install -U -r /app/$(1).txt && pip freeze > /app/$(1).lock"
 endef
 
 .PHONY: update-requirements
@@ -33,6 +33,6 @@ check-migrations:
 
 .PHONY: test
 test:
-	docker-compose down
-	docker-compose build tests-evaluation_registry evaluation_registry-test-db && docker-compose run --rm tests-evaluation_registry
-	docker-compose down
+	docker compose down
+	docker compose build tests-evaluation_registry evaluation_registry-test-db && docker compose run --rm tests-evaluation_registry
+	docker compose down
