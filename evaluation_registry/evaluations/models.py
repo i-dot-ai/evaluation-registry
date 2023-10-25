@@ -50,15 +50,16 @@ class Department(UUIDPrimaryKeyBase, TimeStampedModel):
 
 class Evaluation(UUIDPrimaryKeyBase, TimeStampedModel):
     class EvaluationType(models.TextChoices):
-        IMPACT = 'impact', 'Impact evaluation'
-        PROCESS = 'process', 'Process evaluation'
-        ECONOMIC = 'economic', 'Economic evaluation'
-        OTHER = 'other', 'Other'
+        IMPACT = "impact", "Impact evaluation"
+        PROCESS = "process", "Process evaluation"
+        ECONOMIC = "economic", "Economic evaluation"
+        OTHER = "other", "Other"
+        NOT_SET = "not set", "Not Set"
 
     class EvaluationVisibility(models.TextChoices):
-        DRAFT = 'draft', 'Draft'
-        CIVIL_SERVICE = 'civil_service', 'Civil Service'
-        PUBLIC = 'public', 'Public'
+        DRAFT = "draft", "Draft"
+        CIVIL_SERVICE = "civil_service", "Civil Service"
+        PUBLIC = "public", "Public"
 
     created_by = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
 
@@ -69,6 +70,7 @@ class Evaluation(UUIDPrimaryKeyBase, TimeStampedModel):
     evaluation_type = models.CharField(
         max_length=25,
         choices=EvaluationType.choices,
+        default=EvaluationType.NOT_SET
     )
     evaluation_type_other = models.CharField(max_length=256, blank=True, null=True)
 
@@ -77,10 +79,6 @@ class Evaluation(UUIDPrimaryKeyBase, TimeStampedModel):
     # In the future, there may be canonical lists to select from for these
     grant_number = models.CharField(max_length=256, blank=True, null=True)
     major_project_number = models.CharField(max_length=256, blank=True, null=True)
-
-    research_start_date = models.DateField(blank=True, null=True)
-    research_end_date = models.DateField(blank=True, null=True)
-    final_publication_date = models.DateField(blank=True, null=True)
 
     # TODO: there is a standard max_length of 200 for URL Fields - will that be enough?
     plan_link = models.URLField(blank=True, null=True)
@@ -93,6 +91,39 @@ class Evaluation(UUIDPrimaryKeyBase, TimeStampedModel):
 
 
 class EventDate(UUIDPrimaryKeyBase, TimeStampedModel):
-    evaluation = models.ForeignKey(Evaluation, related_name="other_dates", on_delete=models.CASCADE)
+    class EventDateCategory(models.TextChoices):
+        EVALUATION_START = "eval_start", "Evaluation start"
+        EVALUATION_END = "eval_end", "Evaluation end"
+        FIRST_PARTICIPANT_RECRUITED = "first_recruit", "First participant recruited"
+        LAST_PARTICIPANT_RECRUITED = "last_recruit", "Last participant recruited"
+        INTERVENTION_START_DATE = "intervention_start", "Intervention start date"
+        INTERVENTION_END_DATE = "intervention_end", "Intervention end date"
+        INTERIM_DATA_EXTRACTION_DATE = "interim_extract", "Interim data extraction date"
+        INTERIM_DATA_ANALYSIS_START = "interim_analysis_start", "Interim data analysis start"
+        INTERIM_DATA_ANALYSIS_END = "interim_analysis_end", "Interim data analysis end"
+        PUBLICATION_INTERIM_RESULTS = "pub_interim", "Publication of interim results"
+        FINAL_DATA_EXTRACTION_DATE = "final_extract", "Final data extraction date"
+        FINAL_DATA_ANALYSIS_START = "final_analysis_start", "Final data analysis start"
+        FINAL_DATA_ANALYSIS_END = "final_analysis_end", "Final data analysis end"
+        PUBLICATION_FINAL_RESULTS = "pub_final", "Publication of final results"
+        OTHER = "other", "Other"
+        NOT_SET = "not set", "Not Set"
+
+    class EventDateStatus(models.TextChoices):
+        INTENDED = "intended", "Intended"
+        ACTUAL = "actual", "Actual"
+        NOT_SET = "not set", "Not Set"
+
+    evaluation = models.ForeignKey(Evaluation, related_name="event_dates", on_delete=models.CASCADE)
     date = models.DateField(blank=True, null=True)
-    event_description = models.CharField(max_length=256, blank=True, null=True)
+    other_description = models.CharField(max_length=256, blank=True, null=True)
+    category = models.CharField(
+        max_length=25,
+        choices=EventDateCategory.choices,
+        default=EventDateCategory.NOT_SET
+    )
+    status = models.CharField(
+        max_length=25,
+        choices=EventDateStatus.choices,
+        default=EventDateStatus.NOT_SET
+    )
