@@ -14,7 +14,7 @@ ensure_newline_before_comments = true
 name = "evaluation-registry"
 version = "0.1.0"
 description = ""
-authors = ["Your Name <you@example.com>"]
+authors = []
 readme = "README.md"
 
 [tool.poetry.dependencies]
