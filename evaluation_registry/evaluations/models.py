@@ -65,7 +65,7 @@ class Evaluation(UUIDPrimaryKeyBase, TimeStampedModel):
 
     title = models.CharField(max_length=1024, blank=True, null=True)
     lead_department = models.ForeignKey(Department, on_delete=models.CASCADE)
-    departments = models.ManyToManyField(Department, blank=True, null=True, related_name="+")
+    departments = models.ManyToManyField(Department, related_name="+")
 
     evaluation_type = models.ManyToManyField(EvaluationType)
     evaluation_type_other = models.CharField(max_length=256, blank=True, null=True)
