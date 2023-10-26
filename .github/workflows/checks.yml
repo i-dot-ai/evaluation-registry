@@ -60,6 +60,7 @@ jobs:
 
       - name: Install Requirements
         run: |
+          python3 -m pip install --upgrade pip setuptools
           pip install -r requirements-dev.lock
 
       - name: Run Checks
@@ -76,8 +77,9 @@ jobs:
 
     - name: Install Requirements
       run: |
+        python3 -m pip install --upgrade pip setuptools
         pip install -r requirements-dev.lock
 
     - name: Run tests
       run: |
-        python -m pytest
+        DB_HOST=localhost python -m pytest
