@@ -1,4 +1,4 @@
-django<3.3
+django
 django-cors-headers
 django-allow-cidr
 whitenoise
@@ -16,8 +16,3 @@ django-csp
 django-permissions-policy
 humanize~=4.7.0
 sentry-sdk
-
-# TOTP
-pyotp
-qrcode[pil]
-django-otp
