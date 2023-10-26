@@ -3,7 +3,6 @@ import pytz
 
 from evaluation_registry.evaluations.models import (
     Department,
-    EvaluationVisibility,
     User,
 )
 
@@ -29,6 +28,3 @@ def cabinet_office():
     yield Department.objects.create(code="co", display="Cabinet Office")
 
 
-@pytest.fixture
-def public():
-    yield EvaluationVisibility.objects.create(code="public", display="Public")

@@ -9,15 +9,15 @@ from django_use_email_as_username.models import BaseUser, BaseUserManager
 def month_validator(value):
     if value < 1 or value > 12:
         raise ValidationError(
-            'The month should be a value between 1 and 12',
+            "The month should be a value between 1 and 12",
         )
 
 
 def year_validator(value):
     if value < 1900 or value > 2100:
         raise ValidationError(
-            'The year should be between 1900 and 2100',
-            params={'value': value},
+            "The year should be between 1900 and 2100",
+            params={"value": value},
         )
 
 
@@ -42,7 +42,7 @@ class ChoicesModel(models.Model):
         unique=True,
         help_text="unique identifier, containing only letters, numbers, underscores or hyphens",
     )
-    display = models.CharField(max_length=128, help_text="display name")
+    display = models.CharField(max_length=512, help_text="display name")
 
     class Meta:
         abstract = True
@@ -53,9 +53,6 @@ class ChoicesModel(models.Model):
 
     def __str__(self):
         return self.display
-
-    class Meta:
-        abstract = True
 
 
 class User(BaseUser, UUIDPrimaryKeyBase):
@@ -87,28 +84,28 @@ class Evaluation(UUIDPrimaryKeyBase, TimeStampedModel):
     lead_department = models.ForeignKey(
         Department,
         on_delete=models.CASCADE,
-        related_name='lead_evaluations',
+        related_name="lead_evaluations",
         help_text="evaluations which have been led by this department",
         blank=True,
-        null=True
+        null=True,
     )
     departments = models.ManyToManyField(Department, blank=True, related_name="+")
 
     evaluation_types = models.ManyToManyField(EvaluationType, blank=True)
 
-    brief_description = models.CharField(max_length=1024, blank=True, null=True)
+    brief_description = models.TextField(blank=True, null=True)
     # In the future, there may be canonical lists to select from for these
     grant_number = models.CharField(max_length=256, blank=True, null=True)
     major_project_number = models.CharField(max_length=256, blank=True, null=True)
 
-    # TODO: there is a standard max_length of 200 for URL Fields - will that be enough?
-    plan_link = models.URLField(blank=True, null=True)
-    published_evaluation_link = models.URLField(blank=True, null=True)
+    plan_link = models.URLField(max_length=1024, blank=True, null=True)
+    published_evaluation_link = models.URLField(max_length=1024, blank=True, null=True)
     visibility = models.CharField(
-        max_length=25,
-        choices=EvaluationVisibility.choices,
-        default=EvaluationVisibility.DRAFT
+        max_length=512, choices=EvaluationVisibility.choices, default=EvaluationVisibility.DRAFT
     )
+
+    def __str__(self):
+        return self.title
 
 
 class EventDate(UUIDPrimaryKeyBase, TimeStampedModel):
@@ -147,13 +144,10 @@ class EventDate(UUIDPrimaryKeyBase, TimeStampedModel):
         validators=[year_validator],
     )
     other_description = models.CharField(max_length=256, blank=True, null=True)
-    category = models.CharField(
-        max_length=25,
-        choices=EventDateCategory.choices,
-        default=EventDateCategory.NOT_SET
-    )
-    status = models.CharField(
-        max_length=25,
-        choices=EventDateStatus.choices,
-        default=EventDateStatus.NOT_SET
-    )
+    category = models.CharField(max_length=25, choices=EventDateCategory.choices, default=EventDateCategory.NOT_SET)
+    status = models.CharField(max_length=25, choices=EventDateStatus.choices, default=EventDateStatus.NOT_SET)
+
+    def __str__(self):
+        if self.month:
+            return f"{self.year}-{self.month:02}"
+        return f"{self.year}"
