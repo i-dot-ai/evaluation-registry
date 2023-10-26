@@ -14,25 +14,27 @@ def parse_row(text):
     return json.loads(f"[{text}]")
 
 
-# New
-OAI = ("office-for-artificial-intelligence", "Office for Artificial Intelligence")
-DBEIS = (
-    "department-for-business-energy-and-industrial-strategy",
-    "Department For Business, Energy & Industrial Strategy",
-)
-ETF = ("evaluation-task-force", "Evaluation Task Force")
+# # New
+# OAI = ("office-for-artificial-intelligence", "Office for Artificial Intelligence")
+# DBEIS = (
+#     "department-for-business-energy-and-industrial-strategy",
+#     "Department For Business, Energy & Industrial Strategy",
+# )
+# ETF = ("evaluation-task-force", "Evaluation Task Force")
 
 # in OBT
-DFT = ("department-for-transport", "Department for Transport (DfT)")
-CMS = ("department-for-culture-media-and-sport", "Department for Culture, Media and Sport (DCMS)")
-DSIT = ("department-for-science-innovation-and-technology", "Department for Science, Innovation and Technology (DSIT)")
-DBT = ("department-for-business-and-trade", "Department for Business and Trade (DBT)")
-BDUK = ("building-digital-uk", "Building Digital UK (BDUK)")
-CO = ("cabinet-office", "Cabinet Office")
-HO = ("home-office", "Home Office (Home Office)")
-SCOT = ("the-scottish-government", "The Scottish Government (The Scottish Government)")
-DFE = ("department-for-education", "Department for Education (DfE)")
-DEFRA = ("department-for-environment-food-rural-affairs", "Department for Environment, Food & Rural Affairs (Defra)")
+DFT = "department-for-transport"
+CMS = "department-for-culture-media-and-sport"
+DSIT = "department-for-science-innovation-and-technology"
+DBT = "department-for-business-and-trade"
+BDUK = "building-digital-uk"
+CO = "cabinet-office", "Cabinet Office"
+HO = "home-office", "Home Office (Home Office)"
+SCOT = "the-scottish-government"
+DFE = "department-for-education"
+DEFRA = "department-for-environment-food-rural-affairs"
+EA = "environment-agency"
+MOJ = "ministry-of-justice"
 
 DEPARTMENTS = {
     "Department for transport": [DFT],
@@ -42,16 +44,14 @@ DEPARTMENTS = {
     "Department for science, innovation and technology; office for artificial intelligence; department for digital, culture, media & sport; department for business, energy & industrial strategy": [
         DSIT,
         CMS,
-        OAI,
-        DBEIS,
     ],
     "Department for digital, culture media & sport; arts council england": [CMS],
-    "Department for digital, culture, media & sport; office for artificial intelligence": [CMS, OAI],
+    "Department for digital, culture, media & sport; office for artificial intelligence": [CMS],
     "Culture, media, and sport": [CMS],
     "Building digital uk | department for digital, culture, media & sport": [CMS],
     "Building digital uk": [BDUK],
     "Cabinet office": [CO],
-    "Evaluation task force": [ETF],
+    "Evaluation task force": [],
     "Home office": [HO],
     "Uk commission for employment and skills": [],
     "Department for education": [DFE],
@@ -67,14 +67,14 @@ DEPARTMENTS = {
     "Hm revenue & customs": [],
     "Department for work and pensions.": [],
     "Closed organisation: department for international development": [],
-    "Environment agency": [],
+    "Environment agency": [EA],
     "Uk health security agency": [],
     "Department for environment, food & rural affairs": [DEFRA],
     "Department for business innovation & skills": [],
     "Closed organisation: national college for teaching and leadership": [],
     "Ofsted": [],
     "Other (please state) parliament": [],
-    "Ministry of justice": [],
+    "Ministry of justice": [MOJ],
     "Department for education & national college for teaching and leadership": [DFE],
     "Ofqual": [],
     "Hm government": [],
@@ -109,7 +109,7 @@ DEPARTMENTS = {
     "Information not easily found within the report": [],
     "Department for transport (dft)": [DFT],
     "Department for work and pensions | department of health and social care": [],
-    "Ministry of justice; hm courts & tribunals service": [],
+    "Ministry of justice; hm courts & tribunals service": [MOJ],
     "Hm courts & tribunals service": [],
     "Closed organisation: highways agency": [],
     "Ministry for housing, communities and local government (mhclg)": [],
@@ -120,7 +120,7 @@ DEPARTMENTS = {
     "Department for environment, food & rural affairs | home office": [DEFRA, HO],
     "Land use policy group": [],
     "Hm revenue & customs | hm treasury": [],
-    "Ministry of justice | hm prison and probation service": [],
+    "Ministry of justice | hm prison and probation service": [MOJ],
     "Natural england": [],
     "Department for energy security & net zero": [],
     "The british business bank": [],
@@ -168,8 +168,8 @@ DEPARTMENTS = {
     "Qualifications and curriculum authority": [],
     "Aqa": [],
     "Standards and testing agency": [],
-    "Ministry of justice and national offender management service": [],
-    "Ministry of justice and hm prison and probation service": [],
+    "Ministry of justice and national offender management service": [MOJ],
+    "Ministry of justice and hm prison and probation service": [MOJ],
     "Hm prison & probation service": [],
     "The charity commission": [],
     "Department for business, energy & industrial strategy; and international climate finance (icf)": [],
@@ -196,7 +196,7 @@ DEPARTMENTS = {
     "Department for business, innovation & skills and higher education funding council for england": [],
     "Office of the secretary of state for wales and welsh government": [],
     "Department for culture, media and sport and department for digital, culture, media & sport": [CMS],
-    "Ministry of justice and hm prison and probability": [],
+    "Ministry of justice and hm prison and probability": [MOJ],
     "Driver and vehicle standards agency": [],
     "Disability unit": [],
     "Low pay commission": [],
@@ -317,7 +317,7 @@ DEPARTMENTS = {
     "Office for national statistics": [],
     "Uk office of manpower economics (ome)": [],
     "Department for business, innovation and skills (bis)": [],
-    "Ministry of justice (moj)": [],
+    "Ministry of justice (moj)": [MOJ],
     "Foreign, commonwealth & development office, dfid, mod": [],
     "The insolvency service": [],
     "Valuation office agency": [],
@@ -374,10 +374,9 @@ class Command(BaseCommand):
             for row in f:
                 record = dict(zip(header, parse_row(row)))
                 if lead_department := record["Client"]:
-                    if department_list := DEPARTMENTS[lead_department]:
-                        code, display = department_list[0]
-                        lead_department, _ = Department.objects.get_or_create(code=code, display=display)
+                    if lead_department := Department.objects.filter(code__in=DEPARTMENTS[lead_department]).first():
                         published_evaluation_link = record["gov_uk_link"]
+
                         if len(published_evaluation_link or "") > 1024:
                             published_evaluation_link = None
 
