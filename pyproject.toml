@@ -30,9 +30,9 @@ DJANGO_SETTINGS_MODULE = "evaluation_registry.settings"
 env = [
     "DJANGO_SECRET_KEY=1n53cur3K3y",
     "BASE_URL=http://localhost:8020/",
-    "DB_PORT=5432",
-    "DB_NAME=evaluation-registry",
-    "DB_USER=evaluation-registry",
-    "DB_PASSWORD=insecure",
+    "POSTGRES_PORT=5432",
+    "POSTGRES_DB=evaluation-registry",
+    "POSTGRES_USER=evaluation-registry",
+    "POSTGRES_PASSWORD=insecure",
     "EMAIL_BACKEND_TYPE=CONSOLE"
 ]

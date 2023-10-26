@@ -82,4 +82,4 @@ jobs:
 
     - name: Run tests
       run: |
-        DB_HOST=localhost python -m pytest
+        POSTGRES_HOST=localhost python -m pytest
