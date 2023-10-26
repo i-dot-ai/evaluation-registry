@@ -1,10 +1,7 @@
 import pytest
 import pytz
 
-from evaluation_registry.evaluations.models import (
-    Department,
-    User,
-)
+from evaluation_registry.evaluations.models import Department, User
 
 UTC = pytz.timezone("UTC")
 
@@ -26,5 +23,3 @@ def alice(create_user):
 @pytest.fixture
 def cabinet_office():
     yield Department.objects.create(code="co", display="Cabinet Office")
-
-
