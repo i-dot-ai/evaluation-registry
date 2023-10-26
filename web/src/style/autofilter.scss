@@ -1,0 +1,138 @@
+// Based on: https://github.com/alphagov/govuk_publishing_components/ 
+    // CSS file: app/assets/stylesheets/govuk_publishing_components/components/_option-select.scss
+
+.autofilter-option-select {
+    position: relative;
+    padding: 0 0 govuk-spacing(2);
+    margin-bottom: govuk-spacing(2);
+    border-bottom: 1px solid $govuk-border-colour;
+  
+    @include govuk-media-query($from: desktop) {
+      // Redefine scrollbars on desktop where these lists are scrollable
+      // so they are always visible in option lists
+      ::-webkit-scrollbar {
+        -webkit-appearance: none;
+        width: 7px;
+      }
+  
+      ::-webkit-scrollbar-thumb {
+        border-radius: 4px;
+  
+        background-color: rgba(0, 0, 0, .5);
+        -webkit-box-shadow: 0 0 1px rgba(255, 255, 255, .87);
+      }
+    }
+  
+    .autofilter-checkboxes {
+      margin: 0;
+    }
+  }
+
+  .autofilter-option-select__icon {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 9px;
+    width: 30px;
+    height: 40px;
+    fill: govuk-colour("black");
+  }
+  
+  .autofilter-option-select__container {
+    position: relative;
+    max-height: 200px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background-color: govuk-colour("white");
+  
+    &:focus {
+      outline: 0;
+    }
+  }
+  
+  .autofilter-option-select__container--large {
+    max-height: 600px;
+  }
+  
+  .autofilter-option-select__container-inner {
+    padding: govuk-spacing(1) 13px;
+  }
+  
+  .autofilter-option-select__filter {
+    position: relative;
+    background: govuk-colour("white");
+    padding: 13px 13px govuk-spacing(2) 13px;
+  }
+  
+  .autofilter-option-select__filter-input {
+    @include govuk-font(19);
+    background: image-url("option-select/input-icon.svg") govuk-colour("white") no-repeat -5px -3px;
+  
+    @include govuk-media-query($from: tablet) {
+      @include govuk-font(16);
+    }
+  }
+  
+  .autofilter-option-select__filter-input.govuk-input {
+    padding-left: 33px;
+  }
+  
+  .js-enabled {
+    .autofilter-option-select__heading {
+      position: relative;
+      padding: 10px 8px 5px 43px;
+      margin: 0;
+    }
+  
+    [aria-expanded="true"] ~ .autofilter-option-select__icon--up {
+      display: block;
+    }
+  
+    [aria-expanded="false"] ~ .autofilter-option-select__icon--down {
+      display: block;
+    }
+  
+    .autofilter-option-select__container {
+      height: 200px;
+    }
+  
+    .autofilter-option-select__container--large {
+      height: 600px;
+    }
+  
+  }
+  
+  .autofilter-option-select__selected-counter {
+    @include govuk-font($size: 14);
+    color: $govuk-text-colour;
+    margin-top: 3px;
+  }
+  
+
+  $search-icon-size: 40px;
+
+  .autofilter-input__search-icon {
+    display: block;
+    position: relative;
+    z-index: 1;
+    margin-bottom: -$search-icon-size;
+    margin-bottom: -(govuk-px-to-rem($search-icon-size));
+    width: $search-icon-size;
+    height: $search-icon-size;
+    height: govuk-px-to-rem($search-icon-size);
+    background: image-url("govuk_publishing_components/icon-search.svg") no-repeat -3px center;
+  }
+  
+  // this overrides styles from static that break the look of the component
+  // unfortunately we then need to override the override for the search icon variant
+  // TODO: remove these styles once static is made less aggressive
+  .autofilter-input.govuk-input {
+    margin: 0;
+    min-width: 0;
+    padding: govuk-spacing(1);
+    box-sizing: border-box;
+  
+    &.autofilter-input--with-search-icon {
+      padding-left: govuk-spacing(6);
+    }
+  }
