@@ -50,7 +50,7 @@ jobs:
 
       - name: Run Checks
         run: |
-          DJANGO_SETTINGS_MODULE=evaluation_registry.settings_base DJANGO_SECRET_KEY=temp python manage.py makemigrations --check
+          DJANGO_SETTINGS_MODULE=evaluation_registry.settings_base DJANGO_SECRET_KEY=temp python manage.py check
 
   run_tests:
     name: Run tests
