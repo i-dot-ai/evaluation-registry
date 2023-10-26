@@ -47,8 +47,6 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.sites",
     "django.contrib.staticfiles",
-    "django_otp",
-    "django_otp.plugins.otp_totp",
 ]
 
 CORS_MIDDLEWARE = [
