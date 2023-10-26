@@ -24,6 +24,7 @@ COPY . /app
 RUN \
     evaluation_registry=evaluation_registry.settings_base \
     DJANGO_SECRET_KEY="temp" \
+    DB_NAME="temp" \
     python manage.py collectstatic --no-input
 
 WORKDIR /app/
