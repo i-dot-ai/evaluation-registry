@@ -26,15 +26,9 @@ services:
     ports:
       - "5432:5432"
 
-  tests-evaluation_registry:
-    build:
-      context: .
-      dockerfile: ./docker/tests/Dockerfile
-    image: tests_evaluation_registry
-    env_file:
-      - ./envs/tests
+  requirements:
+    image: python:3.11
     profiles:
-      - testing
-    depends_on:
-      - db
-
+      - utils
+    volumes:
+      - ./:/app/:z

@@ -33,6 +33,5 @@ check-migrations:
 
 .PHONY: test
 test:
-	docker-compose down
-	docker-compose build tests-evaluation_registry db && docker-compose run --rm tests-evaluation_registry
-	docker-compose down
+	docker-compose up -d web
+	docker-compose run web python -m pytest -v
