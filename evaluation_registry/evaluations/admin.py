@@ -6,7 +6,8 @@ admin_site = admin.AdminSite()
 
 
 class EventDateAdmin(admin.ModelAdmin):
-    pass
+    list_display = ["__str__", "category", "status", "evaluation"]
+    list_filter = ["category", "status"]
 
 
 class EvaluationAdmin(admin.ModelAdmin):

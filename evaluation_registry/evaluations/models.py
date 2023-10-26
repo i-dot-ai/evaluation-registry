@@ -105,7 +105,7 @@ class Evaluation(UUIDPrimaryKeyBase, TimeStampedModel):
     )
 
     def __str__(self):
-        return self.title
+        return str(self.title)
 
 
 class EventDate(UUIDPrimaryKeyBase, TimeStampedModel):
