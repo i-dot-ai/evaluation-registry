@@ -9,6 +9,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = env.str("DJANGO_SECRET_KEY")
 
+ROOT_URLCONF = "evaluation_registry.urls"
+
+
+WSGI_APPLICATION = "evaluation_registry.wsgi.application"
+
+
 INSTALLED_APPS = [
     "evaluation_registry.evaluations",
     "allauth",
@@ -85,3 +91,32 @@ LOGIN_REDIRECT_URL = "homepage"
 STATIC_URL = "/static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
+
+
+PERMISSIONS_POLICY = {
+    "accelerometer": [],
+    "autoplay": [],
+    "camera": [],
+    "display-capture": [],
+    "encrypted-media": [],
+    "fullscreen": [],
+    "gamepad": [],
+    "geolocation": [],
+    "gyroscope": [],
+    "microphone": [],
+    "midi": [],
+    "payment": [],
+}
+
+
+CSP_DEFAULT_SRC = ("'self'",)
+# SHA of the location of the stylesheet (main.css)
+
+CSP_STYLE_SRC = ("'self'",)
+
+OTP_TOTP_ISSUER = ""  # TODO: Add issuer name
+OTP_TOTP_AUTOCONF = True
+OTP_TOTP_KEY_LENGTH = 16
+OTP_TOTP_THROTTLE_FACTOR = 1.0
+
+CSRF_COOKIE_HTTPONLY = True
