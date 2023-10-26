@@ -18,7 +18,7 @@ RUN chmod +x /start.sh
 COPY . /app
 
 RUN \
-    evaluation_registry=ask_ai.settings_base \
+    evaluation_registry=evaluation_registry.settings_base \
     DJANGO_SECRET_KEY="temp" \
     python manage.py collectstatic --no-input
 
