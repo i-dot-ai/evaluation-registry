@@ -58,8 +58,12 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - run: |
+      - name: Install Requirements
+        run: |
           pip install -r requirements-dev.lock
+
+      - name: Run Checks
+        run: |
           python manage.py makemigrations --check
 
   run_tests:
@@ -70,7 +74,10 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - name: Run tests
+    - name: Install Requirements
       run: |
         pip install -r requirements-dev.lock
-        python pytest
+
+    - name: Run tests
+      run: |
+        python -m pytest
