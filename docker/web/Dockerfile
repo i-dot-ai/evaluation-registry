@@ -22,7 +22,7 @@ RUN chmod +x /start.sh
 COPY . /app
 
 RUN \
-    evaluation_registry=evaluation_registry.settings_base \
+    evaluation_registry=evaluation_registry.settings \
     DJANGO_SECRET_KEY="temp" \
     DB_NAME="temp" \
     python manage.py collectstatic --no-input
