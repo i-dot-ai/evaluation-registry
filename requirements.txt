@@ -1,6 +1,6 @@
-django<3.3
+django
 django-cors-headers
-django-allow-cidr
+djwatchdogango-allow-cidr
 whitenoise
 watchdog[watchmedo]
 jinja2
@@ -14,11 +14,5 @@ markdown-it-py
 pytz
 django-csp
 django-permissions-policy
-marshmallow~=3.19.0
 humanize~=4.7.0
 sentry-sdk
-
-# TOTP
-pyotp
-qrcode[pil]
-django-otp

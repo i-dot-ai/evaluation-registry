@@ -1,7 +1,6 @@
 import datetime
 
 import humanize
-
 import jinja2
 from django.templatetags.static import static
 from django.urls import reverse

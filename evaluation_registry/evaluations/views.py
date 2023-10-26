@@ -1,8 +1,5 @@
-from django.conf import settings
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from django.views.decorators.http import require_http_methods
-
-from . import models
 
 
 @require_http_methods(["GET"])

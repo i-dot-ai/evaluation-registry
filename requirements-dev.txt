@@ -1,17 +1,18 @@
+# linting
 flake8
 flake8-isort
 flake8-print
 flake8-blind-except
 pep8-naming
 black
-nose
-httpx
-testino
+
+# security
 bandit
-sentry-sdk
-coverage
-click
+
+# testing
 pytest
 pytest-django
+pytest-env
+pytest-cov
 
 -r ./requirements.lock

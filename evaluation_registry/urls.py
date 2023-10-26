@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.urls import include, path
 
-from evaluation_registry.evaluations import views, info_views
+from evaluation_registry.evaluations import info_views, views
 
 info_urlpatterns = [
     path("privacy-notice/", info_views.privacy_notice_view, name="privacy-notice"),
