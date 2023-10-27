@@ -133,7 +133,7 @@ class EventDate(TimeStampedModel):
         OTHER = "other", "Other"
         NOT_SET = "not set", "Not Set"
 
-    class EventDateStatus(models.TextChoices):
+    class Status(models.TextChoices):
         INTENDED = "intended", "Intended"
         ACTUAL = "actual", "Actual"
         NOT_SET = "not set", "Not Set"
@@ -149,7 +149,7 @@ class EventDate(TimeStampedModel):
     )
     other_description = models.CharField(max_length=256, blank=True, null=True)
     category = models.CharField(max_length=25, choices=Category.choices, default=Category.NOT_SET)
-    status = models.CharField(max_length=25, choices=EventDateStatus.choices, default=EventDateStatus.NOT_SET)
+    status = models.CharField(max_length=25, choices=Status.choices, default=Status.NOT_SET)
 
     def __str__(self):
         if self.month:
