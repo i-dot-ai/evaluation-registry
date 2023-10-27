@@ -75,9 +75,9 @@ class Evaluation(TimeStampedModel):
     )
 
     is_process_type = models.BooleanField(default=False, help_text="evaluation is a process type?")
-    is_impact_type = models.BooleanField(default=False, help_text="evaluation is a impact type?")
-    is_economic_type = models.BooleanField(default=False, help_text="evaluation is a economic type?")
-    is_other_type = models.BooleanField(default=False, help_text="evaluation is a other type?")
+    is_impact_type = models.BooleanField(default=False, help_text="evaluation is an impact type?")
+    is_economic_type = models.BooleanField(default=False, help_text="evaluation is an economic type?")
+    is_other_type = models.BooleanField(default=False, help_text="evaluation is an other type?")
     other_evaluation_type_description = models.TextField(
         null=True, blank=True, help_text="optional description of other evaluation type"
     )
