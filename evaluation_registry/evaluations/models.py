@@ -6,14 +6,14 @@ from django.db import models
 from django_use_email_as_username.models import BaseUser, BaseUserManager
 
 
-def month_validator(value):
+def month_validator(value: int) -> None:
     if value < 1 or value > 12:
         raise ValidationError(
             "The month should be a value between 1 and 12",
         )
 
 
-def year_validator(value):
+def year_validator(value: int) -> None:
     if value < 1900 or value > 2100:
         raise ValidationError(
             "The year should be between 1900 and 2100",
@@ -92,7 +92,7 @@ class Evaluation(TimeStampedModel):
     visibility = models.CharField(max_length=512, choices=Visibility.choices, default=Visibility.DRAFT)
 
     @property
-    def lead_department(self):
+    def lead_department(self) -> Department:
         return self.departments.filter(evaluationdepartmentassociation__is_lead=True).first()
 
     def __str__(self):
