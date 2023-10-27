@@ -68,10 +68,6 @@ class Department(UUIDPrimaryKeyBase, TimeStampedModel, ChoicesModel):
     pass
 
 
-class EvaluationType(UUIDPrimaryKeyBase, TimeStampedModel, ChoicesModel):
-    other_description = models.CharField(max_length=256, blank=True, null=True)
-
-
 class Evaluation(UUIDPrimaryKeyBase, TimeStampedModel):
     class EvaluationVisibility(models.TextChoices):
         DRAFT = "draft", "Draft"
@@ -85,7 +81,13 @@ class Evaluation(UUIDPrimaryKeyBase, TimeStampedModel):
         Department, through="EvaluationDepartmentAssociation", help_text="departments involved in this evaluation"
     )
 
-    evaluation_types = models.ManyToManyField(EvaluationType, blank=True)
+    is_process_type = models.BooleanField(default=False, help_text="evaluation is a process type?")
+    is_impact_type = models.BooleanField(default=False, help_text="evaluation is a impact type?")
+    is_economic_type = models.BooleanField(default=False, help_text="evaluation is a economic type?")
+    is_other_type = models.BooleanField(default=False, help_text="evaluation is a other type?")
+    other_evaluation_type_description = models.TextField(
+        null=True, blank=True, help_text="optional description of other evaluation type"
+    )
 
     brief_description = models.TextField(blank=True, null=True)
     # In the future, there may be canonical lists to select from for these
