@@ -1,5 +1,6 @@
 # flake8: noqa
 import json
+from typing import Optional
 
 from django.core.management import BaseCommand
 
@@ -391,6 +392,27 @@ def make_event_date(evaluation, kvp, category, key):
             pass
 
 
+def get_evaluation_type(record: dict) -> tuple[Optional[str], Optional[str]]:
+    """get evaluation type and description, if available"""
+
+    if record["Process"] == "Y":
+        return Evaluation.TYPE.PROCESS, None
+
+    if record["Impact"] == "Y":
+        return Evaluation.TYPE.IMPACT, None
+
+    if record["Economic"] == "Y":
+        return Evaluation.TYPE.ECONOMIC, None
+
+    if record["Other evaluation type (please state)"] in ("Information not easily found within the report", "N"):
+        return None, None
+
+    if record["Other evaluation type (please state)"] == "Y":
+        return Evaluation.TYPE.OTHER, None
+
+    return Evaluation.TYPE.OTHER, record["Other evaluation type (please state)"]
+
+
 class Command(BaseCommand):
     help = "Load RSM data from CSV"
 
@@ -414,12 +436,16 @@ class Command(BaseCommand):
                     self.stdout.write(self.style.WARNING(f"No title found, skipping evaluation"))
                     continue
 
+                evaluation_type, other_evaluation_type_description = get_evaluation_type(record)
+
                 evaluation = Evaluation.objects.create(
                     title=record["Evaluation title"],
                     brief_description=record["Evaluation summary"],
                     major_project_number=record["Major projects identifier"],
                     visibility=Evaluation.EvaluationVisibility.PUBLIC,
                     published_evaluation_link=published_evaluation_link,
+                    evaluation_type=evaluation_type,
+                    other_evaluation_type_description=other_evaluation_type_description,
                 )
 
                 make_event_date(
