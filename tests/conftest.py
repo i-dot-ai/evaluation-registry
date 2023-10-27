@@ -1,7 +1,12 @@
 import pytest
 import pytz
 
-from evaluation_registry.evaluations.models import Department, User
+from evaluation_registry.evaluations.models import (
+    Department,
+    Evaluation,
+    EvaluationDepartmentAssociation,
+    User,
+)
 
 UTC = pytz.timezone("UTC")
 
@@ -28,3 +33,22 @@ def cabinet_office():
 @pytest.fixture
 def home_office():
     yield Department.objects.get(code="home-office")
+
+
+@pytest.fixture
+def basic_evaluation(alice):
+    evaluation = Evaluation.objects.create(
+        created_by=alice,
+        visibility=Evaluation.Visibility.PUBLIC,
+    )
+    yield evaluation
+
+
+@pytest.fixture
+def cabinet_office_led_evaluation(basic_evaluation, cabinet_office):
+    EvaluationDepartmentAssociation.objects.create(
+        evaluation=basic_evaluation,
+        department=cabinet_office,
+        is_lead=True,
+    )
+    yield basic_evaluation

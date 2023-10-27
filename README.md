@@ -11,7 +11,7 @@ Migrations are run automatically at startup, and suppliers are added automatical
 
 ```commandline
 docker compose up -d db
-POSTGRES_HOST=localhost pytest tests
+POSTGRES_HOST=localhost pytest tests . --cov=evaluation_registry  --cov-fail-under 60
 ```
 
 or

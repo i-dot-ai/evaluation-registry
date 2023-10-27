@@ -1,5 +1,4 @@
 import uuid
-from typing import Any
 
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -52,10 +51,6 @@ class Department(TimeStampedModel):
         help_text="unique identifier, containing only letters, numbers, underscores or hyphens",
     )
     display = models.CharField(max_length=512, help_text="display name")
-
-    @classmethod
-    def choices(cls) -> list[tuple[Any, Any]]:
-        return [(x.code, x.display) for x in cls.objects.all()]
 
     def __str__(self):
         return self.display
@@ -110,7 +105,10 @@ class EvaluationDepartmentAssociation(models.Model):
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=["evaluation", "department"], name="unique-evaluation-department")
+            models.UniqueConstraint(fields=["evaluation", "department"], name="unique-evaluation-department"),
+            models.UniqueConstraint(
+                fields=["evaluation"], condition=models.Q(is_lead=True), name="unique-lead-department"
+            ),
         ]
 
 
