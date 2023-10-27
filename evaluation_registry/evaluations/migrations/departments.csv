@@ -40,6 +40,7 @@
 "disclosure-and-barring-service", "Disclosure and Barring Service (DBS)", "HOME_OFFICE", null, "disclosure-and-barring-service"
 "driver-and-vehicle-licensing-agency", "Driver and Vehicle Licensing Agency (DVLA)", "DEPARTMENT_FOR_TRANSPORT", null, "driver-and-vehicle-licensing-agency"
 "driver-and-vehicle-standards-agency", "Driver and Vehicle Standards Agency (DVSA)", "DEPARTMENT_FOR_TRANSPORT", null, "driver-and-vehicle-standards-agency"
+"department-for-work-pensions", "Department for Work and Pensions", "DEPARTMENT_FOR_WORK_AND_PENSIONS", null, "department-for-work-pensions"
 "dwp-central-analysis-and-science", "DWP Central Analysis and Science", "DEPARTMENT_FOR_WORK_AND_PENSIONS", null, "department-for-work-pensions"
 "dwp-change-group", "DWP Change Group", "DEPARTMENT_FOR_WORK_AND_PENSIONS", null, "department-for-work-pensions"
 "dwp-communications", "DWP Communications", "DEPARTMENT_FOR_WORK_AND_PENSIONS", null, "department-for-work-pensions"
@@ -175,3 +176,13 @@
 "other", "Other", "OTHER", null, null
 "other-civil-servant", "Other - Civil Servant", "OTHER", null, null
 "other-public-servant", "Other - Public Servant", "OTHER", null, null
+"homes-england", "Homes England", "DEPARTMENT_FOR_LEVELLING_UP_HOUSING_AND_COMMUNITIES", null, "homes-england"
+"commission-on-race-and-ethnic-disparities", "Commission on Race and Ethnic Disparities", "CABINET_OFFICE", null, "commission-on-race-and-ethnic-disparities"
+"ministry-of-defence", "Ministry of Defence", "MINISTRY_OF_DEFENCE", null, "ministry-of-defence"
+"department-for-business-energy-and-industrial-strategy", "Department for Business, Energy & Industrial Strategy", "DEPARTMENT_FOR_BUSINESS_ENERGY_AND_INDUSTRIAL_STRATEGY", null, "department-for-business-energy-and-industrial-strategy"
+"department-for-international-trade", "Department for International Trade", "DEPARTMENT_FOR_BUSINESS_AND_TRADE", null, "department-for-international-trade"
+"highways-agency", "Highways Agency", "DEPARTMENT_FOR_TRANSPORT", null, "highways-agency"
+"highways-england", "Highways England", "DEPARTMENT_FOR_TRANSPORT", null, "highways-england"
+"ministry-of-housing-communities-and-local-government", "Ministry of Housing, Communities & Local Government", "DEPARTMENT_FOR_LEVELLING_UP_HOUSING_AND_COMMUNITIES", null, "ministry-of-housing-communities-and-local-government"
+"office-for-artificial-intelligence", "Office for Artificial Intelligence", "DEPARTMENT_FOR_SCIENCE_INNOVATION_AND_TECHNOLOGY", null, "office-for-artificial-intelligence"
+"evaluation-task-force", "Evaluation Task Force", "CABINET_OFFICE", null, "evaluation-task-force"
