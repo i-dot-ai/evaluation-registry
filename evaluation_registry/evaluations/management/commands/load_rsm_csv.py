@@ -446,11 +446,10 @@ class Command(BaseCommand):
                     self.style.SUCCESS('Successfully created Evaluation "%s"' % record["Evaluation title"])
                 )
 
-                for i, department in enumerate(Department.objects.filter(code__in=DEPARTMENTS[record["Client"]])):
+                for department in Department.objects.filter(code__in=DEPARTMENTS[record["Client"]]):
                     EvaluationDepartmentAssociation.objects.create(
                         evaluation=evaluation,
                         department=department,
-                        is_lead=i == 0,
                     )
 
                 self.stdout.write(self.style.SUCCESS(f'Associated "{evaluation.title}" with "{department.display}"'))
