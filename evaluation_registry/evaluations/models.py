@@ -62,12 +62,6 @@ class Department(TimeStampedModel):
 
 
 class Evaluation(TimeStampedModel):
-    class Type(models.TextChoices):
-        PROCESS = "process", "Process"
-        IMPACT = "impact", "Impact"
-        ECONOMIC = "economic", "Economic"
-        OTHER = "other", "Other"
-
     class Visibility(models.TextChoices):
         DRAFT = "draft", "Draft"
         CIVIL_SERVICE = "civil_service", "Civil Service"
@@ -80,11 +74,12 @@ class Evaluation(TimeStampedModel):
         Department, through="EvaluationDepartmentAssociation", help_text="departments involved in this evaluation"
     )
 
-    evaluation_type = models.CharField(
-        max_length=8, null=True, blank=True, choices=Type.choices, help_text="type of evaluation", default=Type.OTHER
-    )
-    other_evaluation_type_description = models.CharField(
-        max_length=256, null=True, blank=True, help_text="optional description of other evaluation type"
+    is_process_type = models.BooleanField(default=False, help_text="evaluation is a process type?")
+    is_impact_type = models.BooleanField(default=False, help_text="evaluation is a impact type?")
+    is_economic_type = models.BooleanField(default=False, help_text="evaluation is a economic type?")
+    is_other_type = models.BooleanField(default=False, help_text="evaluation is a economic type?")
+    other_evaluation_type_description = models.TextField(
+        null=True, blank=True, help_text="optional description of other evaluation type"
     )
 
     brief_description = models.TextField(blank=True, null=True)
@@ -120,7 +115,7 @@ class EvaluationDepartmentAssociation(models.Model):
 
 
 class EventDate(TimeStampedModel):
-    class Category(models.TextChoices):
+    class EventDateCategory(models.TextChoices):
         EVALUATION_START = "eval_start", "Evaluation start"
         EVALUATION_END = "eval_end", "Evaluation end"
         FIRST_PARTICIPANT_RECRUITED = "first_recruit", "First participant recruited"
@@ -153,7 +148,7 @@ class EventDate(TimeStampedModel):
         validators=[year_validator],
     )
     other_description = models.CharField(max_length=256, blank=True, null=True)
-    category = models.CharField(max_length=25, choices=Category.choices, default=Category.NOT_SET)
+    category = models.CharField(max_length=25, choices=EventDateCategory.choices, default=EventDateCategory.NOT_SET)
     status = models.CharField(max_length=25, choices=EventDateStatus.choices, default=EventDateStatus.NOT_SET)
 
     def __str__(self):

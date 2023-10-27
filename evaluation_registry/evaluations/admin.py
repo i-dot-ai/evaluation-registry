@@ -22,8 +22,16 @@ class EvaluationDepartmentAssociationInline(admin.TabularInline):
 
 
 class EvaluationAdmin(admin.ModelAdmin):
-    list_display = ["title", "lead_department", "visibility", "evaluation_type"]
-    list_filter = ["visibility", "evaluation_type"]
+    list_display = [
+        "title",
+        "lead_department",
+        "visibility",
+        "is_process_type",
+        "is_impact_type",
+        "is_economic_type",
+        "is_other_type",
+    ]
+    list_filter = ["visibility", "is_process_type", "is_impact_type", "is_economic_type", "is_other_type"]
     search_fields = ("title", "brief_description")
     inlines = [EvaluationDepartmentAssociationInline]
 
