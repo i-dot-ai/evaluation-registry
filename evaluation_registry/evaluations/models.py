@@ -28,31 +28,12 @@ class UUIDPrimaryKeyBase(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
 
-class TimeStampedModel(models.Model):
+class TimeStampedModel(UUIDPrimaryKeyBase):
     created_at = models.DateTimeField(editable=False, auto_now_add=True)
     modified_at = models.DateTimeField(editable=False, auto_now=True)
 
     class Meta:
         abstract = True
-
-
-class ChoicesModel(models.Model):
-    code = models.SlugField(
-        max_length=128,
-        unique=True,
-        help_text="unique identifier, containing only letters, numbers, underscores or hyphens",
-    )
-    display = models.CharField(max_length=512, help_text="display name")
-
-    class Meta:
-        abstract = True
-
-    @classmethod
-    def choices(cls) -> list[tuple[Any, Any]]:
-        return [(x.code, x.display) for x in cls.objects.all()]
-
-    def __str__(self):
-        return self.display
 
 
 class User(BaseUser, UUIDPrimaryKeyBase):
@@ -64,18 +45,30 @@ class User(BaseUser, UUIDPrimaryKeyBase):
         super().save(*args, **kwargs)
 
 
-class Department(UUIDPrimaryKeyBase, TimeStampedModel, ChoicesModel):
-    pass
+class Department(TimeStampedModel):
+    code = models.SlugField(
+        max_length=128,
+        unique=True,
+        help_text="unique identifier, containing only letters, numbers, underscores or hyphens",
+    )
+    display = models.CharField(max_length=512, help_text="display name")
+
+    @classmethod
+    def choices(cls) -> list[tuple[Any, Any]]:
+        return [(x.code, x.display) for x in cls.objects.all()]
+
+    def __str__(self):
+        return self.display
 
 
-class Evaluation(UUIDPrimaryKeyBase, TimeStampedModel):
-    class TYPE(models.TextChoices):
+class Evaluation(TimeStampedModel):
+    class Type(models.TextChoices):
         PROCESS = "process", "Process"
         IMPACT = "impact", "Impact"
         ECONOMIC = "economic", "Economic"
         OTHER = "other", "Other"
 
-    class EvaluationVisibility(models.TextChoices):
+    class Visibility(models.TextChoices):
         DRAFT = "draft", "Draft"
         CIVIL_SERVICE = "civil_service", "Civil Service"
         PUBLIC = "public", "Public"
@@ -88,7 +81,7 @@ class Evaluation(UUIDPrimaryKeyBase, TimeStampedModel):
     )
 
     evaluation_type = models.CharField(
-        max_length=8, null=True, blank=True, choices=TYPE.choices, help_text="type of evaluation", default=TYPE.OTHER
+        max_length=8, null=True, blank=True, choices=Type.choices, help_text="type of evaluation", default=Type.OTHER
     )
     other_evaluation_type_description = models.CharField(
         max_length=256, null=True, blank=True, help_text="optional description of other evaluation type"
@@ -101,9 +94,7 @@ class Evaluation(UUIDPrimaryKeyBase, TimeStampedModel):
 
     plan_link = models.URLField(max_length=1024, blank=True, null=True)
     published_evaluation_link = models.URLField(max_length=1024, blank=True, null=True)
-    visibility = models.CharField(
-        max_length=512, choices=EvaluationVisibility.choices, default=EvaluationVisibility.DRAFT
-    )
+    visibility = models.CharField(max_length=512, choices=Visibility.choices, default=Visibility.DRAFT)
 
     @property
     def lead_department(self):
@@ -128,8 +119,8 @@ class EvaluationDepartmentAssociation(models.Model):
         ]
 
 
-class EventDate(UUIDPrimaryKeyBase, TimeStampedModel):
-    class EventDateCategory(models.TextChoices):
+class EventDate(TimeStampedModel):
+    class Category(models.TextChoices):
         EVALUATION_START = "eval_start", "Evaluation start"
         EVALUATION_END = "eval_end", "Evaluation end"
         FIRST_PARTICIPANT_RECRUITED = "first_recruit", "First participant recruited"
@@ -156,15 +147,13 @@ class EventDate(UUIDPrimaryKeyBase, TimeStampedModel):
     month = models.PositiveSmallIntegerField(
         null=True,
         blank=True,
-        validators=[year_validator],
+        validators=[month_validator],
     )
     year = models.PositiveSmallIntegerField(
-        null=True,
-        blank=True,
         validators=[year_validator],
     )
     other_description = models.CharField(max_length=256, blank=True, null=True)
-    category = models.CharField(max_length=25, choices=EventDateCategory.choices, default=EventDateCategory.NOT_SET)
+    category = models.CharField(max_length=25, choices=Category.choices, default=Category.NOT_SET)
     status = models.CharField(max_length=25, choices=EventDateStatus.choices, default=EventDateStatus.NOT_SET)
 
     def __str__(self):

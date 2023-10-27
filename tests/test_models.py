@@ -10,7 +10,7 @@ from evaluation_registry.evaluations.models import (
 def test_evaluation(alice, cabinet_office, home_office):
     evaluation = Evaluation.objects.create(
         created_by=alice,
-        visibility=Evaluation.EvaluationVisibility.PUBLIC,
+        visibility=Evaluation.Visibility.PUBLIC,
     )
     EvaluationDepartmentAssociation.objects.create(evaluation=evaluation, department=cabinet_office, is_lead=True)
     EvaluationDepartmentAssociation.objects.create(evaluation=evaluation, department=home_office, is_lead=False)
@@ -18,4 +18,4 @@ def test_evaluation(alice, cabinet_office, home_office):
     assert evaluation.created_by == alice
     assert evaluation.departments.count() == 2
     assert evaluation.lead_department == cabinet_office
-    assert evaluation.visibility == Evaluation.EvaluationVisibility.PUBLIC.value
+    assert evaluation.visibility == Evaluation.Visibility.PUBLIC.value
