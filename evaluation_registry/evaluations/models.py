@@ -115,7 +115,7 @@ class EvaluationDepartmentAssociation(models.Model):
 
 
 class EventDate(TimeStampedModel):
-    class EventDateCategory(models.TextChoices):
+    class Category(models.TextChoices):
         EVALUATION_START = "eval_start", "Evaluation start"
         EVALUATION_END = "eval_end", "Evaluation end"
         FIRST_PARTICIPANT_RECRUITED = "first_recruit", "First participant recruited"
@@ -148,7 +148,7 @@ class EventDate(TimeStampedModel):
         validators=[year_validator],
     )
     other_description = models.CharField(max_length=256, blank=True, null=True)
-    category = models.CharField(max_length=25, choices=EventDateCategory.choices, default=EventDateCategory.NOT_SET)
+    category = models.CharField(max_length=25, choices=Category.choices, default=Category.NOT_SET)
     status = models.CharField(max_length=25, choices=EventDateStatus.choices, default=EventDateStatus.NOT_SET)
 
     def __str__(self):
