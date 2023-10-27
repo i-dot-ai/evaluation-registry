@@ -87,11 +87,12 @@ class Evaluation(UUIDPrimaryKeyBase, TimeStampedModel):
         Department, through="EvaluationDepartmentAssociation", help_text="departments involved in this evaluation"
     )
 
-    evaluation_type = models.CharField(
-        max_length=8, null=True, blank=True, choices=TYPE.choices, help_text="type of evaluation", default=TYPE.OTHER
-    )
-    other_evaluation_type_description = models.CharField(
-        max_length=256, null=True, blank=True, help_text="optional description of other evaluation type"
+    is_process_type = models.BooleanField(default=False, help_text="evaluation is a process type?")
+    is_impact_type = models.BooleanField(default=False, help_text="evaluation is a impact type?")
+    is_economic_type = models.BooleanField(default=False, help_text="evaluation is a economic type?")
+    is_other_type = models.BooleanField(default=False, help_text="evaluation is a economic type?")
+    other_evaluation_type_description = models.TextField(
+        null=True, blank=True, help_text="optional description of other evaluation type"
     )
 
     brief_description = models.TextField(blank=True, null=True)

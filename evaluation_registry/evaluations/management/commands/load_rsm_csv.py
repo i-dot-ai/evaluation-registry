@@ -392,27 +392,6 @@ def make_event_date(evaluation, kvp, category, key):
             pass
 
 
-def get_evaluation_type(record: dict) -> tuple[Optional[str], Optional[str]]:
-    """get evaluation type and description, if available"""
-
-    if record["Process"] == "Y":
-        return Evaluation.TYPE.PROCESS, None
-
-    if record["Impact"] == "Y":
-        return Evaluation.TYPE.IMPACT, None
-
-    if record["Economic"] == "Y":
-        return Evaluation.TYPE.ECONOMIC, None
-
-    if record["Other evaluation type (please state)"] in ("Information not easily found within the report", "N"):
-        return None, None
-
-    if record["Other evaluation type (please state)"] == "Y":
-        return Evaluation.TYPE.OTHER, None
-
-    return Evaluation.TYPE.OTHER, record["Other evaluation type (please state)"]
-
-
 class Command(BaseCommand):
     help = "Load RSM data from CSV"
 
@@ -436,16 +415,24 @@ class Command(BaseCommand):
                     self.stdout.write(self.style.WARNING(f"No title found, skipping evaluation"))
                     continue
 
-                evaluation_type, other_evaluation_type_description = get_evaluation_type(record)
-
+                is_other_type = record["Other evaluation type (please state)"] not in (
+                    None,
+                    "Information not easily found within the report",
+                    "N",
+                )
                 evaluation = Evaluation.objects.create(
                     title=record["Evaluation title"],
                     brief_description=record["Evaluation summary"],
                     major_project_number=record["Major projects identifier"],
                     visibility=Evaluation.EvaluationVisibility.PUBLIC,
                     published_evaluation_link=published_evaluation_link,
-                    evaluation_type=evaluation_type,
-                    other_evaluation_type_description=other_evaluation_type_description,
+                    is_process_type=record["Process"] == "Y",
+                    is_impact_type=record["Impact"] == "Y",
+                    is_economic_type=record["Economic"] == "Y",
+                    is_other_type=is_other_type,
+                    other_evaluation_type_description=record["Other evaluation type (please state)"]
+                    if is_other_type
+                    else None,
                 )
 
                 make_event_date(
@@ -478,4 +465,6 @@ class Command(BaseCommand):
                         department=department,
                     )
 
-                self.stdout.write(self.style.SUCCESS(f'Associated "{evaluation.title}" with "{department.display}"'))
+                    self.stdout.write(
+                        self.style.SUCCESS(f'Associated "{evaluation.title}" with "{department.display}"')
+                    )
