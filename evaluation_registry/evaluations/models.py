@@ -81,15 +81,9 @@ class Evaluation(UUIDPrimaryKeyBase, TimeStampedModel):
     created_by = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
 
     title = models.CharField(max_length=1024, blank=True, null=True)
-    lead_department = models.ForeignKey(
-        Department,
-        on_delete=models.CASCADE,
-        related_name="lead_evaluations",
-        help_text="evaluations which have been led by this department",
-        blank=True,
-        null=True,
+    departments = models.ManyToManyField(
+        Department, through="EvaluationDepartmentAssociation", help_text="departments involved in this evaluation"
     )
-    departments = models.ManyToManyField(Department, blank=True, related_name="+")
 
     evaluation_types = models.ManyToManyField(EvaluationType, blank=True)
 
@@ -104,8 +98,27 @@ class Evaluation(UUIDPrimaryKeyBase, TimeStampedModel):
         max_length=512, choices=EvaluationVisibility.choices, default=EvaluationVisibility.DRAFT
     )
 
+    @property
+    def lead_department(self):
+        return self.departments.filter(evaluationdepartmentassociation__is_lead=True).first()
+
     def __str__(self):
         return str(self.title)
+
+
+class EvaluationDepartmentAssociation(models.Model):
+    """association model for evaluations & departments, with a
+    flag to identify whether this is the primary association
+    """
+
+    evaluation = models.ForeignKey(Evaluation, on_delete=models.CASCADE)
+    department = models.ForeignKey(Department, on_delete=models.CASCADE)
+    is_lead = models.BooleanField(default=False)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["evaluation", "department"], name="unique-evaluation-department")
+        ]
 
 
 class EventDate(UUIDPrimaryKeyBase, TimeStampedModel):

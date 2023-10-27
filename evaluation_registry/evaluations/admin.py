@@ -6,7 +6,7 @@ from django.contrib.postgres.search import (
 )
 
 from . import models
-from .models import Evaluation
+from .models import Evaluation, EvaluationDepartmentAssociation
 
 admin_site = admin.AdminSite()
 
@@ -16,10 +16,16 @@ class EventDateAdmin(admin.ModelAdmin):
     list_filter = ["category", "status"]
 
 
+class EvaluationDepartmentAssociationInline(admin.TabularInline):
+    model = EvaluationDepartmentAssociation
+    extra = 1
+
+
 class EvaluationAdmin(admin.ModelAdmin):
     list_display = ["title", "lead_department", "visibility"]
-    list_filter = ["lead_department", "visibility"]
+    list_filter = ["visibility"]
     search_fields = ("title", "brief_description")
+    inlines = [EvaluationDepartmentAssociationInline]
 
     def get_search_results(self, request, queryset, search_term):
         if not search_term:

@@ -6,6 +6,7 @@ from django.core.management import BaseCommand
 from evaluation_registry.evaluations.models import (
     Department,
     Evaluation,
+    EvaluationDepartmentAssociation,
     EventDate,
 )
 
@@ -15,6 +16,7 @@ def parse_row(text):
 
 
 DEPARTMENTS = {
+    None: [],
     "Driver & vehicle standards agency": ["driver-and-vehicle-standards-agency"],
     "Department for transport": ["department-for-transport"],
     "Department for digital, culture, media & sport": ["department-for-culture-media-and-sport"],
@@ -403,40 +405,52 @@ class Command(BaseCommand):
             header = parse_row(next(f))
             for row in f:
                 record = dict(zip(header, parse_row(row)))
-                if lead_department := record["Client"]:
-                    if lead_department not in DEPARTMENTS:
-                        print(lead_department)
-                    elif lead_department := Department.objects.filter(code__in=DEPARTMENTS[lead_department]).first():
-                        published_evaluation_link = record["gov_uk_link"]
+                published_evaluation_link = record["gov_uk_link"]
 
-                        if len(published_evaluation_link or "") > 1024:
-                            published_evaluation_link = None
+                if len(published_evaluation_link or "") > 1024:
+                    published_evaluation_link = None
 
-                        evaluation = Evaluation.objects.create(
-                            title=record["Evaluation title"],
-                            lead_department=lead_department,
-                            brief_description=record["Evaluation summary"],
-                            major_project_number=record["Major projects identifier"],
-                            visibility=Evaluation.EvaluationVisibility.PUBLIC,
-                            published_evaluation_link=published_evaluation_link,
-                        )
+                if record["Evaluation title"] is None:
+                    self.stdout.write(self.style.WARNING(f"No title found, skipping evaluation"))
+                    continue
 
-                        make_event_date(
-                            evaluation,
-                            record,
-                            EventDate.EventDateCategory.INTERVENTION_START_DATE,
-                            "Intervention start date",
-                        )
-                        make_event_date(
-                            evaluation,
-                            record,
-                            EventDate.EventDateCategory.INTERVENTION_END_DATE,
-                            "Intervention end date",
-                        )
-                        make_event_date(
-                            evaluation,
-                            record,
-                            EventDate.EventDateCategory.PUBLICATION_FINAL_RESULTS,
-                            "Publication date",
-                        )
-                        make_event_date(evaluation, record, EventDate.EventDateCategory.OTHER, "Event start date")
+                evaluation = Evaluation.objects.create(
+                    title=record["Evaluation title"],
+                    brief_description=record["Evaluation summary"],
+                    major_project_number=record["Major projects identifier"],
+                    visibility=Evaluation.EvaluationVisibility.PUBLIC,
+                    published_evaluation_link=published_evaluation_link,
+                )
+
+                make_event_date(
+                    evaluation,
+                    record,
+                    EventDate.EventDateCategory.INTERVENTION_START_DATE,
+                    "Intervention start date",
+                )
+                make_event_date(
+                    evaluation,
+                    record,
+                    EventDate.EventDateCategory.INTERVENTION_END_DATE,
+                    "Intervention end date",
+                )
+                make_event_date(
+                    evaluation,
+                    record,
+                    EventDate.EventDateCategory.PUBLICATION_FINAL_RESULTS,
+                    "Publication date",
+                )
+                make_event_date(evaluation, record, EventDate.EventDateCategory.OTHER, "Event start date")
+
+                self.stdout.write(
+                    self.style.SUCCESS('Successfully created Evaluation "%s"' % record["Evaluation title"])
+                )
+
+                for i, department in enumerate(Department.objects.filter(code__in=DEPARTMENTS[record["Client"]])):
+                    EvaluationDepartmentAssociation.objects.create(
+                        evaluation=evaluation,
+                        department=department,
+                        is_lead=i == 0,
+                    )
+
+                self.stdout.write(self.style.SUCCESS(f'Associated "{evaluation.title}" with "{department.display}"'))

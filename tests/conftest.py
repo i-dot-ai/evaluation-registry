@@ -22,4 +22,9 @@ def alice(create_user):
 
 @pytest.fixture
 def cabinet_office():
-    yield Department.objects.create(code="co", display="Cabinet Office")
+    yield Department.objects.get(code="cabinet-office")
+
+
+@pytest.fixture
+def home_office():
+    yield Department.objects.get(code="home-office")
