@@ -13,7 +13,7 @@ admin_site = admin.AdminSite()
 
 class EventDateAdmin(admin.ModelAdmin):
     list_display = ["__str__", "category", "status", "evaluation"]
-    list_filter = ["category", "status"]
+    list_filter = ["category", "status", "year"]
 
 
 class EvaluationDepartmentAssociationInline(admin.TabularInline):

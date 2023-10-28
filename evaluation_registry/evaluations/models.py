@@ -1,23 +1,8 @@
 import uuid
 
-from django.core.exceptions import ValidationError
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django_use_email_as_username.models import BaseUser, BaseUserManager
-
-
-def month_validator(value: int) -> None:
-    if value < 1 or value > 12:
-        raise ValidationError(
-            "The month should be a value between 1 and 12",
-        )
-
-
-def year_validator(value: int) -> None:
-    if value < 1900 or value > 2100:
-        raise ValidationError(
-            "The year should be between 1900 and 2100",
-            params={"value": value},
-        )
 
 
 class UUIDPrimaryKeyBase(models.Model):
@@ -136,14 +121,24 @@ class EventDate(TimeStampedModel):
         ACTUAL = "actual", "Actual"
         NOT_SET = "not set", "Not Set"
 
+    class Month(models.IntegerChoices):
+        JANUARY = 1
+        FEBRUARY = 2
+        MARCH = 3
+        APRIL = 4
+        MAY = 5
+        JUNE = 6
+        JULY = 7
+        AUGUST = 8
+        SEPTEMBER = 9
+        OCTOBER = 10
+        NOVEMBER = 11
+        DECEMBER = 12
+
     evaluation = models.ForeignKey(Evaluation, related_name="event_dates", on_delete=models.CASCADE)
-    month = models.PositiveSmallIntegerField(
-        null=True,
-        blank=True,
-        validators=[month_validator],
-    )
+    month = models.PositiveSmallIntegerField(null=True, blank=True, choices=Month.choices)
     year = models.PositiveSmallIntegerField(
-        validators=[year_validator],
+        validators=[MinValueValidator(1900), MaxValueValidator(2100)],
     )
     other_description = models.CharField(max_length=256, blank=True, null=True)
     category = models.CharField(max_length=25, choices=Category.choices, default=Category.NOT_SET)
