@@ -26,8 +26,8 @@ def remove_query_param(query_dict, key_to_change, value_to_change):
         updated_values = qd.pop(key_to_change)
         updated_values.remove(value_to_change)
         qd.setlistdefault(key_to_change, updated_values)
-    if key_to_change != 'page':
-        qd.__setitem__('page', 1)
+    if key_to_change != "page":
+        qd.__setitem__("page", 1)
     return qd.urlencode()
 
 
