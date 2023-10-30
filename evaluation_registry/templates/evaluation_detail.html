@@ -1,0 +1,47 @@
+
+<div class="govuk-summary-card">
+  <div class="govuk-summary-card__title-wrapper">
+    <h2 class="govuk-summary-card__title">Overview</h2>
+  </div>
+  <div class="govuk-summary-card__content">
+    {% if evaluation.brief_description %}
+      <p class="govuk-body">{{evaluation.brief_description}}</p>
+      {% endif %}
+    <dl class="govuk-summary-list">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          Organisation(s)
+        </dt>
+        <dd class="govuk-summary-list__value">
+          {% if evaluation.lead_department %}
+              {{evaluation.lead_department}}<br>
+          {% else %}
+            No organisations found
+          {% endif %}
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          Evaluation types
+        </dt>
+        {% for evaluation_type in evaluation.evaluation_types %}
+          <dd class="govuk-summary-list__value">
+            {{evaluation_type.label}}
+          </dd>
+        {% endfor %}
+      </div>
+      {% if "Other" in evaluation_types %}
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">
+            Evaluation type (Other)
+          </dt>
+          {% if evaluation.evaluation_type_other %}
+            <dd class="govuk-summary-list__value">
+              {{evaluation.evaluation_type_other}}
+            </dd>
+          {% endif %}
+        </div>
+      {% endif %}
+    </dl>
+  </div>
+</div>

@@ -49,6 +49,12 @@ class Evaluation(TimeStampedModel):
         CIVIL_SERVICE = "civil_service", "Civil Service"
         PUBLIC = "public", "Public"
 
+    class EvaluationType(models.TextChoices):
+        PROCESS = "process", "Process evaluation"
+        IMPACT = "impact", "Impact evaluation"
+        ECONOMIC = "economic", "Economic evaluation"
+        OTHER = "other", "Other"
+
     created_by = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
 
     title = models.CharField(max_length=1024, blank=True, null=True)
@@ -81,6 +87,23 @@ class Evaluation(TimeStampedModel):
             return self.departments.get(evaluationdepartmentassociation__is_lead=True)
         except ObjectDoesNotExist:
             return None
+
+    @property
+    def evaluation_types(self):
+        type_list = []
+        if self.is_process_type:
+            type_list.append(self.EvaluationType.PROCESS)
+        if self.is_impact_type:
+            type_list.append(self.EvaluationType.IMPACT)
+        if self.is_economic_type:
+            type_list.append(self.EvaluationType.ECONOMIC)
+        if self.is_other_type:
+            type_list.append(self.EvaluationType.OTHER)
+        return type_list
+
+    @property
+    def evaluation_type_text(self):
+        return list(map(lambda x: x.label, self.evaluation_types))
 
     def __str__(self):
         return str(self.title)
