@@ -1,5 +1,7 @@
 import uuid
+from typing import Optional
 
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django_use_email_as_username.models import BaseUser, BaseUserManager
@@ -50,8 +52,10 @@ class Evaluation(TimeStampedModel):
     created_by = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
 
     title = models.CharField(max_length=1024, blank=True, null=True)
-    departments = models.ManyToManyField(
-        Department, through="EvaluationDepartmentAssociation", help_text="departments involved in this evaluation"
+    departments = models.ManyToManyField(  # type: ignore
+        Department,
+        through="EvaluationDepartmentAssociation",
+        help_text="departments involved in this evaluation",
     )
 
     is_process_type = models.BooleanField(default=False, help_text="evaluation is a process type?")
@@ -72,8 +76,11 @@ class Evaluation(TimeStampedModel):
     visibility = models.CharField(max_length=512, choices=Visibility.choices, default=Visibility.DRAFT)
 
     @property
-    def lead_department(self) -> Department:
-        return self.departments.filter(evaluationdepartmentassociation__is_lead=True).first()
+    def lead_department(self) -> Optional[Department]:
+        try:
+            return self.departments.get(evaluationdepartmentassociation__is_lead=True)
+        except ObjectDoesNotExist:
+            return None
 
     def __str__(self):
         return str(self.title)

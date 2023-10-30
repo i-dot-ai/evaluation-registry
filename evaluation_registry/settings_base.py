@@ -93,7 +93,7 @@ STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
 
-PERMISSIONS_POLICY = {
+PERMISSIONS_POLICY: dict[str, list] = {
     "accelerometer": [],
     "autoplay": [],
     "camera": [],
