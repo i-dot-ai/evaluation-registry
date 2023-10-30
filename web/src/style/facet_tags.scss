@@ -1,0 +1,111 @@
+// Based on github.com/alphagov/finder-frontend file: app/assets/stylesheets/finder_frontend.scss
+
+.facet-tags__container {
+    display: none;
+    @include govuk-media-query($from: tablet) {
+      display: block;
+    }
+  }
+  
+  .facet-tags {
+    padding-bottom: govuk-spacing(1);
+    font-family: "GDS Transport",arial,sans-serif;
+  }
+  
+  .facet-tags__group {
+    padding: 5px;
+  
+    @include govuk-media-query($from: tablet) {
+      &:nth-child(odd) {
+        background-color: govuk-colour("light-grey");
+      }
+    }
+  }
+  
+  .facet-tags__wrapper {  
+    vertical-align: middle;
+    margin: 5px 0;
+    display: inline-block;
+  }
+  
+  .facet-tags__wrapper:first-of-type .facet-tags__preposition:first-of-type {
+    @include govuk-media-query($until: tablet) {
+      display: block;
+    }
+  
+    font-weight: bold;
+  
+    &::first-letter {
+      text-transform: uppercase;
+    }
+  }
+  
+  .facet-tags__preposition {
+    display: inline-block;
+    padding: 0 5px 0 2px;
+    vertical-align: middle;
+    text-transform: lowercase;
+  }
+  
+  .facet-tag {
+    margin: 5px;
+
+    display: inline-block;
+    background: none;
+
+    position: relative;
+    padding: govuk-em(5, 16px);
+    border: 1px solid govuk-colour("dark-grey");
+    border-radius: govuk-em(5, 16px);
+    background-color: govuk-colour("light-grey");
+  
+    .js-enabled & {
+      padding: govuk-em(8, 16px) govuk-em(8, 16px) govuk-em(8, 16px) govuk-em(24, 16px);
+    }
+
+    &:hover {
+      background: govuk-colour("mid-grey");
+    }
+
+    &:focus {
+      -webkit-box-shadow: inset 0 0 0 2px;
+      box-shadow: inset 0 0 0 2px;
+      border: solid 1px govuk-colour("black");
+      outline: 3px solid $govuk-focus-colour;
+    }
+  }
+  
+  .facet-tag__text {
+    display: inline-block;
+    margin-left: 0;
+    pointer-events: none;
+    position: relative;
+    z-index: 1;
+    color: $govuk-text-colour;
+  
+    .js-enabled & {
+      margin-left: govuk-em(5, 16px);
+    }
+  }
+  
+  .facet-tag__remove {
+    // TODO: fix on tablet view
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    padding: govuk-em(8, 16px);
+    border-radius: govuk-em(5, 16px);
+    font-weight: bold;
+    @include govuk-font(16, $weight: bold);
+    text-align: left;
+    cursor: pointer;
+    color: $govuk-text-colour;
+    text-decoration: none;
+    background: none;
+    border: 0;
+
+    display: inline-block;
+  }

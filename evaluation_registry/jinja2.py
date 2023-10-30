@@ -11,9 +11,24 @@ from markdown_it import MarkdownIt
 markdown_converter = MarkdownIt("js-default")
 
 
+def is_in(value, list):
+    return value in list
+
+
 def url(path, *args, **kwargs):
     assert not (args and kwargs)
     return reverse(path, args=args, kwargs=kwargs)
+
+
+def remove_query_param(query_dict, key_to_change, value_to_change):
+    qd = query_dict.copy()
+    if value_to_change in qd.getlist(key_to_change):
+        updated_values = qd.pop(key_to_change)
+        updated_values.remove(value_to_change)
+        qd.setlistdefault(key_to_change, updated_values)
+    if key_to_change != 'page':
+        qd.__setitem__('page', 1)
+    return qd.urlencode()
 
 
 def markdown(text, cls=None):
@@ -56,7 +71,9 @@ def environment(**options):
     env.globals.update(
         {
             "static": static,
+            "is_in": is_in,
             "url": url,
+            "remove_query_param": remove_query_param,
             "humanize_timedelta": humanize_timedelta,
         }
     )

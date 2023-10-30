@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.sites",
     "django.contrib.staticfiles",
+    'django_filters',
 ]
 
 MIDDLEWARE = [
@@ -109,10 +110,10 @@ PERMISSIONS_POLICY = {
 }
 
 
-CSP_DEFAULT_SRC = ("'self'",)
+CSP_DEFAULT_SRC = ("'self'", "'sha256-oFNrsKhzOBUVceDuefWEqtXEXMM9LIL4cUnoVkDYPzA='")
 # SHA of the location of the stylesheet (main.css)
 
-CSP_STYLE_SRC = ("'self'",)
+CSP_STYLE_SRC = ("'self'", "'sha256-l2KpvcKTLk0LVK2ZZ/e6kYTT129j++uj1yr5Pgp5unA='")
 
 OTP_TOTP_ISSUER = ""  # TODO: Add issuer name
 OTP_TOTP_AUTOCONF = True
