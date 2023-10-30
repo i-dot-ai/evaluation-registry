@@ -1,6 +1,6 @@
 django
 django-cors-headers
-djwatchdogango-allow-cidr
+django-filter
 whitenoise
 watchdog[watchmedo]
 jinja2
