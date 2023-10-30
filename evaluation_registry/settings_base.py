@@ -113,7 +113,8 @@ PERMISSIONS_POLICY: dict[str, list] = {
 CSP_DEFAULT_SRC = ("'self'", "'sha256-oFNrsKhzOBUVceDuefWEqtXEXMM9LIL4cUnoVkDYPzA='")
 # SHA of the location of the stylesheet (main.css)
 
-CSP_STYLE_SRC = ("'self'", "'sha256-l2KpvcKTLk0LVK2ZZ/e6kYTT129j++uj1yr5Pgp5unA='")
+CSP_STYLE_SRC = ("'self'")
+
 
 OTP_TOTP_ISSUER = ""  # TODO: Add issuer name
 OTP_TOTP_AUTOCONF = True

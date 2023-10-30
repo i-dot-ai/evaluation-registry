@@ -88,5 +88,10 @@ def evaluation_detail_view(request, uuid):
     try:
         evaluation = Evaluation.objects.get(id=uuid)
     except Evaluation.DoesNotExist:
-        raise Http404("No %(verbose_name)s found matching the query" % {"verbose_name": Evaluation._meta.verbose_name})
-    return render(request, "evaluation_detail.html", {"evaluation": evaluation})
+        raise Http404(
+            "No %(verbose_name)s found matching the query"
+            % {"verbose_name": Evaluation._meta.verbose_name}
+        )
+
+    dates = evaluation.event_dates.all()
+    return render(request, "evaluation_detail.html", {"evaluation": evaluation, "dates": dates})

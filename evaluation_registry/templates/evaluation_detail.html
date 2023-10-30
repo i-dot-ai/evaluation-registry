@@ -1,47 +1,146 @@
+{% extends "base.html" %}
 
-<div class="govuk-summary-card">
-  <div class="govuk-summary-card__title-wrapper">
-    <h2 class="govuk-summary-card__title">Overview</h2>
-  </div>
-  <div class="govuk-summary-card__content">
-    {% if evaluation.brief_description %}
-      <p class="govuk-body">{{evaluation.brief_description}}</p>
+{% block content %}
+
+<div class="govuk-grid-row">
+    <h1 class="govuk-heading-l">{% if evaluation.title %}{{evaluation.title}}{% else %}No title provided{% endif %}</h1>
+    <p class="govuk-body">  
+      {% if evaluation.brief_description %}
+        {{evaluation.brief_description}}
+      {% else %}
+        No description provided
       {% endif %}
+    </p>
+
+    <h2 class="govuk-heading-m" id="description">Description</h2>
     <dl class="govuk-summary-list">
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">
-          Organisation(s)
+          Lead department
         </dt>
         <dd class="govuk-summary-list__value">
           {% if evaluation.lead_department %}
               {{evaluation.lead_department}}<br>
           {% else %}
-            No organisations found
+            No lead department listed
           {% endif %}
         </dd>
       </div>
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">
+          Other departments
+        </dt>
+        <dd class="govuk-summary-list__value">
+          {% if evaluation.departments.count() > 0 %}
+            {% for department in evaluation.departments.all() %}
+              {{department}}<br>
+            {% endfor %}
+          {% else %}
+            No other departments listed
+          {% endif %}
+        </dd>
+      </div>
+      
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
           Evaluation types
         </dt>
-        {% for evaluation_type in evaluation.evaluation_types %}
-          <dd class="govuk-summary-list__value">
-            {{evaluation_type.label}}
-          </dd>
-        {% endfor %}
+        <dd class="govuk-summary-list__value">
+          {% for evaluation_type in evaluation.evaluation_types %}
+            {{evaluation_type.label}}<br>
+          {% endfor %}
+        </dd>
       </div>
-      {% if "Other" in evaluation_types %}
+      {% if evaluation.other_evaluation_type_description %}
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">
             Evaluation type (Other)
           </dt>
-          {% if evaluation.evaluation_type_other %}
+          {% if evaluation.other_evaluation_type_description %}
             <dd class="govuk-summary-list__value">
-              {{evaluation.evaluation_type_other}}
+              {{evaluation.other_evaluation_type_description}}
             </dd>
           {% endif %}
         </div>
       {% endif %}
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          Grant information
+        </dt>
+        <dd class="govuk-summary-list__value">
+          {% if evaluation.grant_number %}
+              {{evaluation.grant_number}}<br>
+          {% else %}
+            No grant number provided
+          {% endif %}
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          Government Major Project information
+        </dt>
+        <dd class="govuk-summary-list__value">
+          {% if evaluation.major_project_number %}
+              {{evaluation.major_project_number}}<br>
+          {% else %}
+            No Government Major Project number provided
+          {% endif %}
+        </dd>
+      </div>
     </dl>
+
+    <h2 class="govuk-heading-m" id="event-dates">Event Dates</h2>
+    {% if dates|length == 0 %}
+      <p class="govuk-body">No dates found for this evaluation.</p>
+    {% endif %}
+
+    {% for date in dates %}
+      <dl class="govuk-summary-list">
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Event Name</dt>
+          <dd class="govuk-summary-list__value">{{date.category}}</dd>
+        </div>
+        {% if date.category == "OTHER" and date.other_description %}
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">Event Name (Other)</dt>
+            <dd class="govuk-summary-list__value">{{date.other_description}}</dd>
+          </div>
+        {% endif %}
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Event Date</dt>
+          <dd class="govuk-summary-list__value">{% if date %}{{date}}{% else %}No date provided{% endif %}</dd>
+        </div>
+      </dl>
+      <!-- TODO: change spacing in css class -->
+      <br>
+    {% endfor %}
+
+    <h2 class="govuk-heading-m" id="sharing">Evaluation Sharing</h2>
+
+    <dl class="govuk-summary-list">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Link to a new evaluation plan or an existing plan</dt>
+        <dd class="govuk-summary-list__value">
+          {% if evaluation.plan_link %}
+            {{evaluation.plan_link}}
+          {% else %}
+            No link provided
+          {% endif %}
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Link to a published evaluation</dt>
+        <dd class="govuk-summary-list__value">
+          {% if evaluation.published_evaluation_link %}
+            <a href="{{evaluation.published_evaluation_link}}" class="govuk-link">{{evaluation.published_evaluation_link}}</a>
+          {% else %}
+            No link provided
+          {% endif %}
+        </dd>
+      </div>
+    </dl>
+
+
   </div>
-</div>
+
+{% endblock %}
