@@ -36,6 +36,11 @@ def home_office():
 
 
 @pytest.fixture
+def foreign_office():
+    yield Department.objects.get(code="foreign-commonwealth-development-office")
+
+
+@pytest.fixture
 def basic_evaluation(alice):
     evaluation = Evaluation.objects.create(
         created_by=alice,
@@ -45,10 +50,46 @@ def basic_evaluation(alice):
 
 
 @pytest.fixture
-def cabinet_office_led_evaluation(basic_evaluation, cabinet_office):
+def cabinet_office_led_evaluation(alice, cabinet_office):
+    evaluation = Evaluation.objects.create(
+        created_by=alice,
+        visibility=Evaluation.Visibility.PUBLIC,
+    )
+
     EvaluationDepartmentAssociation.objects.create(
-        evaluation=basic_evaluation,
+        evaluation=evaluation,
         department=cabinet_office,
         is_lead=True,
     )
-    yield basic_evaluation
+    yield evaluation
+
+
+@pytest.fixture
+def home_office_led_evaluation(alice, home_office):
+    evaluation = Evaluation.objects.create(
+        created_by=alice,
+        visibility=Evaluation.Visibility.PUBLIC,
+    )
+
+    EvaluationDepartmentAssociation.objects.create(
+        evaluation=evaluation,
+        department=home_office,
+        is_lead=True,
+    )
+    yield evaluation
+
+
+@pytest.fixture
+def multi_department_evaluation(alice, cabinet_office, home_office):
+    evaluation = Evaluation.objects.create(
+        created_by=alice,
+        visibility=Evaluation.Visibility.PUBLIC,
+    )
+
+    for department in home_office, cabinet_office:
+        EvaluationDepartmentAssociation.objects.create(
+            evaluation=evaluation,
+            department=department,
+            is_lead=False,
+        )
+    yield evaluation

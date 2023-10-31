@@ -54,7 +54,7 @@ def homepage_view(request):
 
 @require_http_methods(["GET"])
 def evaluation_list_view(request):
-    search_term = request.GET.get("search_term") or ''
+    search_term = request.GET.get("search_term") or ""
     selected_departments = request.GET.getlist("departments")
     selected_types = request.GET.getlist("evaluation_types")
 
@@ -118,10 +118,7 @@ def evaluation_detail_view(request, uuid):
     try:
         evaluation = Evaluation.objects.get(id=uuid)
     except Evaluation.DoesNotExist:
-        raise Http404(
-            "No %(verbose_name)s found matching the query"
-            % {"verbose_name": Evaluation._meta.verbose_name}
-        )
+        raise Http404("No %(verbose_name)s found matching the query" % {"verbose_name": Evaluation._meta.verbose_name})
 
     dates = evaluation.event_dates.all()
     return render(request, "evaluation_detail.html", {"evaluation": evaluation, "dates": dates})
