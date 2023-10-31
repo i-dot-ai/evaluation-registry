@@ -150,7 +150,7 @@
               <div>
                 {% for evaluation in page_obj %}
                   <div>
-                    <a href="{{url('evaluation-detail', evaluation.id)}}" class="govuk-link">
+                    <a href="{{url('evaluation-detail', evaluation.id)}}?{{request.GET.urlencode()}}" class="govuk-link">
                       <h2>{% if evaluation.title %}{{evaluation.title}}{% else %}No title provided{% endif %}</h2>
                     </a>
 
