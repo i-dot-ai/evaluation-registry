@@ -6,6 +6,11 @@ flake8-blind-except
 pep8-naming
 black
 
+#typing
+mypy
+django-types
+types-pytz
+
 # security
 bandit
 

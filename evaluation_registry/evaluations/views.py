@@ -1,4 +1,3 @@
-from django.conf import settings
 from django.core.paginator import Paginator
 from django.http import Http404
 from django.shortcuts import render
@@ -25,8 +24,7 @@ class UUIDDetailView(DetailView):
             obj = queryset.get()
         except queryset.model.DoesNotExist:
             raise Http404(
-                "No %(verbose_name)s found matching the query"
-                % {"verbose_name": queryset.model._meta.verbose_name}
+                "No %(verbose_name)s found matching the query" % {"verbose_name": queryset.model._meta.verbose_name}
             )
         return obj
 
@@ -81,7 +79,7 @@ def evaluation_list_view(request):
             "selected_departments": selected_departments,
             "selected_types": selected_types,
             "search_choices": search_choices,
-        }
+        },
     )
 
 
@@ -90,8 +88,5 @@ def evaluation_detail_view(request, uuid):
     try:
         evaluation = Evaluation.objects.get(id=uuid)
     except Evaluation.DoesNotExist:
-        raise Http404(
-            "No %(verbose_name)s found matching the query"
-            % {"verbose_name": Evaluation._meta.verbose_name}
-        )
+        raise Http404("No %(verbose_name)s found matching the query" % {"verbose_name": Evaluation._meta.verbose_name})
     return render(request, "evaluation_detail.html", {"evaluation": evaluation})

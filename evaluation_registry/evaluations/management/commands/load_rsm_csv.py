@@ -424,7 +424,7 @@ class Command(BaseCommand):
                     title=record["Evaluation title"],
                     brief_description=record["Evaluation summary"],
                     major_project_number=record["Major projects identifier"],
-                    visibility=Evaluation.EvaluationVisibility.PUBLIC,
+                    visibility=Evaluation.Visibility.PUBLIC,
                     published_evaluation_link=published_evaluation_link,
                     is_process_type=record["Process"] == "Y",
                     is_impact_type=record["Impact"] == "Y",
@@ -438,22 +438,22 @@ class Command(BaseCommand):
                 make_event_date(
                     evaluation,
                     record,
-                    EventDate.EventDateCategory.INTERVENTION_START_DATE,
+                    EventDate.Category.INTERVENTION_START_DATE,
                     "Intervention start date",
                 )
                 make_event_date(
                     evaluation,
                     record,
-                    EventDate.EventDateCategory.INTERVENTION_END_DATE,
+                    EventDate.Category.INTERVENTION_END_DATE,
                     "Intervention end date",
                 )
                 make_event_date(
                     evaluation,
                     record,
-                    EventDate.EventDateCategory.PUBLICATION_FINAL_RESULTS,
+                    EventDate.Category.PUBLICATION_FINAL_RESULTS,
                     "Publication date",
                 )
-                make_event_date(evaluation, record, EventDate.EventDateCategory.OTHER, "Event start date")
+                make_event_date(evaluation, record, EventDate.Category.OTHER, "Event start date")
 
                 self.stdout.write(
                     self.style.SUCCESS('Successfully created Evaluation "%s"' % record["Evaluation title"])

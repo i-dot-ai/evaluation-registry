@@ -18,7 +18,7 @@ ALLOWED_HOSTS = [
 
 # CSRF settings
 CSRF_COOKIE_HTTPONLY = True
-CSRF_TRUSTED_ORIGINS = [
+CSRF_TRUSTED_ORIGINS: list = [
     # Add your dev and prod urls here, without the protocol
 ]
 

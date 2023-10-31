@@ -1,7 +1,7 @@
 import django_filters
+from django.db.models import Q
 
 from evaluation_registry.evaluations.models import Department, Evaluation
-from django.db.models import Q
 
 
 class EvaluationFilter(django_filters.FilterSet):
@@ -13,7 +13,7 @@ class EvaluationFilter(django_filters.FilterSet):
 
     class Meta:
         model = Evaluation
-        fields = ['is_process_type', 'is_impact_type', 'is_economic_type', 'is_other_type', 'departments']
+        fields = ["is_process_type", "is_impact_type", "is_economic_type", "is_other_type", "departments"]
 
     @property
     def qs(self):

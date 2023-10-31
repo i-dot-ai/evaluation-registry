@@ -27,7 +27,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.sites",
     "django.contrib.staticfiles",
-    'django_filters',
+    "django_filters",
 ]
 
 MIDDLEWARE = [
@@ -94,7 +94,7 @@ STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
 
-PERMISSIONS_POLICY = {
+PERMISSIONS_POLICY: dict[str, list] = {
     "accelerometer": [],
     "autoplay": [],
     "camera": [],

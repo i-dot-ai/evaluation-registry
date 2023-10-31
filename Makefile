@@ -24,6 +24,7 @@ check-python-code:
 	black --check .
 	flake8
 	bandit -ll -r evaluation_registry
+	mypy evaluation_registry/ --ignore-missing-imports
 
 .PHONY: check-migrations
 check-migrations:
