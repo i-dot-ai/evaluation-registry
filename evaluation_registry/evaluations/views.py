@@ -1,10 +1,10 @@
 from django.core.paginator import Paginator
+from django.db.models import Q
 from django.http import Http404
 from django.shortcuts import render
 from django.views.decorators.http import require_http_methods
 from django.views.generic import DetailView
 
-from evaluation_registry.evaluations.filters import EvaluationFilter
 from evaluation_registry.evaluations.models import Department, Evaluation
 
 
@@ -53,8 +53,6 @@ def evaluation_list_view(request):
     selected_departments = request.GET.getlist("departments")
     selected_types = request.GET.getlist("evaluation_types")
 
-    evaluation_list = EvaluationFilter(request=request.GET, queryset=Evaluation.objects.all())
-
     # TODO: include evaluation visibility for version for CS
     search_choices = {}
     search_choices["departments"] = Department.objects.filter(code__in=selected_departments).all()
@@ -62,7 +60,23 @@ def evaluation_list_view(request):
         filter(lambda x: x[0] in selected_types, Evaluation.EvaluationType.choices)
     )
 
-    paginator = Paginator(evaluation_list.qs, 25)
+    department_query = Q()
+    if selected_departments:
+        department_query = Q(departments__in=search_choices["departments"])
+
+    type_query = Q()
+    if Evaluation.EvaluationType.PROCESS in selected_types:
+        type_query |= Q(is_process_type=True)
+    if Evaluation.EvaluationType.IMPACT in selected_types:
+        type_query |= Q(is_impact_type=True)
+    if Evaluation.EvaluationType.ECONOMIC in selected_types:
+        type_query |= Q(is_economic_type=True)
+    if Evaluation.EvaluationType.OTHER in selected_types:
+        type_query |= Q(is_other_type=True)
+
+    evaluation_list = Evaluation.objects.filter(department_query & type_query)
+
+    paginator = Paginator(evaluation_list, 25)
     page_number = request.GET.get("page") or 1
     page_obj = paginator.get_page(page_number)
     pages_list = paginator.get_elided_page_range(page_number, on_each_side=1, on_ends=1)
@@ -70,7 +84,7 @@ def evaluation_list_view(request):
         request,
         "evaluation_list.html",
         {
-            "evaluations": evaluation_list.qs,
+            "evaluations": evaluation_list,
             "page_obj": page_obj,
             "pages_list": pages_list,
             "search_term": search_term,
