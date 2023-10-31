@@ -62,7 +62,9 @@ def evaluation_list_view(request):
         filter(lambda x: x[0] in selected_types, Evaluation.EvaluationType.choices)
     )
 
-    paginator = Paginator(evaluation_list.qs, 25)
+    qs = evaluation_list.qs.filter(departments__code__in=selected_departments)
+
+    paginator = Paginator(qs, 25)
     page_number = request.GET.get("page") or 1
     page_obj = paginator.get_page(page_number)
     pages_list = paginator.get_elided_page_range(page_number, on_each_side=1, on_ends=1)
@@ -70,7 +72,7 @@ def evaluation_list_view(request):
         request,
         "evaluation_list.html",
         {
-            "evaluations": evaluation_list.qs,
+            "evaluations": qs,
             "page_obj": page_obj,
             "pages_list": pages_list,
             "search_term": search_term,
