@@ -100,6 +100,17 @@
 
           <div class="govuk-grid-column-two-thirds" role="region" aria-label="Evaluation Registry search results">
             <div class="facet-tags">
+              {% if search_term %}
+                <div class="facet-tags__group">
+                  <div class="facet-tags__wrapper">
+                    <span class="facet-tags__preposition">Search term</span>
+                      <a href="?{{ remove_query_param(request.GET, 'search_term', search_term) }}" class="facet-tag" aria-label="Remove search term filter">
+                        <span class="facet-tag__text">{{ search_term }}</span>
+                        <span class="facet-tag__remove">✕</span>
+                      </a>
+                  </div>
+                </div>
+              {% endif %}
               {% if search_choices.departments %}
                 <div class="facet-tags__group">
                   <div class="facet-tags__wrapper">

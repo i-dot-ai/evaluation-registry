@@ -1,3 +1,8 @@
+from django.contrib.postgres.search import (
+    SearchQuery,
+    SearchRank,
+    SearchVector,
+)
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.http import Http404
@@ -49,7 +54,7 @@ def homepage_view(request):
 
 @require_http_methods(["GET"])
 def evaluation_list_view(request):
-    search_term = request.GET.get("search_term")
+    search_term = request.GET.get("search_term") or ''
     selected_departments = request.GET.getlist("departments")
     selected_types = request.GET.getlist("evaluation_types")
 
@@ -74,7 +79,18 @@ def evaluation_list_view(request):
     if Evaluation.EvaluationType.OTHER in selected_types:
         type_query |= Q(is_other_type=True)
 
-    evaluation_list = Evaluation.objects.filter(department_query & type_query)
+    if search_term:
+        search_title = SearchVector("title", weight="A")
+        description_search = SearchVector("brief_description", weight="B")
+        search_vector = search_title + description_search
+        search_query = SearchQuery(search_term)
+        evaluation_list = (
+            Evaluation.objects.annotate(search=search_vector, rank=SearchRank(search_vector, search_query))
+            .filter(Q(search=search_query) & department_query & type_query)
+            .order_by("-rank")
+        )
+    else:
+        evaluation_list = Evaluation.objects.filter(department_query & type_query)
 
     paginator = Paginator(evaluation_list, 25)
     page_number = request.GET.get("page") or 1
