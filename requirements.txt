@@ -15,3 +15,5 @@ django-csp
 django-permissions-policy
 humanize~=4.7.0
 sentry-sdk
+boto
+django-storages
