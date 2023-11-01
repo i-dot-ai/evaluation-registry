@@ -2,7 +2,7 @@
 
 {% block content %}
   <div class="govuk-grid-row">
-  <a href="{{url('search')}}?{{request.GET.urlencode()}}" class="govuk-back-link">Back</a>
+  <a href="{{url('index')}}?{{request.GET.urlencode()}}" class="govuk-back-link">Back</a>
     <h1 class="govuk-heading-l">{% if evaluation.title %}{{evaluation.title}}{% else %}No title provided{% endif %}</h1>
     <p class="govuk-body">  
       {% if evaluation.brief_description %}
