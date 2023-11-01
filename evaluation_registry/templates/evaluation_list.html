@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <form method="GET" action="{{url('search')}}">
+  <form method="GET" action="{{url('index')}}">
     <div class="govuk-width-container">
       <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
@@ -41,7 +41,7 @@
                         Which departments are you interested in?
                       </legend>
                       <div class="govuk-checkboxes--small autofilter-option-select__container" data-module="govuk-checkboxes">
-                        <div class="js-auto-height-inner" style="padding: 13px;">
+                        <div class="js-auto-height-inner">
                           <span id="checkboxes-0097daf4-count" class="autofilter-option-select__count govuk-visually-hidden" aria-live="polite" data-single="option found" data-multiple="options found" data-selected="selected"></span>
                           <div class="checkboxes__list autofilter-checkboxes__list">
                             {% for department in departments %}
@@ -100,6 +100,17 @@
 
           <div class="govuk-grid-column-two-thirds" role="region" aria-label="Evaluation Registry search results">
             <div class="facet-tags">
+              {% if search_term %}
+                <div class="facet-tags__group">
+                  <div class="facet-tags__wrapper">
+                    <span class="facet-tags__preposition">Search term</span>
+                      <a href="?{{ remove_query_param(request.GET, 'search_term', search_term) }}" class="facet-tag" aria-label="Remove search term filter">
+                        <span class="facet-tag__text">{{ search_term }}</span>
+                        <span class="facet-tag__remove">✕</span>
+                      </a>
+                  </div>
+                </div>
+              {% endif %}
               {% if search_choices.departments %}
                 <div class="facet-tags__group">
                   <div class="facet-tags__wrapper">
@@ -150,7 +161,7 @@
               <div>
                 {% for evaluation in page_obj %}
                   <div>
-                    <a href="{{url('evaluation-detail', evaluation.id)}}" class="govuk-link">
+                    <a href="{{url('evaluation-detail', evaluation.id)}}?{{request.GET.urlencode()}}" class="govuk-link">
                       <h2>{% if evaluation.title %}{{evaluation.title}}{% else %}No title provided{% endif %}</h2>
                     </a>
 

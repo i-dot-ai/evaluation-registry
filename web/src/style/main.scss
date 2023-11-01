@@ -1,3 +1,6 @@
+$govuk-images-path: "images/";
+$govuk-fonts-path: "fonts/";
+
 @import "node_modules/govuk-frontend/govuk/all";
 @import "./autofilter.scss";
 @import "./facet_tags.scss";

@@ -1,6 +1,5 @@
 django
 django-cors-headers
-django-filter
 whitenoise
 watchdog[watchmedo]
 jinja2
