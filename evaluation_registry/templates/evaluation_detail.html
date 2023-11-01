@@ -98,9 +98,9 @@
       <dl class="govuk-summary-list">
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Event Name</dt>
-          <dd class="govuk-summary-list__value">{{date.category}}</dd>
+          <dd class="govuk-summary-list__value">{{date.get_category_display()}}</dd>
         </div>
-        {% if date.category == "OTHER" and date.other_description %}
+        {% if date.category == "other" and date.other_description %}
           <div class="govuk-summary-list__row">
             <dt class="govuk-summary-list__key">Event Name (Other)</dt>
             <dd class="govuk-summary-list__value">{{date.other_description}}</dd>

@@ -1,3 +1,4 @@
+import calendar
 import uuid
 from typing import Optional
 
@@ -176,5 +177,5 @@ class EventDate(TimeStampedModel):
 
     def __str__(self):
         if self.month:
-            return f"{self.year}-{self.month:02}"
+            return f"{calendar.month_name[self.month]} {self.year}"
         return f"{self.year}"
