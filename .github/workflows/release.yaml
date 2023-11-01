@@ -40,7 +40,7 @@ jobs:
         aws_session_token: ${{ env.AWS_SESSION_TOKEN }}
         aws_access_key: ${{ env.AWS_ACCESS_KEY_ID }}
         aws_secret_key: ${{ env.AWS_SECRET_ACCESS_KEY }}
-        application_name: evaluation-registry
+        application_name: evalaution-registry-Application-1KJT6EGARNO5K
         environment_name: evaluation-registry-prod
         version_label:  ${{ env.version_label }}
         region: eu-west-2
