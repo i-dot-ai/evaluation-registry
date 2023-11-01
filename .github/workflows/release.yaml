@@ -2,7 +2,7 @@ name: Development Release Workflow
 on:
   push:
     branches:
-    - 'develop'
+    - 'main'
 
   workflow_dispatch:
 
@@ -27,7 +27,7 @@ jobs:
       id: creds
       with:
         audience: sts.amazonaws.com
-        role-to-assume: arn:aws:iam::817650998681:role/ask-ai-deployment
+        role-to-assume: arn:aws:iam::403665900163:role/evaluation-registry-deploy
         aws-region: eu-west-2
 
     - name: Get SHA
