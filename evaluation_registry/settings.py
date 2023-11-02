@@ -14,6 +14,8 @@ BASE_URL = env.str("BASE_URL")
 ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",
+    "evaluations-registry-dev.eba-au2xspyy.eu-west-2.elasticbeanstalk.com",
+    "evaluations-registry-prod.eba-au2xspyy.eu-west-2.elasticbeanstalk.com",
 ]
 
 # CSRF settings
