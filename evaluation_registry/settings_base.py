@@ -17,7 +17,7 @@ def get_environ_vars() -> dict:
     return ast.literal_eval(completed_process.stdout)
 
 
-if "DB_HOST" in os.environ:
+if "POSTGRES_HOST" in os.environ:
     env = environ.Env()
 else:
     env = get_environ_vars()
