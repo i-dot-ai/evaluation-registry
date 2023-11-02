@@ -27,6 +27,21 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = env.str("DJANGO_SECRET_KEY")
 
+# Add AWS URLS to ALLOWED_HOSTS once known
+ALLOWED_HOSTS = [
+    LOCALHOST,
+    "localhost",
+    "127.0.0.1",
+    "evaluations-registry-dev.eba-au2xspyy.eu-west-2.elasticbeanstalk.com",
+    "evaluations-registry-prod.eba-au2xspyy.eu-west-2.elasticbeanstalk.com",
+]
+
+# CSRF settings
+CSRF_COOKIE_HTTPONLY = True
+CSRF_TRUSTED_ORIGINS: list = [
+    # Add your dev and prod urls here, without the protocol
+]
+
 ROOT_URLCONF = "evaluation_registry.urls"
 
 

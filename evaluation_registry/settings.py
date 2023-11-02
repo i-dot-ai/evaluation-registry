@@ -10,19 +10,6 @@ DEBUG = env.bool("DEBUG", default=False)
 VCAP_APPLICATION = env.json("VCAP_APPLICATION", default={})
 BASE_URL = env.str("BASE_URL")
 
-# Add AWS URLS to ALLOWED_HOSTS once known
-ALLOWED_HOSTS = [
-    "localhost",
-    "127.0.0.1",
-    "evaluations-registry-dev.eba-au2xspyy.eu-west-2.elasticbeanstalk.com",
-    "evaluations-registry-prod.eba-au2xspyy.eu-west-2.elasticbeanstalk.com",
-]
-
-# CSRF settings
-CSRF_COOKIE_HTTPONLY = True
-CSRF_TRUSTED_ORIGINS: list = [
-    # Add your dev and prod urls here, without the protocol
-]
 
 # Application definition
 
