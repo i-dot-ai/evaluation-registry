@@ -3,8 +3,6 @@ import os
 import socket
 import subprocess
 
-
-
 LOCALHOST = socket.gethostbyname(socket.gethostname())
 
 

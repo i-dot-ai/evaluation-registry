@@ -1,8 +1,26 @@
+import ast
+import os
+import socket
+import subprocess
 from pathlib import Path
 
 import environ
 
-env = environ.Env()
+LOCALHOST = socket.gethostbyname(socket.gethostname())
+
+
+def get_environ_vars() -> dict:
+    completed_process = subprocess.run(
+        ["/opt/elasticbeanstalk/bin/get-config", "environment"], stdout=subprocess.PIPE, text=True, check=True
+    )
+
+    return ast.literal_eval(completed_process.stdout)
+
+
+if "DB_HOST" in os.environ:
+    env = environ.Env()
+else:
+    env = get_environ_vars()
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
