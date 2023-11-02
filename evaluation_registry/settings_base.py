@@ -10,6 +10,9 @@ LOCALHOST = socket.gethostbyname(socket.gethostname())
 
 
 def get_environ_vars() -> dict:
+    """get env vars from ec2
+    https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/custom-platforms-scripts.html
+    """
     completed_process = subprocess.run(
         ["/opt/elasticbeanstalk/bin/get-config", "environment"], stdout=subprocess.PIPE, text=True, check=True
     )
@@ -17,10 +20,10 @@ def get_environ_vars() -> dict:
     return ast.literal_eval(completed_process.stdout)
 
 
-if "POSTGRES_HOST" in os.environ:
-    env = environ.Env()
-else:
-    env = get_environ_vars()
+env = environ.Env()
+if "POSTGRES_HOST" not in os.environ:
+    for key, value in get_environ_vars().items():
+        env(key, default=value)
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
