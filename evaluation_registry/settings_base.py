@@ -1,13 +1,49 @@
+import ast
+import os
+import socket
+import subprocess
 from pathlib import Path
 
 import environ
 
+LOCALHOST = socket.gethostbyname(socket.gethostname())
+
+
+def get_environ_vars() -> dict:
+    """get env vars from ec2
+    https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/custom-platforms-scripts.html
+    """
+    completed_process = subprocess.run(
+        ["/opt/elasticbeanstalk/bin/get-config", "environment"], stdout=subprocess.PIPE, text=True, check=True
+    )
+
+    return ast.literal_eval(completed_process.stdout)
+
+
 env = environ.Env()
+if "POSTGRES_HOST" not in os.environ:
+    for key, value in get_environ_vars().items():
+        env(key, default=value)
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = env.str("DJANGO_SECRET_KEY")
+
+# Add AWS URLS to ALLOWED_HOSTS once known
+ALLOWED_HOSTS = [
+    LOCALHOST,
+    "localhost",
+    "127.0.0.1",
+    "evaluations-registry-dev.eba-au2xspyy.eu-west-2.elasticbeanstalk.com",
+    "evaluations-registry-prod.eba-au2xspyy.eu-west-2.elasticbeanstalk.com",
+]
+
+# CSRF settings
+CSRF_COOKIE_HTTPONLY = True
+CSRF_TRUSTED_ORIGINS: list = [
+    # Add your dev and prod urls here, without the protocol
+]
 
 ROOT_URLCONF = "evaluation_registry.urls"
 
