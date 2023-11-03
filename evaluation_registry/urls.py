@@ -10,6 +10,7 @@ info_urlpatterns = [
 
 other_urlpatterns = [
     path("", views.evaluation_list_view, name="index"),
+    path("health/", include("health_check.urls")),
     path("home/", views.homepage_view, name="homepage"),
     path("admin/", admin.site.urls),
     path("evaluation/<uuid:uuid>/", views.evaluation_detail_view, name="evaluation-detail"),
