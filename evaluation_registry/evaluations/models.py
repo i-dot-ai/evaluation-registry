@@ -26,6 +26,10 @@ class TimeStampedModel(UUIDPrimaryKeyBase):
 class User(BaseUser, UUIDPrimaryKeyBase):
     objects = BaseUserManager()
     username = None
+    verified = models.BooleanField(default=False, blank=True, null=True)
+    invited_at = models.DateTimeField(default=None, blank=True, null=True)
+    invite_accepted_at = models.DateTimeField(default=None, blank=True, null=True)
+    last_token_sent_at = models.DateTimeField(editable=False, blank=True, null=True)
 
     def save(self, *args, **kwargs):
         self.email = self.email.lower()
