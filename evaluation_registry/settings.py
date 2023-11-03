@@ -9,6 +9,9 @@ DEBUG = env.bool("DEBUG", default=False)
 
 VCAP_APPLICATION = env.json("VCAP_APPLICATION", default={})
 BASE_URL = env.str("BASE_URL")
+CONTACT_EMAIL = env.str("CONTACT_EMAIL", default="test@example.com")
+FROM_EMAIL = env.str("FROM_EMAIL", default="test@example.com")
+FEEDBACK_EMAIL = env.str("FEEDBACK_EMAIL", default="test@example.com")
 
 
 # Application definition
