@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}
+  <title>Sign in - Evaluation Registry - GOV.UK</title>
+{% endblock %}
+
+{% block content %}
+
+  <section class="wrapper">
+{#    <img class="obt-logo" src="{{static('assets/OBT_LOGO.svg')}}" alt="One Big Thing logo">#}
+{#    <svg width="1em" height="1em" viewBox="0 0 40 40" fill="currentColor"><use href="/static/0assets/OBT_LOGO.svg"></use></svg>#}
+
+    <div>
+      <h1 class="govuk-heading-l">Welcome to Evaluation Registry</h1>
+        {% if space_name == "dev" %}
+            <div class="govuk-error-summary" data-module="govuk-error-summary">
+              <div role="alert">
+                <h2 class="govuk-error-summary__title">
+                  This is a development environment
+                </h2>
+{#                <div class="govuk-error-summary__body">#}
+{#                  <ul class="govuk-list govuk-error-summary__list">#}
+{#                    <li>#}
+{#                      <p>This site is for testing and development purposes. The stability and reliability of this site can not be guaranteed, and data will be deleted often. If you meant to go to the live version of this site, use the link below.</p>#}
+{#                    </li>#}
+{#                    <li>#}
+{#                      <a href="https://onebigthing.civilservice.gov.uk">One Big Thing</a>#}
+{#                    </li>#}
+{#                  </ul>#}
+{#                </div>#}
+              </div>
+            </div>
+        {% endif %}
+      <p class="govuk-body">Evaluation registry will enable you to:</p>
+      <ul class="govuk-list govuk-list--bullet">
+        <li>complete evaluations</li>
+        <li>share in progress and complete evaluations</li>
+        <li>search for evaluations that are relevant to you</li>
+      </ul>
+    </div>
+
+    <form class="login" method="POST" action="/">
+      {{csrf_input}}
+
+      <fieldset class="govuk-fieldset">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+          <h2 class="govuk-fieldset__heading">
+            Sign in
+          </h2>
+        </legend>
+        <div class="govuk-form-group {% if 'id_email' in errors.keys() %}govuk-form-group--error{% endif %}">
+          <label class="govuk-label" for="id_email">
+            Your work email address
+          </label>
+            {% if 'id_email' in errors.keys() %}
+              <p id="id_email-error" class="govuk-error-message">
+                <span class="govuk-visually-hidden">Error:</span> {{errors.id_email}}
+              </p>
+            {% endif %}
+          <input class="govuk-input" id="id_email" name="email" type="email" autocomplete="email" required>
+        </div>
+
+        <p class="govuk-body">By signing in you accept our <a href="{{url('privacy-notice')}}" class="govuk-link">privacy notice</a>.</p>
+
+        <div class="govuk-button-group">
+          <button class="govuk-button" data-module="govuk-button" type="submit">
+            Submit
+          </button>
+        </div>
+      </fieldset>
+    </form>
+  </section>
+{% endblock %}
