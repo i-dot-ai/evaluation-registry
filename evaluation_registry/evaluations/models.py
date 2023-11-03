@@ -2,6 +2,7 @@ import calendar
 import uuid
 from typing import Optional
 
+from django.contrib.postgres.fields import ArrayField
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
@@ -72,6 +73,9 @@ class Evaluation(TimeStampedModel):
     other_evaluation_type_description = models.TextField(
         null=True, blank=True, help_text="optional description of other evaluation type"
     )
+    evaluation_types = ArrayField(
+        models.CharField(max_length=256, choices=EvaluationType.choices), blank=True, null=True
+    )
 
     brief_description = models.TextField(blank=True, null=True)
     # In the future, there may be canonical lists to select from for these
@@ -89,22 +93,13 @@ class Evaluation(TimeStampedModel):
         except ObjectDoesNotExist:
             return None
 
-    @property
-    def evaluation_types(self):
+    def get_evaluation_types_text(self):
         type_list = []
-        if self.is_process_type:
-            type_list.append(self.EvaluationType.PROCESS)
-        if self.is_impact_type:
-            type_list.append(self.EvaluationType.IMPACT)
-        if self.is_economic_type:
-            type_list.append(self.EvaluationType.ECONOMIC)
-        if self.is_other_type:
-            type_list.append(self.EvaluationType.OTHER)
+        if self.evaluation_types:
+            for k, v in self.EvaluationType.choices:
+                if k in self.evaluation_types:
+                    type_list.append(v)
         return type_list
-
-    @property
-    def evaluation_type_text(self):
-        return list(map(lambda x: x.label, self.evaluation_types))
 
     def __str__(self):
         return str(self.title)
