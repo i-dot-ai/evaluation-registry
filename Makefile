@@ -36,3 +36,7 @@ check-migrations:
 test:
 	docker-compose up -d web
 	docker-compose run web POSTGRES_HOST=localhost python -m pytest -v
+
+lint:
+	isort .
+	black .

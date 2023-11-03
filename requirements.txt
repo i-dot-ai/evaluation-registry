@@ -17,3 +17,4 @@ humanize~=4.7.0
 sentry-sdk
 boto
 django-storages
+django-health-check
