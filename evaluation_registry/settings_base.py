@@ -52,6 +52,7 @@ WSGI_APPLICATION = "evaluation_registry.wsgi.application"
 
 
 INSTALLED_APPS = [
+    "health_check",
     "evaluation_registry.evaluations",
     "allauth",
     "allauth.account",
