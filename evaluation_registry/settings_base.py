@@ -21,9 +21,9 @@ def get_environ_vars() -> dict:
 
 
 env = environ.Env()
-if "POSTGRES_HOST" not in os.environ:
-    for key, value in get_environ_vars().items():
-        env(key, default=value)
+# if "POSTGRES_HOST" not in os.environ:
+#     for key, value in get_environ_vars().items():
+#         env(key, default=value)
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
