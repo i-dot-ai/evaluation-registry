@@ -10,6 +10,7 @@ from django.shortcuts import render
 from django.views.decorators.http import require_http_methods
 from django.views.generic import DetailView
 
+from evaluation_registry.evaluations.decorators import login_required
 from evaluation_registry.evaluations.models import Department, Evaluation
 
 
@@ -44,6 +45,7 @@ def index_view(request):
 
 
 @require_http_methods(["GET"])
+@login_required
 def homepage_view(request):
     return render(
         request,
@@ -53,6 +55,7 @@ def homepage_view(request):
 
 
 @require_http_methods(["GET"])
+@login_required
 def evaluation_list_view(request):
     search_term = request.GET.get("search_term") or ""
     selected_departments = request.GET.getlist("departments")
@@ -114,6 +117,7 @@ def evaluation_list_view(request):
 
 
 @require_http_methods(["GET"])
+@login_required
 def evaluation_detail_view(request, uuid):
     try:
         evaluation = Evaluation.objects.get(id=uuid)

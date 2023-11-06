@@ -7,6 +7,7 @@ from evaluation_registry.evaluations import (
     info_views,
     views,
 )
+from evaluation_registry.evaluations.decorators import login_required
 
 info_urlpatterns = [
     path("privacy-notice/", info_views.privacy_notice_view, name="privacy-notice"),
@@ -21,7 +22,7 @@ other_urlpatterns = [
     path("home/", views.homepage_view, name="homepage"),
     path("admin/", admin.site.urls),
     path("evaluation/<uuid:uuid>/", views.evaluation_detail_view, name="evaluation-detail"),
-    path("logout/", authentication_views.LogoutView.as_view(), name="logout"),
+    path("logout/", login_required(authentication_views.LogoutView.as_view()), name="logout"),
     path("email-sent/", authentication_views.email_sent_view, name="email-sent"),
     path("post-login/", authentication_views.post_login_view, name="post-login"),
     path("verify-register/", authentication_views.register_email_view, name="verify-email-register"),

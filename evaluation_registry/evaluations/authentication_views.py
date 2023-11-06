@@ -10,6 +10,7 @@ from django.views import View
 from django.views.decorators.http import require_http_methods
 
 from evaluation_registry.evaluations import email_handler, models
+from evaluation_registry.evaluations.decorators import login_required
 
 logger = logging.getLogger(__name__)
 
@@ -96,6 +97,7 @@ def post_login_view(request):
 
 class LogoutView(View):
     template_name = "logout.html"
+
 
     def get(self, request):
         return render(request, self.template_name)
