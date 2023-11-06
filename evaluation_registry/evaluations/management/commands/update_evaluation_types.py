@@ -24,10 +24,6 @@ class Command(BaseCommand):
             if e.is_other_type:
                 choices.append(Evaluation.EvaluationType.OTHER)
 
-            if len(choices) == 0:
-                self.stdout.write(self.style.WARNING(f"Skipping {e.title}: no evaluation types listed"))
-                continue
-
             e.evaluation_types = choices
             e.save()
 

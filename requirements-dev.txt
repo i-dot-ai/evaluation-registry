@@ -15,6 +15,7 @@ types-pytz
 bandit
 
 # testing
+factory_boy
 pytest
 pytest-django
 pytest-env
