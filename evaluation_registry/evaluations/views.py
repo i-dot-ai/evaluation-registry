@@ -70,14 +70,8 @@ def evaluation_list_view(request):
         department_query = Q(departments__in=search_choices["departments"])
 
     type_query = Q()
-    if Evaluation.EvaluationType.PROCESS in selected_types:
-        type_query |= Q(is_process_type=True)
-    if Evaluation.EvaluationType.IMPACT in selected_types:
-        type_query |= Q(is_impact_type=True)
-    if Evaluation.EvaluationType.ECONOMIC in selected_types:
-        type_query |= Q(is_economic_type=True)
-    if Evaluation.EvaluationType.OTHER in selected_types:
-        type_query |= Q(is_other_type=True)
+    if selected_types:
+        type_query = Q(evaluation_types__contains=selected_types)
 
     if search_term:
         search_title = SearchVector("title", weight="A")

@@ -179,7 +179,7 @@
                           Evaluation type(s)
                         </dt>
                         <dd class="govuk-summary-list__value">
-                          {{evaluation.evaluation_type_text|join(', ')}}
+                          {{evaluation.get_evaluation_types_text()|join(', ')}}
                         </dd>
                       </div>
                     </dl>

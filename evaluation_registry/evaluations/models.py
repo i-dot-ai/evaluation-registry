@@ -2,6 +2,7 @@ import calendar
 import uuid
 from typing import Optional
 
+from django.contrib.postgres.fields import ArrayField
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
@@ -65,10 +66,9 @@ class Evaluation(TimeStampedModel):
         help_text="departments involved in this evaluation",
     )
 
-    is_process_type = models.BooleanField(default=False, help_text="evaluation is a process type?")
-    is_impact_type = models.BooleanField(default=False, help_text="evaluation is an impact type?")
-    is_economic_type = models.BooleanField(default=False, help_text="evaluation is an economic type?")
-    is_other_type = models.BooleanField(default=False, help_text="evaluation is an other type?")
+    evaluation_types = ArrayField(
+        models.CharField(max_length=256, choices=EvaluationType.choices), blank=True, null=True
+    )
     other_evaluation_type_description = models.TextField(
         null=True, blank=True, help_text="optional description of other evaluation type"
     )
@@ -89,22 +89,8 @@ class Evaluation(TimeStampedModel):
         except ObjectDoesNotExist:
             return None
 
-    @property
-    def evaluation_types(self):
-        type_list = []
-        if self.is_process_type:
-            type_list.append(self.EvaluationType.PROCESS)
-        if self.is_impact_type:
-            type_list.append(self.EvaluationType.IMPACT)
-        if self.is_economic_type:
-            type_list.append(self.EvaluationType.ECONOMIC)
-        if self.is_other_type:
-            type_list.append(self.EvaluationType.OTHER)
-        return type_list
-
-    @property
-    def evaluation_type_text(self):
-        return list(map(lambda x: x.label, self.evaluation_types))
+    def get_evaluation_types_text(self) -> list[str]:
+        return [choice[1] for choice in Evaluation.EvaluationType.choices if choice[0] in self.evaluation_types]
 
     def __str__(self):
         return str(self.title)

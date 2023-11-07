@@ -46,8 +46,8 @@
           Evaluation types
         </dt>
         <dd class="govuk-summary-list__value">
-          {% for evaluation_type in evaluation.evaluation_types %}
-            {{evaluation_type.label}}<br>
+          {% for evaluation_type in evaluation.get_evaluation_types_text() %}
+            {{evaluation_type}}<br>
           {% endfor %}
         </dd>
       </div>

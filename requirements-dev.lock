@@ -10,7 +10,7 @@ coverage==7.3.2
 cryptography==41.0.5
 defusedxml==0.7.1
 Django==4.2.7
-django-allauth==0.58.1
+django-allauth==0.58.2
 django-cors-headers==4.3.0
 django-csp==3.7
 django-environ==0.11.2
@@ -21,7 +21,7 @@ django-types==0.19.1
 django-use-email-as-username==1.4.0
 flake8==6.1.0
 flake8-blind-except==0.2.1
-flake8-isort==6.1.0
+flake8-isort==6.1.1
 flake8-print==5.0.0
 gitdb==4.0.11
 GitPython==3.1.40
