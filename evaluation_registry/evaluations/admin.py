@@ -26,6 +26,7 @@ class EvaluationAdmin(admin.ModelAdmin):
         "title",
         "lead_department",
         "visibility",
+        "evaluation_types"
     ]
     list_filter = ["visibility"]
     search_fields = ("title", "brief_description")
