@@ -39,7 +39,7 @@
       </ul>
     </div>
 
-    <form class="login" method="POST" action="/">
+    <form class="login" method="POST">
       {{csrf_input}}
 
       <fieldset class="govuk-fieldset">
@@ -48,15 +48,15 @@
             Sign in
           </h2>
         </legend>
-        <div class="govuk-form-group {% if 'id_email' in errors.keys() %}govuk-form-group--error{% endif %}">
+        <div class="govuk-form-group {% if form.errors %}govuk-form-group--error{% endif %}">
           <label class="govuk-label" for="id_email">
             Your work email address
           </label>
-            {% if 'id_email' in errors.keys() %}
-              <p id="id_email-error" class="govuk-error-message">
-                <span class="govuk-visually-hidden">Error:</span> {{errors.id_email}}
+            {% for error in form.errors.email %}
+              <p id="id_email-error-{{loop.index}}" class="govuk-error-message">
+                <span class="govuk-visually-hidden">Error:</span> {{error}}
               </p>
-            {% endif %}
+            {% endfor %}
           <input class="govuk-input" id="id_email" name="email" type="email" autocomplete="email" required>
         </div>
 
