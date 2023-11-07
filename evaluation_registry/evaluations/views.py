@@ -55,7 +55,6 @@ def homepage_view(request):
 
 
 @require_http_methods(["GET"])
-@login_required
 def evaluation_list_view(request):
     search_term = request.GET.get("search_term") or ""
     selected_departments = request.GET.getlist("departments")
