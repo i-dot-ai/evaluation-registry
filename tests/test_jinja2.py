@@ -17,15 +17,15 @@ def test_convert_markdown():
 
 
 @pytest.mark.parametrize(
-    "time_delta, minutes, hours_limit, too_large_msg",
+    "time_delta, args",
     [
-        ("0 minutes", 0, 0, ""),
-        ("10 hours and 9 minutes", 609, 200, ""),
-        ("More than 200 hours", 13000, 200, ""),
-        ("More than 2 hours", 609, 2, ""),
-        ("too long", 301, 2, "too long"),
+        ("0 minutes", {}),
+        ("10 hours and 9 minutes", {"minutes": 609}),
+        ("More than 200 hours", {"minutes": 13000}),
+        ("More than 2 hours", {"minutes": 609, "hours_limit": 2}),
+        ("too long", {"minutes": 609, "hours_limit": 2, "too_large_msg": "too long"}),
     ],
 )
-def test_humanize_timedelta(time_delta, minutes, hours_limit, too_large_msg):
-    actual = jinja2.humanize_timedelta(minutes, hours_limit, too_large_msg)
+def test_humanize_timedelta(time_delta, args):
+    actual = jinja2.humanize_timedelta(**args)
     assert actual == time_delta, actual
