@@ -1,7 +1,7 @@
 import logging
 
 from django.contrib import messages
-from django.contrib.auth import login, logout
+from django.contrib.auth import login, logout, get_user_model
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 from django.shortcuts import redirect, render
@@ -10,8 +10,11 @@ from django.views import View
 from django.views.decorators.http import require_http_methods
 
 from evaluation_registry.evaluations import email_handler, models
+from evaluation_registry.evaluations.forms import EmailForm
 
 logger = logging.getLogger(__name__)
+
+UserModel = get_user_model()
 
 
 def _strip_microseconds(dt):
@@ -24,41 +27,24 @@ class CustomLoginView(View):
     template_name = "login.html"
     error_message = "Something has gone wrong.  Please try again."
 
-    def error(self, request):
-        messages.error(request, self.error_message)
-        return render(request, self.template_name)
-
     def get(self, request):
         if request.user.is_authenticated:
-            return redirect(reverse("homepage"))
-        context = {"errors": {}}
-        return render(request, self.template_name, context)
+            return redirect(reverse("index"))
+        form = EmailForm()
+        return render(request, self.template_name, {"form": form})
 
     def post(self, request):
-        email = request.POST.get("email")
-        if not email:
-            messages.error(request, "Please enter an email.")
-            return render(request, self.template_name, {"errors": {"id_email": "Please enter an email"}})
-        else:
-            email = email.lower()
+        form = EmailForm(request.POST)
+        if form.is_valid():
             try:
-                user = models.User.objects.get(email=email)
+                user = UserModel.objects.get(email=form.cleaned_data["email"])
                 email_handler.send_verification_email(user)
-            except models.User.DoesNotExist:
-                try:
-                    validate_email(email)
-                except ValidationError as exc:
-                    for errors in exc.error_list:
-                        for error in errors:
-                            messages.error(request, error)
-                    return render(
-                        request,
-                        self.template_name,
-                        {"errors": {"id_email": "Please enter a valid Civil Service email"}},
-                    )
-                user = models.User.objects.create_user(email=email)
+            except UserModel.DoesNotExist:
+                user = UserModel.objects.create_user(email=form.cleaned_data["email"])
                 email_handler.send_register_email(user)
             return redirect(reverse("email-sent"))
+        else:
+            return render(request, "login.html", {"form": form})
 
 
 def email_sent_view(request):
@@ -91,7 +77,7 @@ def verify_email_view(request, register=False):
 
 
 def post_login_view(request):
-    return redirect(reverse("homepage"))
+    return redirect(reverse("index"))
 
 
 class LogoutView(View):
@@ -102,4 +88,4 @@ class LogoutView(View):
 
     def post(self, request):
         logout(request)
-        return redirect("index")
+        return redirect("login")
