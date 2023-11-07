@@ -15,11 +15,11 @@ info_urlpatterns = [
 ]
 
 other_urlpatterns = [
-    path("", authentication_views.CustomLoginView.as_view(), name="index"),
+    path("", views.homepage_view, name="index"),
+    path("login", authentication_views.CustomLoginView.as_view(), name="login"),
     path("unauthorised/", decorators.unauthorised_view, name="unauthorised"),
     path("evaluations/", views.evaluation_list_view, name="list-evaluations"),
     path("health/", include("health_check.urls")),
-    path("home/", views.homepage_view, name="homepage"),
     path("admin/", admin.site.urls),
     path("evaluation/<uuid:uuid>/", views.evaluation_detail_view, name="evaluation-detail"),
     path("logout/", login_required(authentication_views.LogoutView.as_view()), name="logout"),
