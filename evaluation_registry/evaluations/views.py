@@ -180,19 +180,3 @@ def verify_login_link(request):
 
     messages.warning(request, "Invalid token, please try again.")
     return redirect("login")
-
-    # token = request.GET.get("token")
-    # try:
-    #     login_token = LoginToken.objects.get(token=token)
-    #     login(request, login_token.user)
-    #     login_token.delete()
-    # except LoginToken.DoesNotExist:
-    #     messages.warning(request, "link does not exist, please try again")
-    #     return redirect("login")
-    # except ValidationError:
-    #     messages.warning(request, "link is malformed, please try again")
-    #     return redirect("login")
-    #
-    # if login_token.has_expired():
-    #     messages.warning(request, "link has expired, please try again")
-    #     return redirect("login")
