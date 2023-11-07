@@ -16,12 +16,7 @@ from django.views.decorators.http import require_http_methods
 from django.views.generic import DetailView
 
 from evaluation_registry.evaluations.forms import EmailForm
-from evaluation_registry.evaluations.models import (
-    Department,
-    Evaluation,
-    LoginToken,
-    User,
-)
+from evaluation_registry.evaluations.models import Department, Evaluation, User
 
 UserModel = get_user_model()
 
@@ -137,6 +132,9 @@ def evaluation_detail_view(request, uuid):
     return render(request, "evaluation_detail.html", {"evaluation": evaluation, "dates": dates})
 
 
+from django.contrib.auth.tokens import default_token_generator
+
+
 @require_http_methods(["GET", "POST"])
 def send_login_link(request):
     if request.method == "POST":
@@ -148,10 +146,10 @@ def send_login_link(request):
                 user = User.objects.create_user(email=form.cleaned_data["email"])
 
             # Generate a unique token and create a LoginToken object
-            login_token = LoginToken.objects.create(user=user)
+            login_token = default_token_generator.make_token(user)
 
             # Send the login link to the user's email
-            login_url = request.build_absolute_uri(f"/verify-login-link/?token={login_token.token}")
+            login_url = request.build_absolute_uri(f"/verify-login-link/?token={login_token}&email={user.email}")
             send_mail(
                 "Login Link",
                 f"Click the following link to log in: {login_url}",
@@ -171,19 +169,33 @@ def send_login_link(request):
 @require_http_methods(["GET"])
 def verify_login_link(request):
     token = request.GET.get("token")
+    email = request.GET.get("email")
+
     try:
-        login_token = LoginToken.objects.get(token=token)
-        login(request, login_token.user)
-        login_token.delete()
-    except LoginToken.DoesNotExist:
-        messages.warning(request, "link does not exist, please try again")
-        return redirect("login")
-    except ValidationError:
-        messages.warning(request, "link is malformed, please try again")
+        user = User.objects.get(email=email)
+    except User.DoesNotExist:
+        messages.warning(request, "User not found, please try again.")
         return redirect("login")
 
-    if login_token.has_expired():
-        messages.warning(request, "link has expired, please try again")
-        return redirect("login")
+    if default_token_generator.check_token(user, token):
+        login(request, user)
+        return redirect(settings.LOGIN_REDIRECT_URL)
 
-    return redirect(settings.LOGIN_REDIRECT_URL)
+    messages.warning(request, "Invalid token, please try again.")
+    return redirect("login")
+
+    # token = request.GET.get("token")
+    # try:
+    #     login_token = LoginToken.objects.get(token=token)
+    #     login(request, login_token.user)
+    #     login_token.delete()
+    # except LoginToken.DoesNotExist:
+    #     messages.warning(request, "link does not exist, please try again")
+    #     return redirect("login")
+    # except ValidationError:
+    #     messages.warning(request, "link is malformed, please try again")
+    #     return redirect("login")
+    #
+    # if login_token.has_expired():
+    #     messages.warning(request, "link has expired, please try again")
+    #     return redirect("login")

@@ -1,12 +1,10 @@
-import datetime
-
 import pytest
 from django.contrib.sessions.models import Session
 from django.test import override_settings
 from django.urls import reverse
 
 from evaluation_registry.evaluations.forms import EmailForm
-from evaluation_registry.evaluations.models import LoginToken, User
+from evaluation_registry.evaluations.models import User
 
 
 @pytest.mark.django_db
@@ -50,30 +48,22 @@ def test_login_fail(email, errors):
     assert form.errors == errors
 
 
-@pytest.mark.parametrize(
-    "token, error",
-    [
-        ("3c0d9810-daf2-4052-b18c-d672acd738ba", "link does not exist, please try again"),
-        ("3c0d9810", "link is malformed, please try again"),
-    ],
-)
 @pytest.mark.django_db
-def test_link_fails(client, token, error):
-    link = f"http://testserver/verify-login-link/?token={token}"
+def test_link_fails_invalid_token(
+    client,
+    alice,
+):
+    link = f"http://testserver/verify-login-link/?token=3c0d9810&email={alice.email}"
 
     response = client.get(link, follow=True)
     assert response.status_code == 200
-    assert error in str(response.content)
+    assert "Invalid token, please try again." in str(response.content)
 
 
 @pytest.mark.django_db
-def test_link_expired(client, alice, mocker):
-    login_token = LoginToken.objects.create(user=alice, created_at=datetime.date(2000, 1, 1))
-    link = f"http://testserver/verify-login-link/?token={login_token.token}"
-
-    mocker.patch("evaluation_registry.evaluations.models.LoginToken.has_expired", return_value=True)
+def test_link_fails_invalid_user(client):
+    link = f"http://testserver/verify-login-link/?token=3c0d9810&email=someone@gov.uk"
 
     response = client.get(link, follow=True)
     assert response.status_code == 200
-    error = "link has expired, please try again"
-    assert error in str(response.content)
+    assert "User not found, please try again." in str(response.content)
