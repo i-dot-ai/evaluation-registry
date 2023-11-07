@@ -1,9 +1,6 @@
 import logging
 
-from django.contrib import messages
-from django.contrib.auth import login, logout, get_user_model
-from django.core.exceptions import ValidationError
-from django.core.validators import validate_email
+from django.contrib.auth import get_user_model, login, logout
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.views import View

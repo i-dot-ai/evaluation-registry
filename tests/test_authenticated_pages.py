@@ -1,5 +1,4 @@
 import pytest
-from django.conf import settings
 from django.contrib.sessions.models import Session
 from django.test import override_settings
 from django.urls import reverse
