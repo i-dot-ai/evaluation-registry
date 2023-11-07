@@ -1,5 +1,6 @@
 import calendar
 import uuid
+from datetime import datetime, timedelta
 from typing import Optional
 
 from django.core.exceptions import ObjectDoesNotExist
@@ -186,3 +187,8 @@ class LoginToken(TimeStampedModel):
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, help_text="a user may have many tokens")
     token = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, help_text="each token is unique")
+
+    def has_expired(self) -> bool:
+        """has the link expired?"""
+        age = datetime.now() - self.created_at.replace(tzinfo=None)
+        return age > timedelta(hours=1)

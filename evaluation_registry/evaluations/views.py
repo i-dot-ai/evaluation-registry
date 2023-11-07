@@ -6,6 +6,7 @@ from django.contrib.postgres.search import (
     SearchRank,
     SearchVector,
 )
+from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
 from django.core.paginator import Paginator
 from django.db.models import Q
@@ -159,7 +160,7 @@ def send_login_link(request):
                 fail_silently=False,
             )
             # redirect to success
-            return render(request, "link_sent.html")
+            return render(request, "email_sent.html")
         else:
             return render(request, "login.html", {"form": form})
 
@@ -171,11 +172,18 @@ def send_login_link(request):
 def verify_login_link(request):
     token = request.GET.get("token")
     try:
-        magic_token = LoginToken.objects.get(token=token)
-        login(request, magic_token.user)
-        magic_token.delete()
+        login_token = LoginToken.objects.get(token=token)
+        login(request, login_token.user)
+        login_token.delete()
     except LoginToken.DoesNotExist:
         messages.warning(request, "link does not exist, please try again")
+        return redirect("login")
+    except ValidationError:
+        messages.warning(request, "link is malformed, please try again")
+        return redirect("login")
+
+    if login_token.has_expired():
+        messages.warning(request, "link has expired, please try again")
         return redirect("login")
 
     return redirect(settings.LOGIN_REDIRECT_URL)

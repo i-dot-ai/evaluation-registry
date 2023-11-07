@@ -2,9 +2,27 @@
 
 {% block content %}
 
-{% for message in get_messages(request) %}
-<li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-{% endfor %}
+
+<p class="govuk-body">
+    To use the Evaluation Registry, you'll need to enter your work email address below and we'll send you a link to sign in.
+</p>
+
+{% if get_messages(request) %}
+<div class="govuk-error-summary" data-module="govuk-error-summary">
+  <div role="alert">
+    <h2 class="govuk-error-summary__title">
+      There is a problem
+    </h2>
+    <div class="govuk-error-summary__body">
+      <ul class="govuk-list govuk-error-summary__list">
+        {% for message in get_messages(request) %}
+        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</div>
+{% endif %}
 
 <form class="govuk-form-group" method="post" action="{{ url('login') }}">
     {{ csrf_input }}
