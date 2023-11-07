@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth import get_user_model, login
+from django.contrib.auth import get_user_model, login, logout, user_logged_out
 from django.contrib.postgres.search import (
     SearchQuery,
     SearchRank,
@@ -141,7 +141,10 @@ def send_login_link(request):
     if request.method == "POST":
         form = EmailForm(request.POST)
         if form.is_valid():
-            user, _ = User.objects.get_or_create(email=form.cleaned_data["email"])
+            try:
+                user = User.objects.get(email=form.cleaned_data["email"])
+            except User.DoesNotExist:
+                user = User.objects.create_user(email=form.cleaned_data["email"])
 
             # Generate a unique token and create a LoginToken object
             login_token = LoginToken.objects.create(user=user)
