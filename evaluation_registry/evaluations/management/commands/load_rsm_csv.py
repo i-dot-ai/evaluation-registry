@@ -378,6 +378,19 @@ MONTHS = {
 }
 
 
+def create_choices_list(record, is_other_type):
+    choices = []
+    if record["Process"] == "Y":
+        choices.append(Evaluation.EvaluationType.PROCESS)
+    if record["Impact"] == "Y":
+        choices.append(Evaluation.EvaluationType.IMPACT)
+    if record["Economic"] == "Y":
+        choices.append(Evaluation.EvaluationType.ECONOMIC)
+    if is_other_type:
+        choices.append(Evaluation.EvaluationType.OTHER)
+    return choices
+
+
 def make_event_date(evaluation, kvp, category, key):
     pub_month = MONTHS.get(kvp[f"{key} (Month)"])
     if year := kvp[f"{key} (Year)"]:
@@ -426,10 +439,7 @@ class Command(BaseCommand):
                     major_project_number=record["Major projects identifier"],
                     visibility=Evaluation.Visibility.PUBLIC,
                     published_evaluation_link=published_evaluation_link,
-                    is_process_type=record["Process"] == "Y",
-                    is_impact_type=record["Impact"] == "Y",
-                    is_economic_type=record["Economic"] == "Y",
-                    is_other_type=is_other_type,
+                    evaluation_types=create_choices_list(record, is_other_type),
                     other_evaluation_type_description=record["Other evaluation type (please state)"]
                     if is_other_type
                     else None,
