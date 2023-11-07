@@ -92,7 +92,7 @@ OFGEM = frozenset(["ofgem.gov.uk"])
 OFQUAL = frozenset(["ofqual.gov.uk"])
 OFSTED = frozenset(["ofsted.gov.uk"])
 SERIOUS_FRAUD_OFFICE = frozenset(["sfo.gov.uk"])
-SUPREME_COURT_UK = frozenset([])
+SUPREME_COURT_UK: frozenset[str] = frozenset([])
 UK_STATISTICS_AUTHORITY = frozenset(["statisticsauthority.gov.uk"])
 WATER_SERVICES_REGULATION_AUTHORITY = frozenset(["ofwat.gov.uk"])
 
