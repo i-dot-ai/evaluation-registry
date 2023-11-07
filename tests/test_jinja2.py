@@ -1,3 +1,5 @@
+import pytest
+
 from evaluation_registry import jinja2
 
 
@@ -14,18 +16,16 @@ def test_convert_markdown():
     assert actual == expected, actual
 
 
-def test_humanize_timedelta():
-    actual = jinja2.humanize_timedelta()
-    assert actual == "0 minutes", actual
-    actual = jinja2.humanize_timedelta(609)
-    expected = "10 hours and 9 minutes"
-    assert actual == expected, actual
-    actual = jinja2.humanize_timedelta(13000)
-    expected = "More than 200 hours"
-    assert actual == expected, actual
-    actual = jinja2.humanize_timedelta(609, hours_limit=2)
-    expected = "More than 2 hours"
-    assert actual == expected, actual
-    actual = jinja2.humanize_timedelta(301, hours_limit=2, too_large_msg="too long")
-    expected = "too long"
-    assert actual == expected, actual
+@pytest.mark.parametrize(
+    "time_delta, minutes, hours_limit, too_large_msg",
+    [
+        ("0 minutes", 0, 0, ""),
+        ("10 hours and 9 minutes", 609, 200, ""),
+        ("More than 200 hours", 13000, 200, ""),
+        ("More than 2 hours", 609, 2, ""),
+        ("too long", 301, 2, "too long"),
+    ],
+)
+def test_humanize_timedelta(time_delta, minutes, hours_limit, too_large_msg):
+    actual = jinja2.humanize_timedelta(minutes, hours_limit, too_large_msg)
+    assert actual == time_delta, actual
