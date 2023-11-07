@@ -26,12 +26,8 @@ class EvaluationAdmin(admin.ModelAdmin):
         "title",
         "lead_department",
         "visibility",
-        "is_process_type",
-        "is_impact_type",
-        "is_economic_type",
-        "is_other_type",
     ]
-    list_filter = ["visibility", "is_process_type", "is_impact_type", "is_economic_type", "is_other_type"]
+    list_filter = ["visibility"]
     search_fields = ("title", "brief_description")
     inlines = [EvaluationDepartmentAssociationInline]
 
