@@ -1,12 +1,14 @@
 from django.db import migrations
 
+
 def print_success(str):
     # prints in green
-    print(f'\033[1;32;40m{str}\033[m')
+    print(f"\033[1;32;40m{str}\033[m")
+
 
 def print_warning(str):
     # prints in yellow
-    print(f'\033[1;33;40m{str}\033[m')
+    print(f"\033[1;33;40m{str}\033[m")
 
 
 def update_evaluation_types(apps, schema_editor):
@@ -32,7 +34,6 @@ def update_evaluation_types(apps, schema_editor):
         e.save()
 
         print_success(f"Added evaluation types to {e.title}")
-
 
 
 class Migration(migrations.Migration):
