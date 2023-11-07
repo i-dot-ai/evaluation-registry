@@ -1,12 +1,12 @@
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth import get_user_model, login, logout, user_logged_out
+from django.contrib.auth import get_user_model, login
+from django.contrib.auth.tokens import default_token_generator
 from django.contrib.postgres.search import (
     SearchQuery,
     SearchRank,
     SearchVector,
 )
-from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
 from django.core.paginator import Paginator
 from django.db.models import Q
@@ -130,9 +130,6 @@ def evaluation_detail_view(request, uuid):
 
     dates = evaluation.event_dates.all()
     return render(request, "evaluation_detail.html", {"evaluation": evaluation, "dates": dates})
-
-
-from django.contrib.auth.tokens import default_token_generator
 
 
 @require_http_methods(["GET", "POST"])

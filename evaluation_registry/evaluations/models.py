@@ -1,6 +1,5 @@
 import calendar
 import uuid
-from datetime import datetime, timedelta
 from typing import Optional
 
 from django.core.exceptions import ObjectDoesNotExist

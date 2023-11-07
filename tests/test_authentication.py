@@ -62,7 +62,7 @@ def test_link_fails_invalid_token(
 
 @pytest.mark.django_db
 def test_link_fails_invalid_user(client):
-    link = f"http://testserver/verify-login-link/?token=3c0d9810&email=someone@gov.uk"
+    link = "http://testserver/verify-login-link/?token=3c0d9810&email=someone@gov.uk"
 
     response = client.get(link, follow=True)
     assert response.status_code == 200
