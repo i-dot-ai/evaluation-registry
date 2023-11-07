@@ -2,6 +2,7 @@
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
 
+from . import allowed_domains
 from .settings_base import *
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -12,6 +13,12 @@ BASE_URL = env.str("BASE_URL")
 CONTACT_EMAIL = env.str("CONTACT_EMAIL", default="test@example.com")
 FROM_EMAIL = env.str("FROM_EMAIL", default="test@example.com")
 FEEDBACK_EMAIL = env.str("FEEDBACK_EMAIL", default="test@example.com")
+ALLOW_EXAMPLE_EMAILS = env.bool("ALLOW_EXAMPLE_EMAILS", default=False)
+if ALLOW_EXAMPLE_EMAILS:
+    ALLOWED_CIVIL_SERVICE_DOMAINS = allowed_domains.CIVIL_SERVICE_DOMAINS.union({"example.com"})
+    # This is domain is used for testing, so for these purposes, count it as a CS domain
+else:
+    ALLOWED_CIVIL_SERVICE_DOMAINS = allowed_domains.CIVIL_SERVICE_DOMAINS
 
 
 # Application definition
