@@ -179,3 +179,10 @@ class EventDate(TimeStampedModel):
         if self.month:
             return f"{calendar.month_name[self.month]} {self.year}"
         return f"{self.year}"
+
+
+class LoginToken(TimeStampedModel):
+    """A one time token to authenticate a user"""
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, help_text="a user may have many tokens")
+    token = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, help_text="each token is unique")

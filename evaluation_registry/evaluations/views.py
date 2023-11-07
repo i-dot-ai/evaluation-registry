@@ -1,16 +1,28 @@
+from django.conf import settings
+from django.contrib import messages
+from django.contrib.auth import get_user_model, login
 from django.contrib.postgres.search import (
     SearchQuery,
     SearchRank,
     SearchVector,
 )
+from django.core.mail import send_mail
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.http import Http404
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.views.decorators.http import require_http_methods
 from django.views.generic import DetailView
 
-from evaluation_registry.evaluations.models import Department, Evaluation
+from evaluation_registry.evaluations.forms import EmailForm
+from evaluation_registry.evaluations.models import (
+    Department,
+    Evaluation,
+    LoginToken,
+    User,
+)
+
+UserModel = get_user_model()
 
 
 class UUIDDetailView(DetailView):
@@ -122,3 +134,45 @@ def evaluation_detail_view(request, uuid):
 
     dates = evaluation.event_dates.all()
     return render(request, "evaluation_detail.html", {"evaluation": evaluation, "dates": dates})
+
+
+@require_http_methods(["GET", "POST"])
+def send_login_link(request):
+    if request.method == "POST":
+        form = EmailForm(request.POST)
+        if form.is_valid():
+            user, _ = User.objects.get_or_create(email=form.cleaned_data["email"])
+
+            # Generate a unique token and create a LoginToken object
+            login_token = LoginToken.objects.create(user=user)
+
+            # Send the login link to the user's email
+            login_url = request.build_absolute_uri(f"/verify-login-link/?token={login_token.token}")
+            send_mail(
+                "Login Link",
+                f"Click the following link to log in: {login_url}",
+                "from@example.com",
+                [user.email],
+                fail_silently=False,
+            )
+            # redirect to success
+            return render(request, "link_sent.html")
+        else:
+            return render(request, "login.html", {"form": form})
+
+    form = EmailForm()
+    return render(request, "login.html", {"form": form})
+
+
+@require_http_methods(["GET"])
+def verify_login_link(request):
+    token = request.GET.get("token")
+    try:
+        magic_token = LoginToken.objects.get(token=token)
+        login(request, magic_token.user)
+        magic_token.delete()
+    except LoginToken.DoesNotExist:
+        messages.warning(request, "link does not exist, please try again")
+        return redirect("login")
+
+    return redirect(settings.LOGIN_REDIRECT_URL)

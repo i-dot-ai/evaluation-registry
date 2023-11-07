@@ -2,6 +2,7 @@ import datetime
 
 import humanize
 import jinja2
+from django.contrib import messages
 from django.templatetags.static import static
 from django.urls import reverse
 from markdown_it import MarkdownIt
@@ -59,6 +60,10 @@ def humanize_timedelta(minutes=0, hours_limit=200, too_large_msg=""):
         return humanize.precisedelta(delta, minimum_unit="minutes")
 
 
+def get_messages(request):
+    return messages.get_messages(request)
+
+
 def environment(**options):
     extra_options = dict()
     env = jinja2.Environment(  # nosec B701
@@ -75,6 +80,7 @@ def environment(**options):
             "url": url,
             "remove_query_param": remove_query_param,
             "humanize_timedelta": humanize_timedelta,
+            "get_messages": get_messages,
         }
     )
     return env

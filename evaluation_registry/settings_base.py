@@ -151,10 +151,6 @@ CSP_DEFAULT_SRC = ("'self'", "'sha256-oFNrsKhzOBUVceDuefWEqtXEXMM9LIL4cUnoVkDYPz
 
 CSP_STYLE_SRC = "'self'"
 
-
-OTP_TOTP_ISSUER = ""  # TODO: Add issuer name
-OTP_TOTP_AUTOCONF = True
-OTP_TOTP_KEY_LENGTH = 16
-OTP_TOTP_THROTTLE_FACTOR = 1.0
-
-CSRF_COOKIE_HTTPONLY = True
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+ALLOWED_DOMAINS = ["example.com"]
+MESSAGE_STORAGE = "django.contrib.messages.storage.session.SessionStorage"
