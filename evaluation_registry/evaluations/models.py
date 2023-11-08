@@ -91,7 +91,8 @@ class Evaluation(TimeStampedModel):
 
     def get_evaluation_types_text(self) -> list[str]:
         return [
-            choice[1] for choice in Evaluation.EvaluationType.choices if choice and choice[0] in self.evaluation_types
+            value for label, value in Evaluation.EvaluationType.choices
+            if value in self.evaluation_types  # type: ignore
         ]
 
     def __str__(self):
