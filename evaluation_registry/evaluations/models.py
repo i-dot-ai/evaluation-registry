@@ -227,7 +227,7 @@ class Evaluation(TimeStampedModel):
         return self.get_array_field_text(self.rct_types, Evaluation.RCTType.choices)
 
     def get_quasi_experimental_text(self) -> list[str]:
-        return self.get_array_field_text(self.quasi_experimental, Evaluation.QuasiExperimentalType.choices)
+        return self.get_array_field_text(self.quasi_experimental_types, Evaluation.QuasiExperimentalType.choices)
 
     def get_theory_types_text(self) -> list[str]:
         return self.get_array_field_text(self.theory_types, Evaluation.TheoryType.choices)
