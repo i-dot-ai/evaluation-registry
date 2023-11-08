@@ -200,15 +200,17 @@ class Evaluation(TimeStampedModel):
         null=True, blank=True, help_text="description of other issues preventing publication"
     )
 
-    def get_array_field_text(self, values, choices) -> list[str]:
-        return [choice[1] for choice in choices if choice[0] in values]
-
     @property
     def lead_department(self) -> Optional[Department]:
         try:
             return self.departments.get(evaluationdepartmentassociation__is_lead=True)
         except ObjectDoesNotExist:
             return None
+
+    def get_array_field_text(self, values, choices) -> list[str]:
+        if not values:
+            return []
+        return [choice[1] for choice in choices if choice[0] in values]
 
     def get_evaluation_types_text(self) -> list[str]:
         return self.get_array_field_text(self.evaluation_types, Evaluation.EvaluationType.choices)
