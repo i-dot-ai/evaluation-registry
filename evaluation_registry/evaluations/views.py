@@ -4,7 +4,7 @@ from django.contrib.postgres.search import (
     SearchVector,
 )
 from django.core.paginator import Paginator
-from django.db.models import Q, QuerySet
+from django.db.models import QuerySet
 from django.http import Http404
 from django.shortcuts import render
 from django.views.decorators.http import require_http_methods
@@ -73,7 +73,7 @@ def full_text_search(search_term: str) -> QuerySet:
     return evaluation_list
 
 
-def filter_evaluations(evaluations: QuerySet, departments: list[str], types: list[str]) -> QuerySet:
+def filter_by_department_and_types(evaluations: QuerySet, departments: list[str], types: list[str]) -> QuerySet:
     """filter query set on department-codes and evaluation-types"""
 
     if departments:
@@ -91,7 +91,7 @@ def evaluation_list_view(request):
     selected_departments = request.GET.getlist("departments")
     selected_types = request.GET.getlist("evaluation_types")
 
-    evaluation_list = filter_evaluations(
+    evaluation_list = filter_by_department_and_types(
         full_text_search(search_term),
         selected_departments,
         selected_types,

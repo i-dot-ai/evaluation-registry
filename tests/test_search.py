@@ -5,7 +5,7 @@ from evaluation_registry.evaluations.models import (
     EvaluationDepartmentAssociation,
 )
 from evaluation_registry.evaluations.views import (
-    filter_evaluations,
+    filter_by_department_and_types,
     full_text_search,
 )
 
@@ -70,5 +70,5 @@ def test_full_text_search(evaluations, search_term, expected_number_of_results, 
     ],
 )
 def test_filter_evaluations(evaluations, departments, types, expected_number_of_results):
-    results = filter_evaluations(evaluations, departments, types)
+    results = filter_by_department_and_types(evaluations, departments, types)
     assert len(results) == expected_number_of_results

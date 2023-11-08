@@ -90,7 +90,9 @@ class Evaluation(TimeStampedModel):
             return None
 
     def get_evaluation_types_text(self) -> list[str]:
-        return [choice[1] for choice in Evaluation.EvaluationType.choices if choice[0] in self.evaluation_types]
+        return [
+            choice[1] for choice in Evaluation.EvaluationType.choices if choice and choice[0] in self.evaluation_types
+        ]
 
     def __str__(self):
         return str(self.title)
