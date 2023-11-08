@@ -55,7 +55,6 @@ class Evaluation(TimeStampedModel):
         PLANNED = "planned", "A planned evaluation"
         ONGOING = "ongoing", "An ongoing evaluation"
         COMPLETE = "complete", "A complete evaluation report"
-        NOT_SET = "not_set", "Not set"  # Note: do not allow this as a choice on the create/update forms
 
     class EvaluationType(models.TextChoices):
         IMPACT = "impact", "Impact evaluation"
@@ -141,7 +140,7 @@ class Evaluation(TimeStampedModel):
         through="EvaluationDepartmentAssociation",
         help_text="departments involved in this evaluation",
     )
-    status = models.CharField(max_length=512, choices=Status.choices, default=Status.NOT_SET)
+    status = models.CharField(max_length=512, choices=Status.choices, blank=True, null=True)
 
     evaluation_types = ArrayField(
         models.CharField(max_length=256, choices=EvaluationType.choices), blank=True, null=True
