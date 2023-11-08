@@ -14,7 +14,7 @@ from evaluation_registry.evaluations.views import (
 def evaluations(cabinet_office, home_office):
     e1 = Evaluation.objects.create(title="summaries of policies")
     e2 = Evaluation.objects.create(
-        title="how to cover up a large scandal",
+        title="public transport",
         brief_description="to long to detail here",
         evaluation_types=[Evaluation.EvaluationType.IMPACT],
     )
