@@ -35,7 +35,7 @@ check-migrations:
 .PHONY: test
 test:
 	docker-compose up -d web
-	docker-compose run web python -m pytest -v
+	docker-compose run web POSTGRES_HOST=localhost python -m pytest -v
 
 lint:
 	isort .
