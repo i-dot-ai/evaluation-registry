@@ -9,7 +9,7 @@ Migrations are run automatically at startup, and suppliers are added automatical
 ## Running locally
 
 ```commandline
-POSTGRES_HOST=localhost && python manage.py runserver
+export $(cat envs/web | xargs) POSTGRES_HOST=localhost && python manage.py runserver
 ```
 
 
