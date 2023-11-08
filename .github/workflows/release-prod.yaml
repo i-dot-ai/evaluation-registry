@@ -16,7 +16,9 @@ jobs:
         ref: main
 
     - name: Generate deployment package
-      run: zip -r app.zip . -x '*.git*'
+      run: |
+        poetry export --without-hashes --output requirements.txt
+        zip -r app.zip . -x '*.git*'
 
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v4

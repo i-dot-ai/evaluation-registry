@@ -26,10 +26,14 @@ jobs:
       with:
         python-version: 3.11
 
+    - name: Install poetry
+      uses: abatilo/actions-poetry@v2
+      with:
+        poetry-version: 1.2.0
+
     - name: Install dependencies
       run: |
-        python3 -m pip install --upgrade pip setuptools
-        pip install -r requirements-dev.lock
+        poetry install
 
     - name: Run Python code checks
       run: |
@@ -43,14 +47,18 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Install Requirements
+      - name: Install poetry
+        uses: abatilo/actions-poetry@v2
+        with:
+          poetry-version: 1.2.0
+
+      - name: Install dependencies
         run: |
-          python3 -m pip install --upgrade pip setuptools
-          pip install -r requirements-dev.lock
+          poetry install
 
       - name: Run Checks
         run: |
-          DJANGO_SETTINGS_MODULE=evaluation_registry.settings_base DJANGO_SECRET_KEY=temp POSTGRES_HOST=tmp python manage.py check
+          DJANGO_SETTINGS_MODULE=evaluation_registry.settings_base DJANGO_SECRET_KEY=temp POSTGRES_HOST=tmp poetry run python manage.py check
 
   run_tests:
     name: Run tests
@@ -75,11 +83,15 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - name: Install Requirements
+    - name: Install poetry
+      uses: abatilo/actions-poetry@v2
+      with:
+        poetry-version: 1.2.0
+
+    - name: Install dependencies
       run: |
-        python3 -m pip install --upgrade pip setuptools
-        pip install -r requirements-dev.lock
+        poetry install
 
     - name: Run tests
       run: |
-        POSTGRES_HOST=localhost python -m pytest . --cov=evaluation_registry  --cov-fail-under 50
+        POSTGRES_HOST=localhost poetry run pytest . --cov=evaluation_registry  --cov-fail-under 65

@@ -1,27 +1,25 @@
-FROM python:3.11
+FROM python:3.11.6
 ENV PYTHONUNBUFFERED 1
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV TZ=UTC
-
-ARG BASE_URL
-
-ENV BASE_URL=${BASE_URL}
 
 WORKDIR /app
 
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-RUN apt update -y && apt install -y postgresql-client
+COPY . /app
 
-RUN python3 -m pip install -U pip setuptools wheel
-
-COPY ./requirements-dev.lock /app/requirements-dev.lock
-RUN python3 -m pip install -r /app/requirements-dev.lock --no-cache-dir
+RUN python3 -m pip install poetry
+RUN poetry install
 
 COPY ./docker/web/start.sh /start.sh
 RUN chmod +x /start.sh
 
-COPY . /app
+RUN \
+    DJANGO_SETTINGS_MODULE=evaluation_registry.settings_base \
+    DJANGO_SECRET_KEY="temp" \
+    POSTGRES_HOST="temp" \
+    poetry run python manage.py collectstatic --no-input
 
 WORKDIR /app/
 
