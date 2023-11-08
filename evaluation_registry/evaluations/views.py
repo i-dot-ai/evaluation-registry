@@ -4,7 +4,7 @@ from django.contrib.postgres.search import (
     SearchVector,
 )
 from django.core.paginator import Paginator
-from django.db.models import Q
+from django.db.models import Q, QuerySet
 from django.http import Http404
 from django.shortcuts import render
 from django.views.decorators.http import require_http_methods
@@ -52,39 +52,57 @@ def homepage_view(request):
     )
 
 
+def full_text_search(search_term: str) -> QuerySet:
+    """search title and brief-description using PG full-text-search"""
+    if not search_term:
+        return Evaluation.objects.all()
+
+    search_title = SearchVector("title", weight="A")
+    description_search = SearchVector("brief_description", weight="B")
+    search_vector = search_title + description_search
+    search_query = SearchQuery(search_term)
+    evaluation_list = (
+        Evaluation.objects.annotate(
+            search=search_vector,
+            rank=SearchRank(search_vector, search_query),
+        )
+        .filter(search=search_query)
+        .order_by("-rank")
+    )
+
+    return evaluation_list
+
+
+def filter_evaluations(evaluations: QuerySet, departments: list[str], types: list[str]) -> QuerySet:
+    """filter query set on department-codes and evaluation-types"""
+
+    if departments:
+        evaluations = evaluations.filter(departments__code__in=departments)
+
+    if types:
+        evaluations = evaluations.filter(evaluation_types__overlap=types)
+
+    return evaluations.distinct()
+
+
 @require_http_methods(["GET"])
 def evaluation_list_view(request):
-    search_term = request.GET.get("search_term") or ""
+    search_term = request.GET.get("search_term")
     selected_departments = request.GET.getlist("departments")
     selected_types = request.GET.getlist("evaluation_types")
 
-    # TODO: include evaluation visibility for version for CS
-    search_choices = {}
-    search_choices["departments"] = Department.objects.filter(code__in=selected_departments).all()
-    search_choices["evaluation_types"] = list(
-        filter(lambda x: x[0] in selected_types, Evaluation.EvaluationType.choices)
+    evaluation_list = filter_evaluations(
+        full_text_search(search_term),
+        selected_departments,
+        selected_types,
     )
 
-    department_query = Q()
-    if selected_departments:
-        department_query = Q(departments__in=search_choices["departments"])
-
-    type_query = Q()
-    if selected_types:
-        type_query = Q(evaluation_types__contains=selected_types)
-
-    if search_term:
-        search_title = SearchVector("title", weight="A")
-        description_search = SearchVector("brief_description", weight="B")
-        search_vector = search_title + description_search
-        search_query = SearchQuery(search_term)
-        evaluation_list = (
-            Evaluation.objects.annotate(search=search_vector, rank=SearchRank(search_vector, search_query))
-            .filter(Q(search=search_query) & department_query & type_query)
-            .order_by("-rank")
-        )
-    else:
-        evaluation_list = Evaluation.objects.filter(department_query & type_query)
+    search_choices = {
+        "departments": Department.objects.filter(code__in=selected_departments).all(),
+        "evaluation_types": [
+            (label, value) for label, value in Evaluation.EvaluationType.choices if label in selected_types
+        ],
+    }
 
     paginator = Paginator(evaluation_list, 25)
     page_number = request.GET.get("page") or 1
