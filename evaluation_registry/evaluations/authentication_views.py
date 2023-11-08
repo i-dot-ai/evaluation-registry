@@ -1,5 +1,6 @@
 import logging
 
+from django.conf import settings
 from django.contrib.auth import get_user_model, login, logout
 from django.shortcuts import redirect, render
 from django.urls import reverse
@@ -26,7 +27,7 @@ class CustomLoginView(View):
 
     def get(self, request):
         if request.user.is_authenticated:
-            return redirect(reverse("index"))
+            return redirect(reverse(settings.LOGIN_REDIRECT_URL))
         form = EmailForm()
         return render(request, self.template_name, {"form": form})
 
@@ -41,7 +42,7 @@ class CustomLoginView(View):
                 email_handler.send_register_email(user)
             return redirect(reverse("email-sent"))
         else:
-            return render(request, "login.html", {"form": form})
+            return render(request, self.template_name, {"form": form})
 
 
 def email_sent_view(request):
@@ -74,7 +75,7 @@ def verify_email_view(request, register=False):
 
 
 def post_login_view(request):
-    return redirect(reverse("index"))
+    return redirect(reverse(settings.LOGIN_REDIRECT_URL))
 
 
 class LogoutView(View):
