@@ -424,6 +424,9 @@ class Command(BaseCommand):
                 if len(published_evaluation_link or "") > 1024:
                     published_evaluation_link = None
 
+                if record["Major projects identifier"] == "Y":
+                    continue
+
                 if record["Evaluation title"] is None:
                     self.stdout.write(self.style.WARNING(f"No title found, skipping evaluation"))
                     continue
