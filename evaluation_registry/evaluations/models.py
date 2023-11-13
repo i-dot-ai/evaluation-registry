@@ -6,6 +6,7 @@ from django.contrib.postgres.fields import ArrayField
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
+from django.db.models.enums import ChoicesMeta
 from django_use_email_as_username.models import BaseUser, BaseUserManager
 
 
@@ -140,43 +141,41 @@ class Evaluation(TimeStampedModel):
         through="EvaluationDepartmentAssociation",
         help_text="departments involved in this evaluation",
     )
-    status = models.CharField(max_length=512, choices=Status.choices, blank=True, null=True)
+    status = models.CharField(max_length=512, choices=Status, blank=True, null=True)
 
-    evaluation_types = ArrayField(
-        models.CharField(max_length=256, choices=EvaluationType.choices), blank=True, null=True
-    )
+    evaluation_types = ArrayField(models.CharField(max_length=256, choices=EvaluationType), blank=True, null=True)
     other_evaluation_type_description = models.TextField(
         null=True, blank=True, help_text="optional description of other evaluation type"
     )
 
-    impact_types = ArrayField(models.CharField(max_length=256, choices=ImpactType.choices), blank=True, null=True)
+    impact_types = ArrayField(models.CharField(max_length=256, choices=ImpactType), blank=True, null=True)
     other_impact_type_description = models.TextField(
         null=True, blank=True, help_text="optional description of other impact evaluation type"
     )
-    process_types = ArrayField(models.CharField(max_length=256, choices=ProcessType.choices), blank=True, null=True)
+    process_types = ArrayField(models.CharField(max_length=256, choices=ProcessType), blank=True, null=True)
     other_process_type_description = models.TextField(
         null=True, blank=True, help_text="optional description of other process evaluation type"
     )
-    economic_types = ArrayField(models.CharField(max_length=256, choices=EconomicType.choices), blank=True, null=True)
+    economic_types = ArrayField(models.CharField(max_length=256, choices=EconomicType), blank=True, null=True)
     other_economic_type_description = models.TextField(
         null=True, blank=True, help_text="optional description of other economic evaluation type"
     )
 
-    rct_types = ArrayField(models.CharField(max_length=256, choices=RCTType.choices), blank=True, null=True)
+    rct_types = ArrayField(models.CharField(max_length=256, choices=RCTType), blank=True, null=True)
     other_rct_type_description = models.TextField(
         null=True, blank=True, help_text="optional description of other RCT method type"
     )
     quasi_experimental_types = ArrayField(
-        models.CharField(max_length=256, choices=QuasiExperimentalType.choices), blank=True, null=True
+        models.CharField(max_length=256, choices=QuasiExperimentalType), blank=True, null=True
     )
     other_quasi_experimental_type_description = models.TextField(
         null=True, blank=True, help_text="optional description of other quasi-experimental method type"
     )
-    theory_types = ArrayField(models.CharField(max_length=256, choices=TheoryType.choices), blank=True, null=True)
+    theory_types = ArrayField(models.CharField(max_length=256, choices=TheoryType), blank=True, null=True)
     other_theory_type_description = models.TextField(
         null=True, blank=True, help_text="optional description of other theory based method type"
     )
-    generic_types = ArrayField(models.CharField(max_length=256, choices=GenericType.choices), blank=True, null=True)
+    generic_types = ArrayField(models.CharField(max_length=256, choices=GenericType), blank=True, null=True)
     other_generic_type_description = models.TextField(
         null=True, blank=True, help_text="optional description of other generic based method type"
     )
@@ -188,10 +187,8 @@ class Evaluation(TimeStampedModel):
 
     plan_link = models.URLField(max_length=1024, blank=True, null=True)
     published_evaluation_link = models.URLField(max_length=1024, blank=True, null=True)
-    visibility = models.CharField(max_length=512, choices=Visibility.choices, default=Visibility.DRAFT)
-    reasons_unpublished = ArrayField(
-        models.CharField(max_length=256, choices=UnpublishedReason.choices), blank=True, null=True
-    )
+    visibility = models.CharField(max_length=512, choices=Visibility, default=Visibility.DRAFT)
+    reasons_unpublished = ArrayField(models.CharField(max_length=256, choices=UnpublishedReason), blank=True, null=True)
     quality_reasons_unpublished_description = models.TextField(
         null=True, blank=True, help_text="description of quality issues preventing publication"
     )
@@ -206,37 +203,39 @@ class Evaluation(TimeStampedModel):
         except ObjectDoesNotExist:
             return None
 
-    def get_array_field_text(self, values, choices) -> list[str]:
+    @staticmethod
+    def get_array_field_text(values: list[str], text_choices: ChoicesMeta) -> list[str]:
+        """returns a list of TextChoice labels"""
         if not values:
             return []
-        return [choice[1] for choice in choices if choice[0] in values]
+        return [label for value, label in text_choices.choices if value in values]
 
     def get_evaluation_types_text(self) -> list[str]:
-        return self.get_array_field_text(self.evaluation_types, Evaluation.EvaluationType.choices)
+        return self.get_array_field_text(self.evaluation_types, Evaluation.EvaluationType)
 
     def get_impact_types_text(self) -> list[str]:
-        return self.get_array_field_text(self.impact_types, Evaluation.ImpactType.choices)
+        return self.get_array_field_text(self.impact_types, Evaluation.ImpactType)
 
     def get_process_types_text(self) -> list[str]:
-        return self.get_array_field_text(self.process_types, Evaluation.ProcessType.choices)
+        return self.get_array_field_text(self.process_types, Evaluation.ProcessType)
 
     def get_economic_types_text(self) -> list[str]:
-        return self.get_array_field_text(self.economic_types, Evaluation.EconomicType.choices)
+        return self.get_array_field_text(self.economic_types, Evaluation.EconomicType)
 
     def get_rct_types_text(self) -> list[str]:
-        return self.get_array_field_text(self.rct_types, Evaluation.RCTType.choices)
+        return self.get_array_field_text(self.rct_types, Evaluation.RCTType)
 
     def get_quasi_experimental_text(self) -> list[str]:
-        return self.get_array_field_text(self.quasi_experimental_types, Evaluation.QuasiExperimentalType.choices)
+        return self.get_array_field_text(self.quasi_experimental_types, Evaluation.QuasiExperimentalType)
 
     def get_theory_types_text(self) -> list[str]:
-        return self.get_array_field_text(self.theory_types, Evaluation.TheoryType.choices)
+        return self.get_array_field_text(self.theory_types, Evaluation.TheoryType)
 
     def get_generic_types_text(self) -> list[str]:
-        return self.get_array_field_text(self.generic_types, Evaluation.GenericType.choices)
+        return self.get_array_field_text(self.generic_types, Evaluation.GenericType)
 
     def get_reasons_unpublished_text(self) -> list[str]:
-        return self.get_array_field_text(self.reasons_unpublished, Evaluation.UnpublishedReason.choices)
+        return self.get_array_field_text(self.reasons_unpublished, Evaluation.UnpublishedReason)
 
     def __str__(self):
         return str(self.title)
@@ -299,13 +298,13 @@ class EventDate(TimeStampedModel):
         DECEMBER = 12
 
     evaluation = models.ForeignKey(Evaluation, related_name="event_dates", on_delete=models.CASCADE)
-    month = models.PositiveSmallIntegerField(null=True, blank=True, choices=Month.choices)
+    month = models.PositiveSmallIntegerField(null=True, blank=True, choices=Month)
     year = models.PositiveSmallIntegerField(
         validators=[MinValueValidator(1900), MaxValueValidator(2100)],
     )
     other_description = models.CharField(max_length=256, blank=True, null=True)
-    category = models.CharField(max_length=25, choices=Category.choices, default=Category.NOT_SET)
-    status = models.CharField(max_length=25, choices=Status.choices, default=Status.NOT_SET)
+    category = models.CharField(max_length=25, choices=Category, default=Category.NOT_SET)
+    status = models.CharField(max_length=25, choices=Status, default=Status.NOT_SET)
 
     def __str__(self):
         if self.month:
