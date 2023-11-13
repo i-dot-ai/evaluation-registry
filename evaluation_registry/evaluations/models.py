@@ -45,7 +45,7 @@ class Department(TimeStampedModel):
         return self.display
 
 
-class EvaluationComponent(TimeStampedModel):
+class Evaluation(TimeStampedModel):
     class Visibility(models.TextChoices):
         DRAFT = "draft", "Draft"
         CIVIL_SERVICE = "civil_service", "Civil Service"
@@ -212,31 +212,31 @@ class EvaluationComponent(TimeStampedModel):
         return [choice[1] for choice in choices if choice[0] in values]
 
     def get_evaluation_types_text(self) -> list[str]:
-        return self.get_array_field_text(self.evaluation_types, EvaluationComponent.EvaluationType.choices)
+        return self.get_array_field_text(self.evaluation_types, Evaluation.EvaluationType.choices)
 
     def get_impact_types_text(self) -> list[str]:
-        return self.get_array_field_text(self.impact_types, EvaluationComponent.ImpactType.choices)
+        return self.get_array_field_text(self.impact_types, Evaluation.ImpactType.choices)
 
     def get_process_types_text(self) -> list[str]:
-        return self.get_array_field_text(self.process_types, EvaluationComponent.ProcessType.choices)
+        return self.get_array_field_text(self.process_types, Evaluation.ProcessType.choices)
 
     def get_economic_types_text(self) -> list[str]:
-        return self.get_array_field_text(self.economic_types, EvaluationComponent.EconomicType.choices)
+        return self.get_array_field_text(self.economic_types, Evaluation.EconomicType.choices)
 
     def get_rct_types_text(self) -> list[str]:
-        return self.get_array_field_text(self.rct_types, EvaluationComponent.RCTType.choices)
+        return self.get_array_field_text(self.rct_types, Evaluation.RCTType.choices)
 
     def get_quasi_experimental_text(self) -> list[str]:
-        return self.get_array_field_text(self.quasi_experimental_types, EvaluationComponent.QuasiExperimentalType.choices)
+        return self.get_array_field_text(self.quasi_experimental_types, Evaluation.QuasiExperimentalType.choices)
 
     def get_theory_types_text(self) -> list[str]:
-        return self.get_array_field_text(self.theory_types, EvaluationComponent.TheoryType.choices)
+        return self.get_array_field_text(self.theory_types, Evaluation.TheoryType.choices)
 
     def get_generic_types_text(self) -> list[str]:
-        return self.get_array_field_text(self.generic_types, EvaluationComponent.GenericType.choices)
+        return self.get_array_field_text(self.generic_types, Evaluation.GenericType.choices)
 
     def get_reasons_unpublished_text(self) -> list[str]:
-        return self.get_array_field_text(self.reasons_unpublished, EvaluationComponent.UnpublishedReason.choices)
+        return self.get_array_field_text(self.reasons_unpublished, Evaluation.UnpublishedReason.choices)
 
     def __str__(self):
         return str(self.title)
@@ -247,7 +247,7 @@ class EvaluationDepartmentAssociation(models.Model):
     flag to identify whether this is the primary association
     """
 
-    evaluation = models.ForeignKey(EvaluationComponent, on_delete=models.CASCADE)
+    evaluation = models.ForeignKey(Evaluation, on_delete=models.CASCADE)
     department = models.ForeignKey(Department, on_delete=models.CASCADE)
     is_lead = models.BooleanField(default=False)
 
@@ -298,7 +298,7 @@ class EventDate(TimeStampedModel):
         NOVEMBER = 11
         DECEMBER = 12
 
-    evaluation = models.ForeignKey(EvaluationComponent, related_name="event_dates", on_delete=models.CASCADE)
+    evaluation = models.ForeignKey(Evaluation, related_name="event_dates", on_delete=models.CASCADE)
     month = models.PositiveSmallIntegerField(null=True, blank=True, choices=Month.choices)
     year = models.PositiveSmallIntegerField(
         validators=[MinValueValidator(1900), MaxValueValidator(2100)],
