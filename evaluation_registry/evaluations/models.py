@@ -204,7 +204,7 @@ class Evaluation(TimeStampedModel):
             return None
 
     @staticmethod
-    def get_array_field_text(values: list[str], text_choices: ChoicesMeta) -> list[str]:
+    def get_array_field_text(values: list[str] | None, text_choices: ChoicesMeta) -> list[str]:
         """returns a list of TextChoice labels"""
         if not values:
             return []
