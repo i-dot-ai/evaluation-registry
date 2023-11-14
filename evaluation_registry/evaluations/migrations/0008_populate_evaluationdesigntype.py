@@ -26,7 +26,6 @@ def update_evaluation_design_type_parents(apps, schema_editor):
         if parent:
             parent_instance = EvaluationDesignType.objects.get(code=parent)
 
-
             EvaluationDesignType.objects.filter(code=code).update(
                 parent=parent_instance,
             )

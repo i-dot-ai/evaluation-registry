@@ -1,6 +1,5 @@
 # flake8: noqa
 import json
-from typing import Optional
 
 from django.core.management import BaseCommand
 
@@ -8,7 +7,10 @@ from evaluation_registry.evaluations.models import (
     Department,
     Evaluation,
     EvaluationDepartmentAssociation,
+    EvaluationDesignType,
+    EvaluationDesignTypeDetail,
     EventDate,
+    Report,
 )
 
 
@@ -360,6 +362,66 @@ DEPARTMENTS = {
     "Other (scotland)": ["the-scottish-government"],
 }
 
+DESIGN_TYPES = {
+    "surveys and polling": "surveys_process",
+    "individual interviews": "individual_process",
+    "output or performance monitoring": "output_process",
+    "Randomised Controlled Trial (RCT)": "rct",
+    "Interviews and group sessions": "group_process",
+    "Surveys (ECTs)": "surveys_process",
+    "Cluster randomised RCT": "cluster",
+    "Surveys, focus groups and interviews conducted": "surveys_process",
+    "Propensity Score Matching": "propensity",
+    "Focus groups or group interviews alongwith individual interviews & case studies": "group_process",
+    "Difference in Difference": "difference",
+    "Output or performance review": "output_process",
+    "Output or performance modelling": "output_process",
+    "Survey and polling": "surveys_process",
+    "Individual interviews": "individual_process",
+    "Case studies": "case_study_process",
+    "Survey respondents (landlords)": "surveys_process",
+    "Simulation model developed": "simulation",
+    "Focus groups or group interviews": "group_process",
+    "Outcome letter review": "outcome",
+    "Semi structured qualitative interviews": "qca",
+    "Other (Qualitative research)": "qualitative_process",
+    "Mix of methods including surveys and group interviews": "surveys_process",
+    "Telephone interviews (housing advisers)": "individual_process",
+    "Individual interviews": "individual_process",
+    "Focus groups, interviews, and surveys": "group_process",
+    "Review of data from Adult Tobacco Policy Survey": "surveys_process",
+    "Consultative/deliberative methods": "consultative_process",
+    "Surveys (senior leaders)": "surveys_process",
+    "Randomised Controlled Trial": "rct",
+    "Synthetic Control Methods": "synthetic",
+    "interviews": "individual_process",
+    "qualitative depth interviews and focus groups": "qualitative_process",
+    "Case Studies": "case_study_process",
+    "Case studies and interviews": "case_study_process",
+    "Simulation modelling": "simulation",
+    "Focus group": "group_process",
+    "Interviews (landlords)": "individual_process",
+    "Process Tracing": "process_tracing",
+    "Interview": "individual_process",
+    "regression adjusted Difference-in-Difference (DiD)": "difference",
+    "Survyes and case study": "surveys_process",
+    "Participant Survey": "surveys_process",
+    "focus groups": "group_process",
+    "INTERVIEW": "individual_process",
+    "Surveys and polling": "surveys_process",
+    "Surveys and interviews": "surveys_process",
+    "Focus groups (housing advisers)": "group_process",
+    "Forcus group": "group_process",
+    "Contribution Tracing": "contribution_tracing",
+    "Surveys": "surveys_process",
+    "Outcome harvesting": "outcome",
+    "Performance or output monitoring": "output_process",
+    "Individual interviews along with surveys and review of monitoring data to carry out quantitative modelling approach": "individual_process",
+    "Simulation modelling: Asset Liability Modelling (ALM)": "simulation",
+    "Other (RCT - Quasi-Experimentl approaches)": "rct",
+}
+
+
 MONTHS = {
     "January": 1,
     "February": 2,
@@ -378,19 +440,6 @@ MONTHS = {
 }
 
 
-def create_choices_list(record, is_other_type):
-    choices = []
-    if record["Process"] == "Y":
-        choices.append(Evaluation.EvaluationType.PROCESS)
-    if record["Impact"] == "Y":
-        choices.append(Evaluation.EvaluationType.IMPACT)
-    if record["Economic"] == "Y":
-        choices.append(Evaluation.EvaluationType.ECONOMIC)
-    if is_other_type:
-        choices.append(Evaluation.EvaluationType.OTHER)
-    return choices
-
-
 def make_event_date(evaluation, kvp, category, key):
     pub_month = MONTHS.get(kvp[f"{key} (Month)"])
     if year := kvp[f"{key} (Year)"]:
@@ -405,8 +454,13 @@ def make_event_date(evaluation, kvp, category, key):
             pass
 
 
+class MajorProjectError(Exception):
+    def __init__(self, id):
+        self.id = id
+
+
 class Command(BaseCommand):
-    help = "Load RSM data from CSV"
+    help = "Load RSM data from json"
 
     def add_arguments(self, parser):
         parser.add_argument("file", type=str)
@@ -415,69 +469,123 @@ class Command(BaseCommand):
         file = options["file"]
         self.stdout.write(self.style.SUCCESS('loading "%s"' % file))
 
-        with open(file) as f:
-            header = parse_row(next(f))
-            for row in f:
-                record = dict(zip(header, parse_row(row)))
-                published_evaluation_link = record["gov_uk_link"]
+        with open(file, "r") as read_file:
+            data = json.load(read_file)
 
-                if len(published_evaluation_link or "") > 1024:
-                    published_evaluation_link = None
+            for evaluation_id, evaluation in data.items():
+                try:
+                    descriptions = set()
+                    design_types = set()
+                    design_type_descriptions = set()
+                    departments = set()
 
-                if record["Major projects identifier"] == "Y":
-                    continue
-
-                if record["Evaluation title"] is None:
-                    self.stdout.write(self.style.WARNING(f"No title found, skipping evaluation"))
-                    continue
-
-                is_other_type = record["Other evaluation type (please state)"] not in (
-                    None,
-                    "Information not easily found within the report",
-                    "N",
-                )
-                evaluation = Evaluation.objects.create(
-                    title=record["Evaluation title"],
-                    brief_description=record["Evaluation summary"],
-                    major_project_number=record["Major projects identifier"],
-                    visibility=Evaluation.Visibility.PUBLIC,
-                    published_evaluation_link=published_evaluation_link,
-                    evaluation_types=create_choices_list(record, is_other_type),
-                    other_evaluation_type_description=record["Other evaluation type (please state)"]
-                    if is_other_type
-                    else None,
-                )
-
-                make_event_date(
-                    evaluation,
-                    record,
-                    EventDate.Category.INTERVENTION_START_DATE,
-                    "Intervention start date",
-                )
-                make_event_date(
-                    evaluation,
-                    record,
-                    EventDate.Category.INTERVENTION_END_DATE,
-                    "Intervention end date",
-                )
-                make_event_date(
-                    evaluation,
-                    record,
-                    EventDate.Category.PUBLICATION_FINAL_RESULTS,
-                    "Publication date",
-                )
-                make_event_date(evaluation, record, EventDate.Category.OTHER, "Event start date")
-
-                self.stdout.write(
-                    self.style.SUCCESS('Successfully created Evaluation "%s"' % record["Evaluation title"])
-                )
-
-                for department in Department.objects.filter(code__in=DEPARTMENTS[record["Client"]]):
-                    EvaluationDepartmentAssociation.objects.create(
-                        evaluation=evaluation,
-                        department=department,
+                    evaluation_record = Evaluation.objects.create(
+                        rsm_id=evaluation_id,
+                        visibility=Evaluation.Visibility.PUBLIC,
                     )
+                    for report_id, report in evaluation.items():
+                        for item in report:
+                            if item["\ufeffMajor projects identifier"]:
+                                raise MajorProjectError(evaluation_id)
 
+                            if not evaluation_record.title:
+                                evaluation_record.title = item["Evaluation title"]
+                                evaluation_record.save()
+
+                            # Not using get_or_create() as title often only given in the first row
+                            if not Report.objects.filter(rsm_id=report_id).exists():
+                                Report.objects.create(
+                                    title=item["Report title"], link=item["gov_uk_link"], evaluation=evaluation_record
+                                )
+
+                            # check additional columns for data to be appended
+                            if item["Process"] == "Y":
+                                design_types.add("process")
+                            if item["Impact"] == "Y":
+                                design_types.add("impact")
+                            if item["Economic"] == "Y":
+                                design_types.add("economic")
+                            if item["Other evaluation type (please state)"] not in (
+                                None,
+                                "Information not easily found within the report",
+                                "N",
+                            ):
+                                design_types.add("other")
+                                design_type_descriptions.add(item["Other evaluation type (please state)"])
+
+                            if item["Impact - Design"]:
+                                try:
+                                    # TODO: handle odd use of cases etc
+                                    design_types.add(DESIGN_TYPES[item["Impact - Design"]])
+                                except KeyError as err:
+                                    # This is a non-standard design type text
+                                    pass
+
+                            if item["Evaluation summary"]:
+                                descriptions.add(item["Evaluation summary"])
+
+                            if item["Client"]:
+                                departments.add(item["Client"])
+
+                            # add dates
+                            make_event_date(
+                                evaluation_record,
+                                item,
+                                EventDate.Category.INTERVENTION_START_DATE,
+                                "Intervention start date",
+                            )
+                            make_event_date(
+                                evaluation_record,
+                                item,
+                                EventDate.Category.INTERVENTION_END_DATE,
+                                "Intervention end date",
+                            )
+                            make_event_date(
+                                evaluation_record,
+                                item,
+                                EventDate.Category.PUBLICATION_FINAL_RESULTS,
+                                "Publication date",
+                            )
+                            make_event_date(evaluation_record, item, EventDate.Category.OTHER, "Event start date")
+                    # create description
+                    evaluation_record.brief_description = " ".join(descriptions)
+
+                    # create design_types
+                    for design_type in design_types:
+                        evaluation_record.evaluation_design_types.add(
+                            EvaluationDesignType.objects.get(code=design_type)
+                        )
+
+                    evaluation_record.save()
+                    self.stdout.write(self.style.SUCCESS('Successfully created Evaluation "%s"' % evaluation_id))
+
+                    # create departments
+                    department_codes = list(map(lambda x: DEPARTMENTS[x], departments))
+
+                    for department in Department.objects.filter(code__in=department_codes):
+                        EvaluationDepartmentAssociation.objects.create(
+                            evaluation=evaluation,
+                            department=department,
+                        )
+
+                        self.stdout.write(
+                            self.style.SUCCESS(f'Associated "{evaluation.title}" with "{department.display}"')
+                        )
+
+                    # create design_type_descriptions
+                    for description in design_type_descriptions:
+                        # TODO: handle empty strings
+                        EvaluationDesignTypeDetail.objects.create(
+                            evaluation=evaluation_record,
+                            design_type=EvaluationDesignType.objects.get(code="other"),
+                            text=description,
+                        )
+                        self.stdout.write(
+                            self.style.SUCCESS(f'Added extra design description "{description}" to "{evaluation_record.title}"')
+                        )
+
+                except MajorProjectError as err:
+                    Evaluation.objects.filter(rsm_id=err.id).delete()
                     self.stdout.write(
-                        self.style.SUCCESS(f'Associated "{evaluation.title}" with "{department.display}"')
+                        self.style.ERROR('Did not create record for evaluation id "%s", as is a Major Project' % err)
                     )

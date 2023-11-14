@@ -89,6 +89,8 @@ class Evaluation(TimeStampedModel):
         help_text="departments involved in this evaluation",
     )
     status = models.CharField(max_length=512, choices=Status.choices, blank=True, null=True)
+    # For matching with initial data upload from RSM - evaluation id
+    rsm_id = models.SmallIntegerField(blank=True, null=True, unique=True)
 
     evaluation_design_types = models.ManyToManyField(
         EvaluationDesignType,
@@ -100,7 +102,6 @@ class Evaluation(TimeStampedModel):
     major_project_number = models.CharField(max_length=256, blank=True, null=True)
 
     plan_link = models.URLField(max_length=1024, blank=True, null=True)
-    published_evaluation_link = models.URLField(max_length=1024, blank=True, null=True)
     visibility = models.CharField(max_length=512, choices=Visibility.choices, default=Visibility.DRAFT)
     reasons_unpublished = ArrayField(
         models.CharField(max_length=256, choices=UnpublishedReason.choices), blank=True, null=True
@@ -154,6 +155,13 @@ class EvaluationDesignTypeDetail(models.Model):
     evaluation = models.ForeignKey(Evaluation, on_delete=models.CASCADE)
     design_type = models.ForeignKey(EvaluationDesignType, on_delete=models.CASCADE)
     text = models.CharField(max_length=1024, blank=True, null=True)
+
+
+class Report(TimeStampedModel):
+    title = models.CharField(max_length=1024, blank=True, null=True)
+    link = models.URLField(max_length=1024, blank=True, null=True)
+    rsm_id = models.SmallIntegerField(blank=True, null=True, unique=True)
+    evaluation = models.ForeignKey(Evaluation, on_delete=models.CASCADE)
 
 
 class EventDate(TimeStampedModel):
