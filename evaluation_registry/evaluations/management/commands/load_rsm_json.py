@@ -2,6 +2,7 @@
 import json
 
 from django.core.management import BaseCommand
+from django.db import DataError
 
 from evaluation_registry.evaluations.models import (
     Department,
@@ -366,59 +367,58 @@ DESIGN_TYPES = {
     "surveys and polling": "surveys_process",
     "individual interviews": "individual_process",
     "output or performance monitoring": "output_process",
-    "Randomised Controlled Trial (RCT)": "rct",
-    "Interviews and group sessions": "group_process",
-    "Surveys (ECTs)": "surveys_process",
-    "Cluster randomised RCT": "cluster",
-    "Surveys, focus groups and interviews conducted": "surveys_process",
-    "Propensity Score Matching": "propensity",
-    "Focus groups or group interviews alongwith individual interviews & case studies": "group_process",
-    "Difference in Difference": "difference",
-    "Output or performance review": "output_process",
-    "Output or performance modelling": "output_process",
-    "Survey and polling": "surveys_process",
-    "Individual interviews": "individual_process",
-    "Case studies": "case_study_process",
-    "Survey respondents (landlords)": "surveys_process",
-    "Simulation model developed": "simulation",
-    "Focus groups or group interviews": "group_process",
-    "Outcome letter review": "outcome",
-    "Semi structured qualitative interviews": "qca",
-    "Other (Qualitative research)": "qualitative_process",
-    "Mix of methods including surveys and group interviews": "surveys_process",
-    "Telephone interviews (housing advisers)": "individual_process",
-    "Individual interviews": "individual_process",
-    "Focus groups, interviews, and surveys": "group_process",
-    "Review of data from Adult Tobacco Policy Survey": "surveys_process",
-    "Consultative/deliberative methods": "consultative_process",
-    "Surveys (senior leaders)": "surveys_process",
-    "Randomised Controlled Trial": "rct",
-    "Synthetic Control Methods": "synthetic",
+    "randomised controlled trial (rct)": "rct",
+    "interviews and group sessions": "group_process",
+    "surveys (ects)": "surveys_process",
+    "cluster randomised rct": "cluster",
+    "surveys, focus groups and interviews conducted": "surveys_process",
+    "propensity score matching": "propensity",
+    "focus groups or group interviews alongwith individual interviews & case studies": "group_process",
+    "difference in difference": "difference",
+    "output or performance review": "output_process",
+    "output or performance modelling": "output_process",
+    "survey and polling": "surveys_process",
+    "individual interviews": "individual_process",
+    "case studies": "case_study_process",
+    "survey respondents (landlords)": "surveys_process",
+    "simulation model developed": "simulation",
+    "focus groups or group interviews": "group_process",
+    "outcome letter review": "outcome",
+    "semi structured qualitative interviews": "qca",
+    "other (qualitative research)": "qualitative_process",
+    "mix of methods including surveys and group interviews": "surveys_process",
+    "telephone interviews (housing advisers)": "individual_process",
+    "focus groups, interviews, and surveys": "group_process",
+    "review of data from adult tobacco policy survey": "surveys_process",
+    "consultative/deliberative methods": "consultative_process",
+    "surveys (senior leaders)": "surveys_process",
+    "randomised controlled trial": "rct",
+    "synthetic control methods": "synthetic",
     "interviews": "individual_process",
     "qualitative depth interviews and focus groups": "qualitative_process",
-    "Case Studies": "case_study_process",
-    "Case studies and interviews": "case_study_process",
-    "Simulation modelling": "simulation",
-    "Focus group": "group_process",
-    "Interviews (landlords)": "individual_process",
-    "Process Tracing": "process_tracing",
-    "Interview": "individual_process",
-    "regression adjusted Difference-in-Difference (DiD)": "difference",
-    "Survyes and case study": "surveys_process",
-    "Participant Survey": "surveys_process",
+    "case studies": "case_study_process",
+    "case studies and interviews": "case_study_process",
+    "simulation modelling": "simulation",
+    "focus group": "group_process",
+    "interviews (landlords)": "individual_process",
+    "process tracing": "process_tracing",
+    "interview": "individual_process",
+    "regression adjusted difference-in-difference (did)": "difference",
+    "survyes and case study": "surveys_process",
+    "participant survey": "surveys_process",
     "focus groups": "group_process",
-    "INTERVIEW": "individual_process",
-    "Surveys and polling": "surveys_process",
-    "Surveys and interviews": "surveys_process",
-    "Focus groups (housing advisers)": "group_process",
-    "Forcus group": "group_process",
-    "Contribution Tracing": "contribution_tracing",
-    "Surveys": "surveys_process",
-    "Outcome harvesting": "outcome",
-    "Performance or output monitoring": "output_process",
-    "Individual interviews along with surveys and review of monitoring data to carry out quantitative modelling approach": "individual_process",
-    "Simulation modelling: Asset Liability Modelling (ALM)": "simulation",
-    "Other (RCT - Quasi-Experimentl approaches)": "rct",
+    "interview": "individual_process",
+    "surveys and polling": "surveys_process",
+    "surveys and interviews": "surveys_process",
+    "focus groups (housing advisers)": "group_process",
+    "forcus group": "group_process",
+    "contribution tracing": "contribution_tracing",
+    "surveys": "surveys_process",
+    "outcome harvesting": "outcome",
+    "performance or output monitoring": "output_process",
+    "individual interviews along with surveys and review of monitoring data to carry out quantitative modelling approach": "individual_process",
+    "simulation modelling: asset liability modelling (alm)": "simulation",
+    "other (rct - quasi-experimentl approaches)": "rct",
 }
 
 
@@ -515,11 +515,11 @@ class Command(BaseCommand):
 
                             if item["Impact - Design"]:
                                 try:
-                                    # TODO: handle odd use of cases etc
-                                    design_types.add(DESIGN_TYPES[item["Impact - Design"]])
+                                    design_types.add(DESIGN_TYPES[item["Impact - Design"].lower().strip().rstrip(".")])
                                 except KeyError as err:
                                     # This is a non-standard design type text
-                                    pass
+                                    design_types.add("other")
+                                    design_type_descriptions.add(item["Impact - Design"])
 
                             if item["Evaluation summary"]:
                                 descriptions.add(item["Evaluation summary"])
@@ -574,14 +574,30 @@ class Command(BaseCommand):
 
                     # create design_type_descriptions
                     for description in design_type_descriptions:
-                        # TODO: handle empty strings
-                        EvaluationDesignTypeDetail.objects.create(
-                            evaluation=evaluation_record,
-                            design_type=EvaluationDesignType.objects.get(code="other"),
-                            text=description,
-                        )
+                        if description == "":
+                            continue
+                        try:
+                            EvaluationDesignTypeDetail.objects.create(
+                                evaluation=evaluation_record,
+                                design_type=EvaluationDesignType.objects.get(code="other"),
+                                text=description,
+                            )
+                        except DataError:
+                            self.stdout.write(
+                                self.style.WARNING(
+                                    "Could not assign Evaluation Design description. This is likely because the value is too long for the field. The value has been trimmed to fit."
+                                )
+                            )
+                            max_length = EvaluationDesignTypeDetail._meta.get_field("text").max_length
+                            EvaluationDesignTypeDetail.objects.create(
+                                evaluation=evaluation_record,
+                                design_type=EvaluationDesignType.objects.get(code="other"),
+                                text=description[: max_length - 3] + "[…]",
+                            )
                         self.stdout.write(
-                            self.style.SUCCESS(f'Added extra design description "{description}" to "{evaluation_record.title}"')
+                            self.style.SUCCESS(
+                                f'Added extra design description "{description}" to "{evaluation_record.title}"'
+                            )
                         )
 
                 except MajorProjectError as err:
