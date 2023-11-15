@@ -3,6 +3,7 @@ import pytest
 from evaluation_registry.evaluations.models import (
     Evaluation,
     EvaluationDepartmentAssociation,
+    EvaluationDesignType,
 )
 from evaluation_registry.evaluations.views import (
     filter_by_department_and_types,
@@ -11,17 +12,19 @@ from evaluation_registry.evaluations.views import (
 
 
 @pytest.fixture
-def evaluations(cabinet_office, home_office):
+def evaluations(cabinet_office, home_office, impact, other):
     e1 = Evaluation.objects.create(title="summaries of policies")
     e2 = Evaluation.objects.create(
         title="public transport",
         brief_description="to long to detail here",
-        evaluation_types=[Evaluation.EvaluationType.IMPACT],
     )
-    Evaluation.objects.create(
+    e2.evaluation_design_types.add(impact)
+
+    e3 = Evaluation.objects.create(
         title="details of something or other",
-        evaluation_types=[Evaluation.EvaluationType.IMPACT, Evaluation.EvaluationType.OTHER],
     )
+    e3.evaluation_design_types.add(impact)
+    e3.evaluation_design_types.add(other)
 
     for dept in cabinet_office, home_office:
         EvaluationDepartmentAssociation.objects.create(

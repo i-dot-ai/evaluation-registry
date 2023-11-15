@@ -80,7 +80,7 @@ def filter_by_department_and_types(evaluations: QuerySet, departments: list[str]
         evaluations = evaluations.filter(departments__code__in=departments)
 
     if types:
-        evaluations = evaluations.filter(evaluation_types__overlap=types)
+        evaluations = evaluations.filter(evaluation_design_types__code__in=types)
 
     return evaluations.distinct()
 
