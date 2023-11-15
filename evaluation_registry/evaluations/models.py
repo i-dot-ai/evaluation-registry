@@ -101,7 +101,7 @@ class Evaluation(TimeStampedModel):
     # For matching with initial data upload from RSM - evaluation id
     rsm_evaluation_id = models.SmallIntegerField(blank=True, null=True, unique=True)
 
-    evaluation_design_types = models.ManyToManyField(
+    evaluation_design_types = models.ManyToManyField(  # type: ignore
         EvaluationDesignType, through="EvaluationDesignTypeDetail", help_text="add more text for 'Other' Design Types"
     )
 
