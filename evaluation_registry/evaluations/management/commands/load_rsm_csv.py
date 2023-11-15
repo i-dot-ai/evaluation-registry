@@ -2,6 +2,7 @@
 
 # flake8: noqa
 import json
+from collections import Counter
 from typing import Optional
 
 from django.core.management import BaseCommand
@@ -10,6 +11,8 @@ from evaluation_registry.evaluations.models import (
     Department,
     Evaluation,
     EvaluationDepartmentAssociation,
+    EvaluationDesignType,
+    EvaluationDesignTypeDetail,
     EventDate,
 )
 
@@ -418,68 +421,78 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS('loading "%s"' % file))
 
         with open(file) as f:
-            header = parse_row(next(f))
-            for row in f:
-                record = dict(zip(header, parse_row(row)))
-                published_evaluation_link = record["gov_uk_link"]
+            header, *rows = map(parse_row, f)
+            records = [dict(zip(header, row)) for row in rows]
 
-                if len(published_evaluation_link or "") > 1024:
-                    published_evaluation_link = None
+        counts = Counter(x["Evaluation ID"] for x in records)
+        simple_evaluation_ids = {evaluation_id for evaluation_id, count in counts.items() if count == 1}
 
-                if record["Major projects identifier"] == "Y":
-                    continue
+        for simple_evaluation_id in simple_evaluation_ids:
+            record = next(x for x in records if x["Evaluation ID"] == simple_evaluation_id)
+            published_evaluation_link = record["gov_uk_link"]
 
-                if record["Evaluation title"] is None:
-                    self.stdout.write(self.style.WARNING(f"No title found, skipping evaluation"))
-                    continue
+            if len(published_evaluation_link or "") > 1024:
+                published_evaluation_link = None
 
-                is_other_type = record["Other evaluation type (please state)"] not in (
-                    None,
-                    "Information not easily found within the report",
-                    "N",
-                )
-                evaluation = Evaluation.objects.create(
-                    title=record["Evaluation title"],
-                    brief_description=record["Evaluation summary"],
-                    major_project_number=record["Major projects identifier"],
-                    visibility=Evaluation.Visibility.PUBLIC,
-                    published_evaluation_link=published_evaluation_link,
-                    evaluation_types=create_choices_list(record, is_other_type),
-                    other_evaluation_type_description=record["Other evaluation type (please state)"]
-                    if is_other_type
-                    else None,
-                )
+            if record["Major projects identifier"] == "Y":
+                continue
 
-                make_event_date(
-                    evaluation,
-                    record,
-                    EventDate.Category.INTERVENTION_START_DATE,
-                    "Intervention start date",
-                )
-                make_event_date(
-                    evaluation,
-                    record,
-                    EventDate.Category.INTERVENTION_END_DATE,
-                    "Intervention end date",
-                )
-                make_event_date(
-                    evaluation,
-                    record,
-                    EventDate.Category.PUBLICATION_FINAL_RESULTS,
-                    "Publication date",
-                )
-                make_event_date(evaluation, record, EventDate.Category.OTHER, "Event start date")
+            if record["Evaluation title"] is None:
+                self.stdout.write(self.style.WARNING(f"No title found, skipping evaluation"))
+                continue
 
-                self.stdout.write(
-                    self.style.SUCCESS('Successfully created Evaluation "%s"' % record["Evaluation title"])
-                )
+            is_other_type = record["Other evaluation type (please state)"] not in (
+                None,
+                "Information not easily found within the report",
+                "N",
+            )
+            evaluation = Evaluation.objects.create(
+                title=record["Evaluation title"],
+                brief_description=record["Evaluation summary"],
+                major_project_number=record["Major projects identifier"],
+                visibility=Evaluation.Visibility.PUBLIC,
+                plan_link=published_evaluation_link,
+            )
 
-                for department in Department.objects.filter(code__in=DEPARTMENTS[record["Client"]]):
-                    EvaluationDepartmentAssociation.objects.create(
+            for evaluation_type in "Process", "Impact", "Economic":
+                if record[evaluation_type] == "Y":
+                    EvaluationDesignTypeDetail.objects.create(
                         evaluation=evaluation,
-                        department=department,
+                        design_type=EvaluationDesignType.objects.get(code=evaluation_type.lower()),
                     )
+            if is_other_type:
+                EvaluationDesignTypeDetail.objects.create(
+                    evaluation=evaluation,
+                    design_type=EvaluationDesignType.objects.get(code="other"),
+                    text=record["Other evaluation type (please state)"],
+                )
 
-                    self.stdout.write(
-                        self.style.SUCCESS(f'Associated "{evaluation.title}" with "{department.display}"')
-                    )
+            make_event_date(
+                evaluation,
+                record,
+                EventDate.Category.INTERVENTION_START_DATE,
+                "Intervention start date",
+            )
+            make_event_date(
+                evaluation,
+                record,
+                EventDate.Category.INTERVENTION_END_DATE,
+                "Intervention end date",
+            )
+            make_event_date(
+                evaluation,
+                record,
+                EventDate.Category.PUBLICATION_FINAL_RESULTS,
+                "Publication date",
+            )
+            make_event_date(evaluation, record, EventDate.Category.OTHER, "Event start date")
+
+            self.stdout.write(self.style.SUCCESS('Successfully created Evaluation "%s"' % record["Evaluation title"]))
+
+            for department in Department.objects.filter(code__in=DEPARTMENTS[record["Client"]]):
+                EvaluationDepartmentAssociation.objects.create(
+                    evaluation=evaluation,
+                    department=department,
+                )
+
+                self.stdout.write(self.style.SUCCESS(f'Associated "{evaluation.title}" with "{department.display}"'))
