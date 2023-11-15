@@ -6,7 +6,11 @@ from django.contrib.postgres.search import (
 )
 
 from . import models
-from .models import Evaluation, EvaluationDepartmentAssociation
+from .models import (
+    Evaluation,
+    EvaluationDepartmentAssociation,
+    EvaluationDesignTypeDetail,
+)
 
 admin_site = admin.AdminSite()
 
@@ -21,11 +25,16 @@ class EvaluationDepartmentAssociationInline(admin.TabularInline):
     extra = 1
 
 
+class EvaluationDesignTypeDetailInline(admin.TabularInline):
+    model = EvaluationDesignTypeDetail
+    extra = 1
+
+
 class EvaluationAdmin(admin.ModelAdmin):
     list_display = ["title", "lead_department", "visibility"]
-    list_filter = ["visibility"]
+    list_filter = ["visibility", "evaluation_design_types__display"]
     search_fields = ("title", "brief_description")
-    inlines = [EvaluationDepartmentAssociationInline]
+    inlines = [EvaluationDepartmentAssociationInline, EvaluationDesignTypeDetailInline]
 
     def get_search_results(self, request, queryset, search_term):
         if not search_term:
@@ -48,7 +57,13 @@ class DepartmentAdmin(admin.ModelAdmin):
     list_display = ["code", "display"]
 
 
+class EvaluationDesignTypeAdmin(admin.ModelAdmin):
+    list_display = ["code", "display", "parent", "collect_description"]
+    list_filter = ["parent"]
+
+
 admin.site.register(models.EventDate, EventDateAdmin)
 admin.site.register(models.Evaluation, EvaluationAdmin)
 admin.site.register(models.Department, DepartmentAdmin)
+admin.site.register(models.EvaluationDesignType, EvaluationDesignTypeAdmin)
 admin.site.register(models.User)
