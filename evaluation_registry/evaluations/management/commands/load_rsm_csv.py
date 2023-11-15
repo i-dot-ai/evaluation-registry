@@ -1,3 +1,5 @@
+# TODO: update this, pending dicussion with RSM team about data structures
+
 # flake8: noqa
 import json
 from typing import Optional

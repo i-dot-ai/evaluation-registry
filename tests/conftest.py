@@ -5,6 +5,7 @@ from evaluation_registry.evaluations.models import (
     Department,
     Evaluation,
     EvaluationDepartmentAssociation,
+    EvaluationDesignType,
     User,
 )
 
@@ -52,3 +53,13 @@ def cabinet_office_led_evaluation(basic_evaluation, cabinet_office):
         is_lead=True,
     )
     yield basic_evaluation
+
+
+@pytest.fixture
+def impact():
+    yield EvaluationDesignType.objects.get(code="impact")
+
+
+@pytest.fixture
+def other():
+    yield EvaluationDesignType.objects.get(code="other")

@@ -10,7 +10,7 @@ from django.shortcuts import render
 from django.views.decorators.http import require_http_methods
 from django.views.generic import DetailView
 
-from evaluation_registry.evaluations.models import Department, Evaluation
+from evaluation_registry.evaluations.models import Department, Evaluation, EvaluationDesignType
 
 
 class UUIDDetailView(DetailView):
@@ -80,7 +80,7 @@ def filter_by_department_and_types(evaluations: QuerySet, departments: list[str]
         evaluations = evaluations.filter(departments__code__in=departments)
 
     if types:
-        evaluations = evaluations.filter(evaluation_types__overlap=types)
+        evaluations = evaluations.filter(evaluation_design_types__code__in=types)
 
     return evaluations.distinct()
 
@@ -100,7 +100,7 @@ def evaluation_list_view(request):
     search_choices = {
         "departments": Department.objects.filter(code__in=selected_departments).all(),
         "evaluation_types": [
-            (label, value) for label, value in Evaluation.EvaluationType.choices if label in selected_types
+            (e.code, e.display) for e in EvaluationDesignType.root_objects.filter(code__in=selected_types)
         ],
     }
 
@@ -115,9 +115,9 @@ def evaluation_list_view(request):
             "evaluations": evaluation_list,
             "page_obj": page_obj,
             "pages_list": pages_list,
-            "search_term": search_term,
+            "search_term": search_term if search_term else "",
             "departments": Department.objects.all(),
-            "evaluation_types": Evaluation.EvaluationType.choices,
+            "evaluation_types": EvaluationDesignType.root_objects.all(),
             "selected_departments": selected_departments,
             "selected_types": selected_types,
             "search_choices": search_choices,
