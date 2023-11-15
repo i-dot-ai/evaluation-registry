@@ -3,7 +3,6 @@ import pytest
 from evaluation_registry.evaluations.models import (
     Evaluation,
     EvaluationDepartmentAssociation,
-    EvaluationDesignType,
 )
 from evaluation_registry.evaluations.views import (
     filter_by_department_and_types,
