@@ -409,9 +409,6 @@ def make_event_date(evaluation, kvp, category, key):
             pass
 
 
-OTHER_DESIGN_TYPE = EvaluationDesignType.objects.get(code="other")
-
-
 class Command(BaseCommand):
     help = "Load RSM data from CSV"
 
@@ -454,9 +451,16 @@ class Command(BaseCommand):
                 if is_other_type:
                     EvaluationDesignTypeDetail.objects.create(
                         evaluation=evaluation,
-                        design_type=OTHER_DESIGN_TYPE,
+                        design_type=EvaluationDesignType.objects.get(code="other"),
                         text=record["Other evaluation type (please state)"],
                     )
+
+                for evaluation_type in "Process", "Impact", "Economic":
+                    if record[evaluation_type] == "Y":
+                        EvaluationDesignTypeDetail.objects.create(
+                            evaluation=evaluation,
+                            design_type=EvaluationDesignType.objects.get(code=evaluation_type.lower()),
+                        )
 
                 make_event_date(
                     evaluation,
