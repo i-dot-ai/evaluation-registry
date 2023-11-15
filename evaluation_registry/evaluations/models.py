@@ -141,6 +141,10 @@ class Evaluation(TimeStampedModel):
     def reports_with_links(self):
         return self.report_set.exclude(link='')
 
+    @property
+    def other_design_types(self):
+        return self.evaluationdesigntypedetail_set.filter(design_type__code='other')
+
     def get_reasons_unpublished_text(self) -> list[str]:
         if not self.reasons_unpublished:
             return []

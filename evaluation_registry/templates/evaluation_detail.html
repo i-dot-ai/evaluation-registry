@@ -51,14 +51,18 @@
           {% endfor %}
         </dd>
       </div>
-      {% if evaluation.evaluationdesigntypedetail_set.all()|length > 0 %}
+      {% if evaluation.other_design_types.all()|length > 0 %}
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">
             Evaluation type (Other)
           </dt>
             <dd class="govuk-summary-list__value">
-              {% for other_description in evaluation.evaluationdesigntypedetail_set.all() %}
-                {{other_description.text}}<br>
+              {% for other_description in evaluation.other_design_types.all() %}
+                {% if other_description.text %}  
+                  {{other_description.text}}<br>
+                {% else %}
+                  No description listed
+                {% endif %}
               {% endfor %}
             </dd>
         </div>
