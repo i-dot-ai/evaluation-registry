@@ -33,7 +33,7 @@ def update_evaluation_design_type_parents(apps, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("evaluations", "0007_evaluationdesigntype_and_more"),
+        ("evaluations", "0003_evaluationdesigntype_and_more"),
     ]
 
     operations = [

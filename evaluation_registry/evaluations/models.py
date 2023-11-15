@@ -99,10 +99,12 @@ class Evaluation(TimeStampedModel):
     )
     status = models.CharField(max_length=512, choices=Status.choices, blank=True, null=True)
     # For matching with initial data upload from RSM - evaluation id
-    rsm_id = models.SmallIntegerField(blank=True, null=True, unique=True)
+    rsm_evaluation_id = models.SmallIntegerField(blank=True, null=True, unique=True)
 
     evaluation_design_types = models.ManyToManyField(
         EvaluationDesignType,
+        through="EvaluationDesignTypeDetail",
+        help_text="add more text for 'Other' Design Types"
     )
 
     brief_description = models.TextField(blank=True, null=True)
@@ -179,7 +181,7 @@ class EvaluationDesignTypeDetail(models.Model):
 class Report(TimeStampedModel):
     title = models.CharField(max_length=1024, blank=True, null=True)
     link = models.URLField(max_length=1024, blank=True, null=True)
-    rsm_id = models.SmallIntegerField(blank=True, null=True, unique=True)
+    rsm_report_id = models.SmallIntegerField(blank=True, null=True, unique=True)
     evaluation = models.ForeignKey(Evaluation, on_delete=models.CASCADE)
 
 
