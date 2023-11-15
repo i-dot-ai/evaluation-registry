@@ -130,10 +130,14 @@ class Evaluation(TimeStampedModel):
             return None
 
     @property
-    def get_types_text_list(self):
+    def types_text_list(self):
         # if not self.evaluation_design_types.filter(parent__isnull=True):
         #     return []
         return [t.display for t in self.evaluation_design_types.filter(parent__isnull=True)]
+
+    @property
+    def reports_with_links(self):
+        return self.report_set.exclude(link='')
 
     def get_reasons_unpublished_text(self) -> list[str]:
         if not self.reasons_unpublished:

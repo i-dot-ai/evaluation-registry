@@ -46,21 +46,21 @@
           Evaluation types
         </dt>
         <dd class="govuk-summary-list__value">
-          {% for evaluation_type in evaluation.get_evaluation_types_text() %}
+          {% for evaluation_type in evaluation.types_text_list %}
             {{evaluation_type}}<br>
           {% endfor %}
         </dd>
       </div>
-      {% if evaluation.other_evaluation_type_description %}
+      {% if evaluation.evaluationdesigntypedetail_set.all()|length > 0 %}
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">
             Evaluation type (Other)
           </dt>
-          {% if evaluation.other_evaluation_type_description %}
             <dd class="govuk-summary-list__value">
-              {{evaluation.other_evaluation_type_description}}
+              {% for other_description in evaluation.evaluationdesigntypedetail_set.all() %}
+                {{other_description.text}}<br>
+              {% endfor %}
             </dd>
-          {% endif %}
         </div>
       {% endif %}
       <div class="govuk-summary-list__row">
@@ -128,15 +128,29 @@
           {% endif %}
         </dd>
       </div>
-      <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">Link to a published evaluation</dt>
-        <dd class="govuk-summary-list__value">
-          {% if evaluation.published_evaluation_link %}
-            <a href="{{evaluation.published_evaluation_link}}" class="govuk-link">{{evaluation.published_evaluation_link}}</a>
-          {% else %}
+      {% if evaluation.reports_with_links|length > 0 %}
+        {% for report in evaluation.reports_with_links %}
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+              {% if report.title %}
+                Published report: {{ report.title }}
+              {% else %}
+                Link to a published evaluation
+              {% endif %}
+            </dt>
+            <dd class="govuk-summary-list__value">
+              <a href="{{evaluation.published_evaluation_link}}" class="govuk-link">{{ report.link }}</a>
+            </dd>
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Link to a published evaluation</dt>
+          <dd class="govuk-summary-list__value">
             No link provided
-          {% endif %}
-        </dd>
+          </dd>
+        </div>
+      {% endif %}
       </div>
     </dl>
 
