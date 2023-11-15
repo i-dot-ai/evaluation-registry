@@ -383,19 +383,6 @@ MONTHS = {
 }
 
 
-def create_choices_list(record, is_other_type):
-    choices = []
-    if record["Process"] == "Y":
-        choices.append(Evaluation.EvaluationType.PROCESS)
-    if record["Impact"] == "Y":
-        choices.append(Evaluation.EvaluationType.IMPACT)
-    if record["Economic"] == "Y":
-        choices.append(Evaluation.EvaluationType.ECONOMIC)
-    if is_other_type:
-        choices.append(Evaluation.EvaluationType.OTHER)
-    return choices
-
-
 def make_event_date(evaluation, kvp, category, key):
     pub_month = MONTHS.get(kvp[f"{key} (Month)"])
     if year := kvp[f"{key} (Year)"]:
