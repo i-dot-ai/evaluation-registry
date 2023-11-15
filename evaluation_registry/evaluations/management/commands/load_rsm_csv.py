@@ -1,4 +1,5 @@
 # flake8: noqa
+import csv
 import json
 
 from django.core.management import BaseCommand
@@ -13,10 +14,6 @@ from evaluation_registry.evaluations.models import (
     EventDate,
     Report,
 )
-
-
-def parse_row(text):
-    return json.loads(f"[{text}]")
 
 
 DEPARTMENTS = {
@@ -469,15 +466,28 @@ class Command(BaseCommand):
         file = options["file"]
         self.stdout.write(self.style.SUCCESS('loading "%s"' % file))
 
-        with open(file, "r") as read_file:
-            data = json.load(read_file)
+        evaluations = {}
 
-            for evaluation_id, evaluation in data.items():
+        with open(file, 'r', newline='') as csvfile:
+            reader = csv.DictReader(csvfile)
+
+            for row in reader:
+                if row['Evaluation ID'] in evaluations:
+                    if row['Report ID'] in evaluations[row['Evaluation ID']]:
+                        evaluations[row['Evaluation ID']][row['Report ID']].append(row)
+                    else:
+                        evaluations[row['Evaluation ID']][row['Report ID']] = [row]
+                else:
+                    evaluations[row['Evaluation ID']] = {}
+                    evaluations[row['Evaluation ID']][row['Report ID']] = [row]
+
+
+            for evaluation_id, evaluation in evaluations.items():
                 try:
                     descriptions = set()
                     design_types = set()
                     design_type_descriptions = set()
-                    departments = set()
+                    department_codes = set()
 
                     evaluation_record = Evaluation.objects.create(
                         rsm_id=evaluation_id,
@@ -525,7 +535,8 @@ class Command(BaseCommand):
                                 descriptions.add(item["Evaluation summary"])
 
                             if item["Client"]:
-                                departments.add(item["Client"])
+                                for d in DEPARTMENTS[item["Client"]]:
+                                    department_codes.add(d)
 
                             # add dates
                             make_event_date(
@@ -560,16 +571,14 @@ class Command(BaseCommand):
                     self.stdout.write(self.style.SUCCESS('Successfully created Evaluation "%s"' % evaluation_id))
 
                     # create departments
-                    department_codes = list(map(lambda x: DEPARTMENTS[x], departments))
-
                     for department in Department.objects.filter(code__in=department_codes):
                         EvaluationDepartmentAssociation.objects.create(
-                            evaluation=evaluation,
+                            evaluation=evaluation_record,
                             department=department,
                         )
 
                         self.stdout.write(
-                            self.style.SUCCESS(f'Associated "{evaluation.title}" with "{department.display}"')
+                            self.style.SUCCESS(f'Associated "{evaluation_record.title}" with "{department.display}"')
                         )
 
                     # create design_type_descriptions
