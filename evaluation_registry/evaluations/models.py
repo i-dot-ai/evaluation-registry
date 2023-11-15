@@ -6,6 +6,7 @@ from django.contrib.postgres.fields import ArrayField
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
+from django.db.models.query import QuerySet
 from django_use_email_as_username.models import BaseUser, BaseUserManager
 
 
@@ -45,6 +46,11 @@ class Department(TimeStampedModel):
         return self.display
 
 
+class RootDesignTypeManager(models.Manager):
+    def get_queryset(self) -> QuerySet:
+        return super().get_queryset().filter(parent__isnull=True)
+
+
 class EvaluationDesignType(TimeStampedModel):
     code = models.SlugField(
         max_length=128,
@@ -56,6 +62,9 @@ class EvaluationDesignType(TimeStampedModel):
     collect_description = models.BooleanField(
         default=False, help_text="Use for 'other' types to prompt further information"
     )
+
+    objects = models.Manager()
+    root_objects = RootDesignTypeManager()
 
     def __str__(self):
         return self.display
@@ -119,6 +128,12 @@ class Evaluation(TimeStampedModel):
             return self.departments.get(evaluationdepartmentassociation__is_lead=True)
         except ObjectDoesNotExist:
             return None
+
+    @property
+    def get_types_text_list(self):
+        # if not self.evaluation_design_types.filter(parent__isnull=True):
+        #     return []
+        return [t.display for t in self.evaluation_design_types.filter(parent__isnull=True)]
 
     def get_reasons_unpublished_text(self) -> list[str]:
         if not self.reasons_unpublished:

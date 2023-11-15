@@ -77,9 +77,9 @@
                       <div class="govuk-checkboxes--small" data-module="govuk-checkboxes">
                         {% for evaluation_type in evaluation_types %}
                           <div class="govuk-checkboxes__item">
-                            <input class="govuk-checkboxes__input" id="evaluation_types-{{ loop.index }}" name="evaluation_types" type="checkbox" value="{{ evaluation_type[0] }}" {% if is_in(evaluation_type[0], selected_types) %}checked{% endif %}>
+                            <input class="govuk-checkboxes__input" id="evaluation_types-{{ loop.index }}" name="evaluation_types" type="checkbox" value="{{ evaluation_type.code }}" {% if is_in(evaluation_type.code, selected_types) %}checked{% endif %}>
                             <label class="govuk-label govuk-checkboxes__label" for="evaluation_types-{{ loop.index }}">
-                              {{evaluation_type[1]}}
+                              {{evaluation_type.display}}
                             </label>
                           </div>
                         {% endfor %}
@@ -179,7 +179,7 @@
                           Evaluation type(s)
                         </dt>
                         <dd class="govuk-summary-list__value">
-                          {{evaluation.get_evaluation_types_text()|join(', ')}}
+                          {{evaluation.get_types_text_list|join(', ')}}
                         </dd>
                       </div>
                     </dl>
