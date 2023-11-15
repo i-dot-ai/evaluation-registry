@@ -102,9 +102,7 @@ class Evaluation(TimeStampedModel):
     rsm_evaluation_id = models.SmallIntegerField(blank=True, null=True, unique=True)
 
     evaluation_design_types = models.ManyToManyField(
-        EvaluationDesignType,
-        through="EvaluationDesignTypeDetail",
-        help_text="add more text for 'Other' Design Types"
+        EvaluationDesignType, through="EvaluationDesignTypeDetail", help_text="add more text for 'Other' Design Types"
     )
 
     brief_description = models.TextField(blank=True, null=True)
@@ -139,7 +137,7 @@ class Evaluation(TimeStampedModel):
 
     @property
     def reports_with_links(self):
-        return self.report_set.exclude(link='')
+        return self.report_set.exclude(link="")
 
     def get_reasons_unpublished_text(self) -> list[str]:
         if not self.reasons_unpublished:

@@ -10,6 +10,8 @@ from evaluation_registry.evaluations.models import (
     Department,
     Evaluation,
     EvaluationDepartmentAssociation,
+    EvaluationDesignType,
+    EvaluationDesignTypeDetail,
     EventDate,
 )
 
@@ -383,7 +385,7 @@ MONTHS = {
 def create_choices_list(record, is_other_type):
     choices = []
     if record["Process"] == "Y":
-        choices.append(Evaluation.EvaluationType.PROCESS)
+        choices.append(Evaluation.PROCESS)
     if record["Impact"] == "Y":
         choices.append(Evaluation.EvaluationType.IMPACT)
     if record["Economic"] == "Y":
@@ -407,6 +409,9 @@ def make_event_date(evaluation, kvp, category, key):
             pass
 
 
+OTHER_DESIGN_TYPE = EvaluationDesignType.objects.get(code="other")
+
+
 class Command(BaseCommand):
     help = "Load RSM data from CSV"
 
@@ -423,8 +428,8 @@ class Command(BaseCommand):
                 record = dict(zip(header, parse_row(row)))
                 published_evaluation_link = record["gov_uk_link"]
 
-                if len(published_evaluation_link or "") > 1024:
-                    published_evaluation_link = None
+                # if len(published_evaluation_link or "") > 1024:
+                #     published_evaluation_link = None
 
                 if record["Major projects identifier"] == "Y":
                     continue
@@ -443,12 +448,15 @@ class Command(BaseCommand):
                     brief_description=record["Evaluation summary"],
                     major_project_number=record["Major projects identifier"],
                     visibility=Evaluation.Visibility.PUBLIC,
-                    published_evaluation_link=published_evaluation_link,
-                    evaluation_types=create_choices_list(record, is_other_type),
-                    other_evaluation_type_description=record["Other evaluation type (please state)"]
-                    if is_other_type
-                    else None,
+                    plan_link=published_evaluation_link,
                 )
+
+                if is_other_type:
+                    EvaluationDesignTypeDetail.objects.create(
+                        evaluation=evaluation,
+                        design_type=OTHER_DESIGN_TYPE,
+                        text=record["Other evaluation type (please state)"],
+                    )
 
                 make_event_date(
                     evaluation,
