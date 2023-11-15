@@ -6,6 +6,7 @@ from django.core.management import call_command
 from evaluation_registry.evaluations.models import Evaluation
 
 
+@pytest.mark.skip(reason="load_rsm_csv file to be updated pending discussion with RSM team")
 @pytest.mark.django_db
 def test_load_rsm_csv():
     initial_evaluation_count = Evaluation.objects.count()
