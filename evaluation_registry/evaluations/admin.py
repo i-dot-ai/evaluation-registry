@@ -10,14 +10,15 @@ from .models import (
     Evaluation,
     EvaluationDepartmentAssociation,
     EvaluationDesignTypeDetail,
+    EventDate,
 )
 
 admin_site = admin.AdminSite()
 
 
-class EventDateAdmin(admin.ModelAdmin):
-    list_display = ["__str__", "category", "status", "evaluation"]
-    list_filter = ["category", "status", "year"]
+class EventDateInline(admin.TabularInline):
+    model = EventDate
+    extra = 1
 
 
 class EvaluationDepartmentAssociationInline(admin.TabularInline):
@@ -31,10 +32,10 @@ class EvaluationDesignTypeDetailInline(admin.TabularInline):
 
 
 class EvaluationAdmin(admin.ModelAdmin):
-    list_display = ["title", "lead_department", "visibility"]
+    list_display = ["rsm_evaluation_id", "title", "lead_department", "visibility"]
     list_filter = ["visibility", "evaluation_design_types__display"]
     search_fields = ("title", "brief_description")
-    inlines = [EvaluationDepartmentAssociationInline, EvaluationDesignTypeDetailInline]
+    inlines = [EventDateInline, EvaluationDepartmentAssociationInline, EvaluationDesignTypeDetailInline]
 
     def get_search_results(self, request, queryset, search_term):
         if not search_term:
@@ -62,7 +63,6 @@ class EvaluationDesignTypeAdmin(admin.ModelAdmin):
     list_filter = ["parent"]
 
 
-admin.site.register(models.EventDate, EventDateAdmin)
 admin.site.register(models.Evaluation, EvaluationAdmin)
 admin.site.register(models.Department, DepartmentAdmin)
 admin.site.register(models.EvaluationDesignType, EvaluationDesignTypeAdmin)

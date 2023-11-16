@@ -434,6 +434,7 @@ class Command(BaseCommand):
                 "N",
             )
             evaluation = Evaluation.objects.create(
+                rsm_evaluation_id=simple_evaluation_id,
                 title=record["Evaluation title"],
                 brief_description=record["Evaluation summary"],
                 major_project_number=record["Major projects identifier"],

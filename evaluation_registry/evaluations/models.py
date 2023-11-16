@@ -131,8 +131,6 @@ class Evaluation(TimeStampedModel):
 
     @property
     def types_text_list(self):
-        # if not self.evaluation_design_types.filter(parent__isnull=True):
-        #     return []
         return [t.display for t in self.evaluation_design_types.filter(parent__isnull=True)]
 
     @property
