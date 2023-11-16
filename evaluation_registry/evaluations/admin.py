@@ -1,4 +1,3 @@
-import simple_history
 from django.contrib import admin
 from django.contrib.postgres.search import (
     SearchQuery,

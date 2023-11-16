@@ -5,7 +5,7 @@ from tqdm import tqdm
 from evaluation_registry.evaluations.models import Evaluation
 
 CHATGPT_ROLE = """
-You are a plain text formatter. 
+You are a plain text formatter.
 
 You will receive badly formatted text and reformat it with:
 * proper capitalization of abbreviations, proper nouns and sentences
@@ -15,7 +15,7 @@ Do not:
 * remove or add words
 * change the tone of the text
 
-Please return the reformatted text without explanation. 
+Please return the reformatted text without explanation.
 """
 
 
