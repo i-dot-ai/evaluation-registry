@@ -101,10 +101,8 @@ class Evaluation(TimeStampedModel):
     # For matching with initial data upload from RSM - evaluation id
     rsm_evaluation_id = models.SmallIntegerField(blank=True, null=True, unique=True)
 
-    evaluation_design_types = models.ManyToManyField(
-        EvaluationDesignType,
-        through="EvaluationDesignTypeDetail",
-        help_text="add more text for 'Other' Design Types"
+    evaluation_design_types = models.ManyToManyField(  # type: ignore
+        EvaluationDesignType, through="EvaluationDesignTypeDetail", help_text="add more text for 'Other' Design Types"
     )
 
     brief_description = models.TextField(blank=True, null=True)
@@ -133,17 +131,15 @@ class Evaluation(TimeStampedModel):
 
     @property
     def types_text_list(self):
-        # if not self.evaluation_design_types.filter(parent__isnull=True):
-        #     return []
         return [t.display for t in self.evaluation_design_types.filter(parent__isnull=True)]
 
     @property
     def reports_with_links(self):
-        return self.report_set.exclude(link='')
+        return self.report_set.exclude(link="")
 
     @property
     def other_design_types(self):
-        return self.evaluationdesigntypedetail_set.filter(design_type__code='other')
+        return self.evaluationdesigntypedetail_set.filter(design_type__code="other")
 
     def get_reasons_unpublished_text(self) -> list[str]:
         if not self.reasons_unpublished:
@@ -185,7 +181,7 @@ class EvaluationDesignTypeDetail(models.Model):
 class Report(TimeStampedModel):
     title = models.CharField(max_length=1024, blank=True, null=True)
     link = models.URLField(max_length=1024, blank=True, null=True)
-    rsm_report_id = models.SmallIntegerField(blank=True, null=True, unique=True)
+    rsm_report_id = models.SmallIntegerField(blank=True, null=True)
     evaluation = models.ForeignKey(Evaluation, on_delete=models.CASCADE)
 
 
