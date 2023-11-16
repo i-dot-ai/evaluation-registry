@@ -14,6 +14,7 @@ from evaluation_registry.evaluations.models import (
     EvaluationDesignType,
     EvaluationDesignTypeDetail,
     EventDate,
+    Report,
 )
 
 
@@ -437,9 +438,15 @@ class Command(BaseCommand):
                 rsm_evaluation_id=simple_evaluation_id,
                 title=record["Evaluation title"],
                 brief_description=record["Evaluation summary"],
-                major_project_number=record["Major projects identifier"],
+                # major_project_number=record["Major projects identifier"],
                 visibility=Evaluation.Visibility.PUBLIC,
-                plan_link=published_evaluation_link,
+            )
+
+            Report.objects.create(
+                title=record["Report title"],
+                link=published_evaluation_link,
+                rsm_report_id=record["Report ID"],
+                evaluation=evaluation,
             )
 
             for evaluation_type in "Process", "Impact", "Economic":

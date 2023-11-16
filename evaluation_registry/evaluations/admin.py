@@ -11,6 +11,7 @@ from .models import (
     EvaluationDepartmentAssociation,
     EvaluationDesignTypeDetail,
     EventDate,
+    Report,
 )
 
 admin_site = admin.AdminSite()
@@ -26,6 +27,11 @@ class EvaluationDepartmentAssociationInline(admin.TabularInline):
     extra = 0
 
 
+class ReportInline(admin.TabularInline):
+    model = Report
+    extra = 0
+
+
 class EvaluationDesignTypeDetailInline(admin.TabularInline):
     model = EvaluationDesignTypeDetail
     extra = 0
@@ -35,7 +41,7 @@ class EvaluationAdmin(admin.ModelAdmin):
     list_display = ["rsm_evaluation_id", "title", "lead_department", "visibility"]
     list_filter = ["visibility", "evaluation_design_types__display"]
     search_fields = ("title", "brief_description")
-    inlines = [EventDateInline, EvaluationDepartmentAssociationInline, EvaluationDesignTypeDetailInline]
+    inlines = [ReportInline, EventDateInline, EvaluationDepartmentAssociationInline, EvaluationDesignTypeDetailInline]
 
     def get_search_results(self, request, queryset, search_term):
         if not search_term:
