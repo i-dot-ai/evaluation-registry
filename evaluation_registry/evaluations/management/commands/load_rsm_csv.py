@@ -507,7 +507,7 @@ class Command(BaseCommand):
                 evaluation=evaluation,
             )
 
-            for evaluation_type in "Process", "Economic":
+            for evaluation_type in "Process", "Impact", "Economic":
                 if record[evaluation_type] == "Y":
                     EvaluationDesignTypeDetail.objects.create(
                         evaluation=evaluation,
