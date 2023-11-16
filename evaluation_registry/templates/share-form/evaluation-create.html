@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="govuk-grid-row">
+  <form action="{{url('evaluation-create', status)}}" method="post">
+    {{csrf_input}}
+    <input type="hidden" id="status" name="status" value="{{status}}" />
+
+    <h2 class="govuk-heading-l">
+      About the evaluation
+    </h2>
+
+    <div class="govuk-form-group">
+      <h3 class="govuk-label-wrapper">
+        <label class="govuk-label govuk-label--m" for="title">
+          Title of evaluation
+        </label>
+      </h3>
+      <div id="title-hint" class="govuk-hint">
+        Write this so that your evaluation can be understood by someone who does not know the policy area.
+      </div>
+      <input
+        class="govuk-input"
+        id="title"
+        name="title"
+        type="text"
+        aria-describedby="title-hint"
+        value="{{ data.title }}"
+      >
+    </div>
+
+    <div class="govuk-form-group">
+      <h3 class="govuk-label-wrapper">
+        <label class="govuk-label govuk-label--m" for="lead_department">
+          Lead Department
+        </label>
+      </h3>
+      <div id="event-name-hint" class="govuk-hint">
+        Type to search for a department
+      </div>
+      <select class="govuk-select" id="lead_department" name="lead_department" data-accessible-autocomplete>
+        <option value="{{data.lead_department}}"></option>
+        {% for department in departments %}
+          <option value="{{department.code}}" {% if department.code == data.lead_department %}selected{% endif %}>{{department.display}}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+
+    <div class="govuk-form-group">
+      <h3 class="govuk-label-wrapper">
+        <label class="govuk-label govuk-label--m" for="department">
+          Other Departments involved
+        </label>
+      </h3>
+      <div id="event-name-hint" class="govuk-hint">
+        Type to search for a department
+      </div>
+      <select class="govuk-select" id="department" name="department" data-accessible-autocomplete>
+        <option value=""></option>
+        {% for department in departments %}
+          <option value="{{department.code}}">{{department.display}}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <button
+      class="govuk-button govuk-button--secondary"
+      data-module="govuk-button"
+      formaction="{{url('evaluation-create', status)}}"
+      name="addanother"
+      value="department"
+    >
+      Add another non-lead department
+    </button>
+
+    {% if data.department %}
+      <dl class="govuk-summary-list">
+        {% for department in data.department %}
+          <input type="hidden" id="department-{{ loop.index }}" name="department" value="{{department.code}}" />
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__value">
+              {{department.display}}
+            </dt>
+            <dd class="govuk-summary-list__value">
+              <button
+                class="govuk-button govuk-button--secondary"
+                data-module="govuk-button"
+                name="remove_department"
+                value="{{department.code}}"
+              >
+                Remove
+              </button>
+            </dd>
+          </div>
+        {% endfor %}
+      </dl>
+    {% endif %}
+
+    <br>
+
+    <button
+      data-prevent-double-click="true"
+      class="govuk-button"
+      data-module="govuk-button"
+      name="form_complete"
+      value="completed"
+    >
+      Save and continue
+    </button>
+
+  </form>
+</div>
+{% endblock %}

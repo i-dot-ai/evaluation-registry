@@ -149,7 +149,6 @@ PERMISSIONS_POLICY: dict[str, list] = {
 
 
 CSP_DEFAULT_SRC = ("'self'", "'sha256-oFNrsKhzOBUVceDuefWEqtXEXMM9LIL4cUnoVkDYPzA='")
-# SHA of the location of the stylesheet (main.css)
 
 CSP_STYLE_SRC = "'self'"
 

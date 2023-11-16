@@ -6,36 +6,16 @@ from django.contrib.postgres.search import (
 from django.core.paginator import Paginator
 from django.db.models import QuerySet
 from django.http import Http404
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.views.decorators.http import require_http_methods
-from django.views.generic import DetailView
 
+from evaluation_registry.evaluations.forms import EvaluationCreateForm
 from evaluation_registry.evaluations.models import (
     Department,
     Evaluation,
+    EvaluationDepartmentAssociation,
     EvaluationDesignType,
 )
-
-
-class UUIDDetailView(DetailView):
-    uuid_url_kwarg = "id"
-
-    def get_object(self, queryset=None):
-        if queryset is None:
-            queryset = self.get_queryset()
-
-        uuid = self.kwargs.get(self.uuid_url_kwarg)
-        if uuid is not None:
-            queryset = queryset.filter(id=uuid)
-
-        try:
-            # Get the single item from the filtered queryset
-            obj = queryset.get()
-        except queryset.model.DoesNotExist:
-            raise Http404(
-                "No %(verbose_name)s found matching the query" % {"verbose_name": queryset.model._meta.verbose_name}
-            )
-        return obj
 
 
 @require_http_methods(["GET"])
@@ -138,3 +118,69 @@ def evaluation_detail_view(request, uuid):
 
     dates = evaluation.event_dates.all()
     return render(request, "evaluation_detail.html", {"evaluation": evaluation, "dates": dates})
+
+
+@require_http_methods(["GET", "POST"])
+def start_form_view(request):
+    options = Evaluation.Status.choices
+    if request.method == "GET":
+        return render(request, "share-form/evaluation-status.html", {"options": options, "error": False})
+    elif request.method == "POST":
+        status = request.POST.get("status")
+        if not status:
+            return render(request, "share-form/evaluation-status.html", {"options": options, "error": True})
+        return redirect("evaluation-create", status=status)
+
+
+@require_http_methods(["GET", "POST"])
+def evaluation_create_view(request, status):
+    # if this is a POST request we need to process the form data
+    departments = Department.objects.all()
+    if request.method == "POST":
+        # create a form instance and populate it with data from the request:
+        form = EvaluationCreateForm(request.POST)
+
+        form_complete = request.POST.get("form_complete")
+        selected_departments = request.POST.getlist("department")
+        selected_lead = request.POST.get("lead_department")
+        department_to_remove = request.POST.get("remove_department")
+
+        if form_complete:
+            if form.is_valid():
+                new_evaluation = form.save()
+                if selected_lead:
+                    EvaluationDepartmentAssociation.objects.create(
+                        evaluation=new_evaluation, department=Department.objects.get(code=selected_lead), is_lead=True
+                    )
+                for department in selected_departments:
+                    # TODO: handle in clean
+                    if department == "":
+                        continue
+                    EvaluationDepartmentAssociation.objects.create(
+                        evaluation=new_evaluation,
+                        department=Department.objects.get(code=department),
+                    )
+
+                return redirect("/")  # TODO: redirect to next page of form & show success of saving
+            else:
+                print(form.errors)  # TODO: show errors in form
+
+        if department_to_remove and (department_to_remove in selected_departments):
+            selected_departments.remove(department_to_remove)
+
+        data = {
+            "title": request.POST.get("title"),
+            "lead_department": selected_lead,
+            "department": Department.objects.filter(code__in=selected_departments).all(),
+        }
+
+    # if a GET (or any other method) we'll create a blank form
+    else:
+        form = EvaluationCreateForm()
+        data = {"title": "", "lead_department": [], "department": []}
+
+    return render(
+        request,
+        "share-form/evaluation-create.html",
+        {"form": form, "status": status, "departments": departments, "data": data},
+    )
