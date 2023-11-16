@@ -1,3 +1,5 @@
+import datetime
+
 from django.contrib import admin
 from django.contrib.postgres.search import (
     SearchQuery,
@@ -5,6 +7,7 @@ from django.contrib.postgres.search import (
     SearchVector,
 )
 from simple_history.admin import SimpleHistoryAdmin
+from django.core.management import call_command
 
 from . import models
 from .models import (
@@ -16,6 +19,25 @@ from .models import (
 )
 
 admin_site = admin.AdminSite()
+
+
+def import_csv(modeladmin, request, queryset):
+    if queryset.count() > 1:
+        modeladmin.message_user(request, "Please select exactly one file to import.", level="ERROR")
+        return
+
+    file = queryset.first()
+    call_command("load_rsm_csv", file.csv.file)
+    file.last_successfully_loaded_at = datetime.datetime.now()
+    file.save()
+
+
+import_csv.short_description = "Import selected CSV file"
+
+
+class RSMFileAdmin(admin.ModelAdmin):
+    actions = [import_csv]
+    list_display = ["id", "csv", "last_successfully_loaded_at"]
 
 
 class EventDateInline(admin.TabularInline):
@@ -73,4 +95,5 @@ class EvaluationDesignTypeAdmin(admin.ModelAdmin):
 admin.site.register(models.Evaluation, EvaluationAdmin)
 admin.site.register(models.Department, DepartmentAdmin)
 admin.site.register(models.EvaluationDesignType, EvaluationDesignTypeAdmin)
+admin.site.register(models.RSMFile, RSMFileAdmin)
 admin.site.register(models.User)
