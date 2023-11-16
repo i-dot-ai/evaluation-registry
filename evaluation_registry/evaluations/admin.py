@@ -32,7 +32,7 @@ def import_csv(modeladmin, request, queryset):
     file.save()
 
 
-import_csv.short_description = "Import selected CSV file"
+import_csv.short_description = "Import selected CSV file"  # type: ignore
 
 
 class RSMFileAdmin(admin.ModelAdmin):

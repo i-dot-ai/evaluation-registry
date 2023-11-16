@@ -21,7 +21,7 @@ from evaluation_registry.evaluations.models import (
 try:
     USER, _ = get_user_model().objects.get_or_create(email="i-dot-ai-team@cabinetoffice.gov.uk")
 except ProgrammingError:
-    USER = None
+    USER = None  # type: ignore
 
 
 def parse_row(text):
