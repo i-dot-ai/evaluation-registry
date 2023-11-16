@@ -35,8 +35,8 @@ ALLOWED_HOSTS = [
     LOCALHOST,
     "localhost",
     "127.0.0.1",
-    "evaluationregistry-dev.eba-wmwkym6s.eu-west-2.elasticbeanstalk.com",
-    "evaluationregistry-prod.eba-wmwkym6s.eu-west-2.elasticbeanstalk.com",
+    "evaluation-registry-dev.eba-izdb4qxe.eu-west-2.elasticbeanstalk.com",
+    "evaluation-registry-prod.eba-izdb4qxe.eu-west-2.elasticbeanstalk.com",
 ]
 
 # CSRF settings
