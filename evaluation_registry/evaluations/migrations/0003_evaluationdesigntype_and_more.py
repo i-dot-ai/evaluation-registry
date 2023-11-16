@@ -132,7 +132,7 @@ class Migration(migrations.Migration):
                 ("modified_at", models.DateTimeField(auto_now=True)),
                 ("title", models.CharField(blank=True, max_length=1024, null=True)),
                 ("link", models.URLField(blank=True, max_length=1024, null=True)),
-                ("rsm_report_id", models.SmallIntegerField(blank=True, null=True, unique=True)),
+                ("rsm_report_id", models.SmallIntegerField(blank=True, null=True)),
                 (
                     "evaluation",
                     models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="evaluations.evaluation"),

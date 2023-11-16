@@ -181,7 +181,7 @@ class EvaluationDesignTypeDetail(models.Model):
 class Report(TimeStampedModel):
     title = models.CharField(max_length=1024, blank=True, null=True)
     link = models.URLField(max_length=1024, blank=True, null=True)
-    rsm_report_id = models.SmallIntegerField(blank=True, null=True, unique=True)
+    rsm_report_id = models.SmallIntegerField(blank=True, null=True)
     evaluation = models.ForeignKey(Evaluation, on_delete=models.CASCADE)
 
 
