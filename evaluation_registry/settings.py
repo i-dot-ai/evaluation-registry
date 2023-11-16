@@ -9,6 +9,13 @@ DEBUG = env.bool("DEBUG", default=False)
 
 VCAP_APPLICATION = env.json("VCAP_APPLICATION", default={})
 BASE_URL = env.str("BASE_URL")
+COLA_COOKIE_NAME = env.str("COLA_COOKIE_NAME", "")
+COLA_COOKIE_DOMAIN = env.str("COLA_COOKIE_DOMAIN", "")
+COLA_COGNITO_CLIENT_ID = env.str("COLA_COGNITO_CLIENT_ID", "")
+AWS_REGION_NAME = env.str("AWS_REGION_NAME", "")
+COLA_COGNITO_USER_POOL_ID = env.str("COLA_COGNITO_USER_POOL_ID", "")
+COLA_LOGIN_URL = env.str("COLA_LOGIN_URL", "")
+COLA_JWT_EXTRACTION_REGEX_PATTERN = env.str("COLA_JWT_EXTRACTION_REGEX_PATTERN", r"")
 
 
 # Application definition
@@ -37,6 +44,7 @@ DATABASES = {
 }
 
 AUTHENTICATION_BACKENDS = [
+    "automatilib.cola.backend.COLAAuthenticationBackend",
     "django.contrib.auth.backends.ModelBackend",
 ]
 

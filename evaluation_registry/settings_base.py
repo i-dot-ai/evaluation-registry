@@ -54,6 +54,8 @@ WSGI_APPLICATION = "evaluation_registry.wsgi.application"
 INSTALLED_APPS = [
     "health_check",
     "evaluation_registry.evaluations",
+    "automatilib.core.apps.IdotAIConfig",
+    "automatilib.cola.apps.ColaAuthConfig",
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
@@ -125,6 +127,7 @@ ACCOUNT_USERNAME_REQUIRED = False
 SITE_ID = 1
 ACCOUNT_EMAIL_VERIFICATION = "none"
 LOGIN_REDIRECT_URL = "homepage"
+LOGIN_URL = "login"
 
 
 STATIC_URL = "/static/"
