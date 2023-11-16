@@ -18,17 +18,17 @@ admin_site = admin.AdminSite()
 
 class EventDateInline(admin.TabularInline):
     model = EventDate
-    extra = 1
+    extra = 0
 
 
 class EvaluationDepartmentAssociationInline(admin.TabularInline):
     model = EvaluationDepartmentAssociation
-    extra = 1
+    extra = 0
 
 
 class EvaluationDesignTypeDetailInline(admin.TabularInline):
     model = EvaluationDesignTypeDetail
-    extra = 1
+    extra = 0
 
 
 class EvaluationAdmin(admin.ModelAdmin):
