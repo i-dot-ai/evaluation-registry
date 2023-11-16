@@ -4,9 +4,7 @@
 import json
 from collections import Counter
 
-from django.contrib.auth import get_user_model
 from django.core.management import BaseCommand
-from django.db import ProgrammingError
 
 from evaluation_registry.evaluations.models import (
     Department,
@@ -17,11 +15,6 @@ from evaluation_registry.evaluations.models import (
     EventDate,
     Report,
 )
-
-try:
-    USER, _ = get_user_model().objects.get_or_create(email="i-dot-ai-team@cabinetoffice.gov.uk")
-except ProgrammingError:
-    USER = None
 
 
 def parse_row(text):
@@ -477,8 +470,6 @@ class Command(BaseCommand):
             header, *rows = map(parse_row, f)
             records = [dict(zip(header, row)) for row in rows]
 
-        Evaluation.objects.filter(created_by=USER).delete()
-
         counts = Counter(x["Evaluation ID"] for x in records)
         simple_evaluation_ids = {evaluation_id for evaluation_id, count in counts.items() if count == 1}
 
@@ -502,7 +493,6 @@ class Command(BaseCommand):
                 "N",
             )
             evaluation = Evaluation.objects.create(
-                created_by=USER,
                 rsm_evaluation_id=simple_evaluation_id,
                 title=record["Evaluation title"],
                 brief_description=record["Evaluation summary"],
