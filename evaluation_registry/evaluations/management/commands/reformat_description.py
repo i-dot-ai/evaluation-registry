@@ -35,7 +35,7 @@ class Command(BaseCommand):
         )
 
         progress_bar = tqdm(desc="Processing", total=max_number_to_process)
-        for evaluation in Evaluation.objects.all()[100 : 100 + max_number_to_process]:
+        for evaluation in Evaluation.objects.all().order_by("rsm_evaluation_id")[:max_number_to_process]:
             progress_bar.set_description(f"updating rsm-evaluation-id: {evaluation.rsm_evaluation_id}")
             chat_completion = client.chat.completions.create(
                 messages=[
