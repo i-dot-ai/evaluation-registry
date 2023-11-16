@@ -93,4 +93,4 @@ if env.str("AWS_STORAGE_BUCKET_NAME", default=None):
     AWS_STORAGE_BUCKET_NAME = env.str("AWS_STORAGE_BUCKET_NAME")
     AWS_S3_REGION_NAME = env.str("AWS_REGION_NAME")
 else:
-    DEFAULT_FILE_STORAGE = "inmemorystorage.InMemoryStorage"
+    DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
