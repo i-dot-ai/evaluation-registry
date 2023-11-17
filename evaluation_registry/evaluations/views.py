@@ -125,11 +125,10 @@ def start_form_view(request):
     options = Evaluation.Status.choices
     if request.method == "GET":
         return render(request, "share-form/evaluation-status.html", {"options": options, "error": False})
-    elif request.method == "POST":
-        status = request.POST.get("status")
-        if not status:
-            return render(request, "share-form/evaluation-status.html", {"options": options, "error": True})
-        return redirect("evaluation-create", status=status)
+    status = request.POST.get("status")
+    if not status:
+        return render(request, "share-form/evaluation-status.html", {"options": options, "error": True})
+    return redirect("evaluation-create", status=status)
 
 
 @require_http_methods(["GET", "POST"])
@@ -160,8 +159,7 @@ def evaluation_create_view(request, status):
                         )
 
                 return redirect("evaluation-detail", uuid=new_evaluation.id)  # TODO: redirect to next page of form
-            else:
-                errors = form.errors.as_data()
+            errors = form.errors.as_data()
 
         if department_to_remove and (department_to_remove in selected_departments):
             selected_departments.remove(department_to_remove)
