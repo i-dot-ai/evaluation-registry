@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% import 'macros.html' as macros with context %}
 
 {% block content %}
 <div class="govuk-grid-row">
@@ -31,22 +32,11 @@
       </div>
     {% endif %}
 
-    <div class="govuk-form-group {% if errors['title'] %}govuk-form-group--error{% endif %}">
-      <h3 class="govuk-label-wrapper">
-        <label class="govuk-label govuk-label--m" for="title">
-          Title of evaluation
-        </label>
-      </h3>
-      {% if errors['title'] %}
-        <p id="full-name-input-error" class="govuk-error-message">
-          {% for error in errors['title'] %}
-          <span class="govuk-visually-hidden">Error:</span> {{ error.message }}
-          {% endfor %}
-        </p>
-      {% endif %}
-      <div id="title-hint" class="govuk-hint">
-        Write this so that your evaluation can be understood by someone who does not know the policy area.
-      </div>
+    {% call macros.govuk_input(
+      'title',
+      'Title of evaluation',
+      'Write this so that your evaluation can be understood by someone who does not know the policy area',
+    ) %}
       <input
         class="govuk-input"
         id="title"
@@ -55,56 +45,33 @@
         aria-describedby="title-hint"
         value="{{ data.title }}"
       >
-    </div>
+    {% endcall %}
 
-    <div class="govuk-form-group {% if errors['lead_department'] %}govuk-form-group--error{% endif %}">
-      <h3 class="govuk-label-wrapper">
-        <label class="govuk-label govuk-label--m" for="lead_department">
-          Lead Department
-        </label>
-      </h3>
-      {% if errors['lead_department'] %}
-        <p id="full-name-input-error" class="govuk-error-message">
-          {% for error in errors['lead_department'] %}
-            <span class="govuk-visually-hidden">Error:</span> {{ error.message }}
-          {% endfor %}
-        </p>
-      {% endif %}
-      <div id="event-name-hint" class="govuk-hint">
-        Type to search for a department
-      </div>
+    {% call macros.govuk_input(
+      'lead_department',
+      'Lead department',
+      'Type to search for a department',
+    ) %}
       <select class="govuk-select" id="lead_department" name="lead_department" data-accessible-autocomplete>
         <option value="{{data.lead_department}}"></option>
         {% for department in departments %}
           <option value="{{department.code}}" {% if department.code == data.lead_department %}selected{% endif %}>{{department.display}}</option>
         {% endfor %}
       </select>
-    </div>
+    {% endcall %}
 
-
-    <div class="govuk-form-group {% if errors['departments'] %}govuk-form-group--error{% endif %}">
-      <h3 class="govuk-label-wrapper">
-        <label class="govuk-label govuk-label--m" for="departments">
-          Other Departments involved
-        </label>
-      </h3>
-      {% if errors['departments'] %}
-        <p id="full-name-input-error" class="govuk-error-message">
-          {% for error in errors['departments'] %}
-            <span class="govuk-visually-hidden">Error:</span> {{ error.message }}
-          {% endfor %}
-        </p>
-      {% endif %}
-      <div id="event-name-hint" class="govuk-hint">
-        Type to search for a department
-      </div>
+    {% call macros.govuk_input(
+      'departments',
+      'Other Departments involved',
+      'Type to search for a department',
+    ) %}
       <select class="govuk-select" id="departments" name="departments" data-accessible-autocomplete>
         <option></option>
         {% for department in departments %}
           <option value="{{department.code}}">{{department.display}}</option>
         {% endfor %}
       </select>
-    </div>
+    {% endcall %}
 
     <button
       class="govuk-button govuk-button--secondary"
