@@ -18,3 +18,5 @@ sentry-sdk
 boto
 django-storages
 django-health-check
+django-simple-history
+openai

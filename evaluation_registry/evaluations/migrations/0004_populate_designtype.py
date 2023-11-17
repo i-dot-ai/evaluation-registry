@@ -37,6 +37,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(populate_evaluation_design_type_model),
-        migrations.RunPython(update_evaluation_design_type_parents),
+        migrations.RunPython(populate_evaluation_design_type_model, reverse_code=migrations.RunPython.noop),
+        migrations.RunPython(update_evaluation_design_type_parents, reverse_code=migrations.RunPython.noop),
     ]

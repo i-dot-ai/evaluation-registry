@@ -22,5 +22,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(populate_department_model),
+        migrations.RunPython(populate_department_model, reverse_code=migrations.RunPython.noop),
     ]

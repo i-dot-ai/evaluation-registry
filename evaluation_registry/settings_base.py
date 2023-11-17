@@ -35,8 +35,8 @@ ALLOWED_HOSTS = [
     LOCALHOST,
     "localhost",
     "127.0.0.1",
-    "evaluationregistry-dev.eba-wmwkym6s.eu-west-2.elasticbeanstalk.com",
-    "evaluationregistry-prod.eba-wmwkym6s.eu-west-2.elasticbeanstalk.com",
+    "evaluation-registry-dev.eba-izdb4qxe.eu-west-2.elasticbeanstalk.com",
+    "evaluation-registry-prod.eba-izdb4qxe.eu-west-2.elasticbeanstalk.com",
 ]
 
 # CSRF settings
@@ -64,6 +64,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.sites",
     "django.contrib.staticfiles",
+    "simple_history",
 ]
 
 MIDDLEWARE = [
@@ -79,6 +80,7 @@ MIDDLEWARE = [
     "django_permissions_policy.PermissionsPolicyMiddleware",
     "django_permissions_policy.PermissionsPolicyMiddleware",
     "allauth.account.middleware.AccountMiddleware",
+    "simple_history.middleware.HistoryRequestMiddleware",
 ]
 
 TEMPLATES = [

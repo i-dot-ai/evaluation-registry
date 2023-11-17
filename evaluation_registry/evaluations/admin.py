@@ -4,28 +4,45 @@ from django.contrib.postgres.search import (
     SearchRank,
     SearchVector,
 )
+from simple_history.admin import SimpleHistoryAdmin
 
 from . import models
-from .models import Evaluation, EvaluationDepartmentAssociation
+from .models import (
+    Evaluation,
+    EvaluationDepartmentAssociation,
+    EvaluationDesignTypeDetail,
+    EventDate,
+    Report,
+)
 
 admin_site = admin.AdminSite()
 
 
-class EventDateAdmin(admin.ModelAdmin):
-    list_display = ["__str__", "category", "status", "evaluation"]
-    list_filter = ["category", "status", "year"]
+class EventDateInline(admin.TabularInline):
+    model = EventDate
+    extra = 0
 
 
 class EvaluationDepartmentAssociationInline(admin.TabularInline):
     model = EvaluationDepartmentAssociation
-    extra = 1
+    extra = 0
 
 
-class EvaluationAdmin(admin.ModelAdmin):
-    list_display = ["title", "lead_department", "visibility"]
-    list_filter = ["visibility"]
+class ReportInline(admin.TabularInline):
+    model = Report
+    extra = 0
+
+
+class EvaluationDesignTypeDetailInline(admin.TabularInline):
+    model = EvaluationDesignTypeDetail
+    extra = 0
+
+
+class EvaluationAdmin(SimpleHistoryAdmin):
+    list_display = ["rsm_evaluation_id", "title", "lead_department", "visibility"]
+    list_filter = ["visibility", "evaluation_design_types__display"]
     search_fields = ("title", "brief_description")
-    inlines = [EvaluationDepartmentAssociationInline]
+    inlines = [ReportInline, EventDateInline, EvaluationDepartmentAssociationInline, EvaluationDesignTypeDetailInline]
 
     def get_search_results(self, request, queryset, search_term):
         if not search_term:
@@ -48,7 +65,12 @@ class DepartmentAdmin(admin.ModelAdmin):
     list_display = ["code", "display"]
 
 
-admin.site.register(models.EventDate, EventDateAdmin)
+class EvaluationDesignTypeAdmin(admin.ModelAdmin):
+    list_display = ["code", "display", "parent", "collect_description"]
+    list_filter = ["parent"]
+
+
 admin.site.register(models.Evaluation, EvaluationAdmin)
 admin.site.register(models.Department, DepartmentAdmin)
+admin.site.register(models.EvaluationDesignType, EvaluationDesignTypeAdmin)
 admin.site.register(models.User)
