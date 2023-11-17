@@ -1,6 +1,5 @@
 from django.forms import ModelChoiceField, ModelForm, ModelMultipleChoiceField
 
-
 from evaluation_registry.evaluations.models import Department, Evaluation
 
 

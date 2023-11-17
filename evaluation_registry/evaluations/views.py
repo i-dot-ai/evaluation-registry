@@ -159,7 +159,7 @@ def evaluation_create_view(request, status):
                             department=department,
                         )
 
-                return redirect('evaluation-detail', uuid=new_evaluation.id)  # TODO: redirect to next page of form
+                return redirect("evaluation-detail", uuid=new_evaluation.id)  # TODO: redirect to next page of form
             else:
                 errors = form.errors.as_data()
 
