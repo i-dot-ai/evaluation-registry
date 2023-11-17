@@ -11,8 +11,8 @@ update-requirements:
 
 .PHONY: reset-db
 reset-db:
-	docker compose down db --volumes
-	docker compose up -d db
+	docker-compose down db --volumes
+	docker-compose up -d db
 
 # -------------------------------------- Code Style  -------------------------------------
 
