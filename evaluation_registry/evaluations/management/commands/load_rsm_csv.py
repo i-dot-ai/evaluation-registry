@@ -18,11 +18,6 @@ from evaluation_registry.evaluations.models import (
     Report,
 )
 
-try:
-    USER, _ = get_user_model().objects.get_or_create(email="i-dot-ai-team@cabinetoffice.gov.uk")
-except ProgrammingError:
-    USER = None  # type: ignore
-
 
 def parse_row(text):
     return json.loads(f"[{text}]")
@@ -473,11 +468,13 @@ class Command(BaseCommand):
         file = options["file"]
         self.stdout.write(self.style.SUCCESS('loading "%s"' % file))
 
+        admin, _ = get_user_model().objects.get_or_create(email="i-dot-ai-team@cabinetoffice.gov.uk")
+
         with open(file) as f:
             header, *rows = map(parse_row, f)
             records = [dict(zip(header, row)) for row in rows]
 
-        Evaluation.objects.filter(created_by=USER).delete()
+        Evaluation.objects.filter(created_by=admin).delete()
 
         counts = Counter(x["Evaluation ID"] for x in records)
         simple_evaluation_ids = {evaluation_id for evaluation_id, count in counts.items() if count == 1}
@@ -502,11 +499,10 @@ class Command(BaseCommand):
                 "N",
             )
             evaluation = Evaluation.objects.create(
-                created_by=USER,
+                created_by=admin,
                 rsm_evaluation_id=simple_evaluation_id,
                 title=record["Evaluation title"],
                 brief_description=record["Evaluation summary"],
-                # major_project_number=record["Major projects identifier"],
                 visibility=Evaluation.Visibility.PUBLIC,
             )
 
