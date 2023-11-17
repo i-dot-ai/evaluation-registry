@@ -10,12 +10,40 @@
       About the evaluation
     </h2>
 
-    <div class="govuk-form-group">
+    {% if errors %}
+      <div class="govuk-error-summary" data-module="govuk-error-summary">
+        <div role="alert">
+          <h2 class="govuk-error-summary__title">
+            There is a problem
+          </h2>
+          <div class="govuk-error-summary__body">
+            <ul class="govuk-list govuk-error-summary__list">
+              {% for field, error_list in errors.items() %}
+                {% for error in error_list %}
+                  <li>
+                    <a href="#{{field}}">{{error.message}}</a>
+                  </li>
+                {% endfor %}
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+
+    <div class="govuk-form-group {% if errors['title'] %}govuk-form-group--error{% endif %}">
       <h3 class="govuk-label-wrapper">
         <label class="govuk-label govuk-label--m" for="title">
           Title of evaluation
         </label>
       </h3>
+      {% if errors['title'] %}
+        <p id="full-name-input-error" class="govuk-error-message">
+          {% for error in errors['title'] %}
+          <span class="govuk-visually-hidden">Error:</span> {{ error.message }}
+          {% endfor %}
+        </p>
+      {% endif %}
       <div id="title-hint" class="govuk-hint">
         Write this so that your evaluation can be understood by someone who does not know the policy area.
       </div>
@@ -29,12 +57,19 @@
       >
     </div>
 
-    <div class="govuk-form-group">
+    <div class="govuk-form-group {% if errors['lead_department'] %}govuk-form-group--error{% endif %}">
       <h3 class="govuk-label-wrapper">
         <label class="govuk-label govuk-label--m" for="lead_department">
           Lead Department
         </label>
       </h3>
+      {% if errors['lead_department'] %}
+        <p id="full-name-input-error" class="govuk-error-message">
+          {% for error in errors['lead_department'] %}
+            <span class="govuk-visually-hidden">Error:</span> {{ error.message }}
+          {% endfor %}
+        </p>
+      {% endif %}
       <div id="event-name-hint" class="govuk-hint">
         Type to search for a department
       </div>
@@ -47,12 +82,19 @@
     </div>
 
 
-    <div class="govuk-form-group">
+    <div class="govuk-form-group {% if errors['departments'] %}govuk-form-group--error{% endif %}">
       <h3 class="govuk-label-wrapper">
         <label class="govuk-label govuk-label--m" for="departments">
           Other Departments involved
         </label>
       </h3>
+      {% if errors['departments'] %}
+        <p id="full-name-input-error" class="govuk-error-message">
+          {% for error in errors['departments'] %}
+            <span class="govuk-visually-hidden">Error:</span> {{ error.message }}
+          {% endfor %}
+        </p>
+      {% endif %}
       <div id="event-name-hint" class="govuk-hint">
         Type to search for a department
       </div>

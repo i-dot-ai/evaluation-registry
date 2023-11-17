@@ -134,12 +134,12 @@ def start_form_view(request):
 
 @require_http_methods(["GET", "POST"])
 def evaluation_create_view(request, status):
+    errors = {}
     # if this is a POST request we need to process the form data
     departments = Department.objects.all()
     if request.method == "POST":
         # create a form instance and populate it with data from the request:
         form = EvaluationCreateForm(request.POST)
-        print(request.POST)
 
         form_complete = request.POST.get("form_complete")
         selected_departments = request.POST.getlist("departments")
@@ -152,16 +152,17 @@ def evaluation_create_view(request, status):
                 EvaluationDepartmentAssociation.objects.create(
                     evaluation=new_evaluation, department=Department.objects.get(code=selected_lead), is_lead=True
                 )
-                if form.cleaned_data['departments']:
-                    for department in form.cleaned_data['departments']:
+                if form.cleaned_data["departments"]:
+                    for department in form.cleaned_data["departments"]:
                         EvaluationDepartmentAssociation.objects.create(
                             evaluation=new_evaluation,
-                            department=Department.objects.get(code=department),
+                            department=department,
                         )
 
                 return redirect("/")  # TODO: redirect to next page of form & show success of saving
             else:
-                print(form.errors)  # TODO: show errors in form
+                print(form.errors.as_data())
+                errors = form.errors.as_data()
 
         if department_to_remove and (department_to_remove in selected_departments):
             selected_departments.remove(department_to_remove)
@@ -175,10 +176,10 @@ def evaluation_create_view(request, status):
     # if a GET (or any other method) we'll create a blank form
     else:
         form = EvaluationCreateForm()
-        data = {"title": "", "lead_department": '', "departments": []}
+        data = {"title": "", "lead_department": "", "departments": []}
 
     return render(
         request,
         "share-form/evaluation-create.html",
-        {"form": form, "status": status, "departments": departments, "data": data},
+        {"form": form, "status": status, "departments": departments, "data": data, "errors": errors},
     )

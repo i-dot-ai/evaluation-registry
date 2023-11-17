@@ -31,8 +31,8 @@
           Other departments
         </dt>
         <dd class="govuk-summary-list__value">
-          {% if evaluation.departments.count() > 0 %}
-            {% for department in evaluation.departments.all() %}
+          {% if evaluation.other_departments|length > 0 %}
+            {% for department in evaluation.other_departments %}
               {{department}}<br>
             {% endfor %}
           {% else %}

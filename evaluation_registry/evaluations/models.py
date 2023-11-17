@@ -92,7 +92,7 @@ class Evaluation(TimeStampedModel):
 
     created_by = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
 
-    title = models.CharField(max_length=1024, blank=True, null=True)
+    title = models.CharField(max_length=1024, null=True)
     departments = models.ManyToManyField(  # type: ignore
         Department,
         through="EvaluationDepartmentAssociation",
@@ -128,6 +128,13 @@ class Evaluation(TimeStampedModel):
     def lead_department(self) -> Optional[Department]:
         try:
             return self.departments.get(evaluationdepartmentassociation__is_lead=True)
+        except ObjectDoesNotExist:
+            return None
+
+    @property
+    def other_departments(self) -> Optional[Department]:
+        try:
+            return self.departments.filter(evaluationdepartmentassociation__is_lead=False)
         except ObjectDoesNotExist:
             return None
 

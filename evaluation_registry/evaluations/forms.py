@@ -1,5 +1,4 @@
-from django.core.exceptions import ValidationError
-from django.forms import ModelChoiceField, ModelForm, ModelMultipleChoiceField 
+from django.forms import ModelChoiceField, ModelForm, ModelMultipleChoiceField
 
 
 from evaluation_registry.evaluations.models import Department, Evaluation
@@ -8,27 +7,31 @@ from evaluation_registry.evaluations.models import Department, Evaluation
 class NullableModelMultipleChoiceField(ModelMultipleChoiceField):
     # Because Django doesn't allow for an empty_label in multiple choice fields
     def clean(self, value):
-        updated_value = [v for v in value if v != '']
-        super().clean(updated_value)
+        updated_value = [v for v in value if v != ""]
+        return super().clean(updated_value)
 
 
 class EvaluationCreateForm(ModelForm):
-    lead_department = ModelChoiceField(queryset=Department.objects.all(), empty_label='', to_field_name='code')
-    departments = NullableModelMultipleChoiceField(queryset=Department.objects.all(), to_field_name='code', required=False)
+    lead_department = ModelChoiceField(queryset=Department.objects.all(), to_field_name="code", label="Lead Department")
+    departments = NullableModelMultipleChoiceField(
+        queryset=Department.objects.all(), to_field_name="code", required=False
+    )
+
+    def __init__(self, *args, **kwargs):
+        super(EvaluationCreateForm, self).__init__(*args, **kwargs)
+
+        for field in self.fields.values():
+            field.error_messages = {"required": "{fieldname} is required".format(fieldname=field.label)}
 
     def clean(self):
-        cleaned_data = super().clean()
-        lead_department = cleaned_data.get("lead_department")
-        departments = cleaned_data.get("departments")
+        super().clean()
+        lead_department = self.cleaned_data.get("lead_department")
+        departments = self.cleaned_data.get("departments")
 
-        all_departments = [lead_department] + [departments]
-
-        for idx, department in enumerate(all_departments):
-            if len(set(all_departments[:idx+1])) < len(all_departments[:idx+1]):
-                raise ValidationError(
-                    'This department has been listed more than once: %(department)s',
-                    code='invalid',
-                    params={'department': department.display},
+        if departments:
+            if departments.filter(id=lead_department.id).exists():
+                self.add_error(
+                    "departments", f"This department has been listed more than once: {lead_department.display}"
                 )
 
     class Meta:
