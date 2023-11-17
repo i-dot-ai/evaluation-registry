@@ -14,6 +14,8 @@ other_urlpatterns = [
     path("home/", views.homepage_view, name="homepage"),
     path("admin/", admin.site.urls),
     path("evaluation/<uuid:uuid>/", views.evaluation_detail_view, name="evaluation-detail"),
+    path("evaluation/create", views.start_form_view, name="start-form"),
+    path("evaluation/create/<str:status>", views.evaluation_create_view, name="evaluation-create"),
     path("accounts/", include("allauth.urls")),
 ]
 

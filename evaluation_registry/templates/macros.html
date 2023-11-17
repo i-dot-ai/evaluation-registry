@@ -1,0 +1,22 @@
+{% macro govuk_input(id, label, hint) -%}
+  <div class="govuk-form-group {% if errors[id] %}govuk-form-group--error{% endif %}">
+    <h3 class="govuk-label-wrapper">
+      <label class="govuk-label govuk-label--m" for="{{id}}">
+        {{ label }}
+      </label>
+    </h3>
+    {% if errors[id] %}
+      <p id="{{id}}-input-error" class="govuk-error-message">
+        {% for error in errors[id] %}
+        <span class="govuk-visually-hidden">Error:</span> {{ error.message }}
+        {% endfor %}
+      </p>
+    {% endif %}
+    {% if hint %}
+      <div id="{{ id }}-hint" class="govuk-hint">
+        {{ hint }}
+      </div>
+    {% endif %}
+    {{ caller() }}
+  </div>
+{%- endmacro %}
