@@ -4,6 +4,7 @@ from django.contrib.postgres.search import (
     SearchRank,
     SearchVector,
 )
+from simple_history.admin import SimpleHistoryAdmin
 
 from . import models
 from .models import (
@@ -37,7 +38,7 @@ class EvaluationDesignTypeDetailInline(admin.TabularInline):
     extra = 0
 
 
-class EvaluationAdmin(admin.ModelAdmin):
+class EvaluationAdmin(SimpleHistoryAdmin):
     list_display = ["rsm_evaluation_id", "title", "lead_department", "visibility"]
     list_filter = ["visibility", "evaluation_design_types__display"]
     search_fields = ("title", "brief_description")

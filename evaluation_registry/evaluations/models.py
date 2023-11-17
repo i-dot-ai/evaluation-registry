@@ -8,6 +8,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models.query import QuerySet
 from django_use_email_as_username.models import BaseUser, BaseUserManager
+from simple_history.models import HistoricalRecords
 
 
 class UUIDPrimaryKeyBase(models.Model):
@@ -121,6 +122,7 @@ class Evaluation(TimeStampedModel):
     other_reasons_unpublished_description = models.TextField(
         null=True, blank=True, help_text="description of other issues preventing publication"
     )
+    history = HistoricalRecords()
 
     @property
     def lead_department(self) -> Optional[Department]:
