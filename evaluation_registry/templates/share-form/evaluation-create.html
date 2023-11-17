@@ -49,15 +49,15 @@
 
     <div class="govuk-form-group">
       <h3 class="govuk-label-wrapper">
-        <label class="govuk-label govuk-label--m" for="department">
+        <label class="govuk-label govuk-label--m" for="departments">
           Other Departments involved
         </label>
       </h3>
       <div id="event-name-hint" class="govuk-hint">
         Type to search for a department
       </div>
-      <select class="govuk-select" id="department" name="department" data-accessible-autocomplete>
-        <option value=""></option>
+      <select class="govuk-select" id="departments" name="departments" data-accessible-autocomplete>
+        <option></option>
         {% for department in departments %}
           <option value="{{department.code}}">{{department.display}}</option>
         {% endfor %}
@@ -69,15 +69,15 @@
       data-module="govuk-button"
       formaction="{{url('evaluation-create', status)}}"
       name="addanother"
-      value="department"
+      value="departments"
     >
       Add another non-lead department
     </button>
 
-    {% if data.department %}
+    {% if data.departments %}
       <dl class="govuk-summary-list">
-        {% for department in data.department %}
-          <input type="hidden" id="department-{{ loop.index }}" name="department" value="{{department.code}}" />
+        {% for department in data.departments %}
+          <input type="hidden" id="department-{{ loop.index }}" name="departments" value="{{department.code}}" />
           <div class="govuk-summary-list__row">
             <dt class="govuk-summary-list__value">
               {{department.display}}

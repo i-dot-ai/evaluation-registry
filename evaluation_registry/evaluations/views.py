@@ -139,27 +139,25 @@ def evaluation_create_view(request, status):
     if request.method == "POST":
         # create a form instance and populate it with data from the request:
         form = EvaluationCreateForm(request.POST)
+        print(request.POST)
 
         form_complete = request.POST.get("form_complete")
-        selected_departments = request.POST.getlist("department")
+        selected_departments = request.POST.getlist("departments")
         selected_lead = request.POST.get("lead_department")
         department_to_remove = request.POST.get("remove_department")
 
         if form_complete:
             if form.is_valid():
                 new_evaluation = form.save()
-                if selected_lead:
-                    EvaluationDepartmentAssociation.objects.create(
-                        evaluation=new_evaluation, department=Department.objects.get(code=selected_lead), is_lead=True
-                    )
-                for department in selected_departments:
-                    # TODO: handle in clean
-                    if department == "":
-                        continue
-                    EvaluationDepartmentAssociation.objects.create(
-                        evaluation=new_evaluation,
-                        department=Department.objects.get(code=department),
-                    )
+                EvaluationDepartmentAssociation.objects.create(
+                    evaluation=new_evaluation, department=Department.objects.get(code=selected_lead), is_lead=True
+                )
+                if form.cleaned_data['departments']:
+                    for department in form.cleaned_data['departments']:
+                        EvaluationDepartmentAssociation.objects.create(
+                            evaluation=new_evaluation,
+                            department=Department.objects.get(code=department),
+                        )
 
                 return redirect("/")  # TODO: redirect to next page of form & show success of saving
             else:
@@ -171,13 +169,13 @@ def evaluation_create_view(request, status):
         data = {
             "title": request.POST.get("title"),
             "lead_department": selected_lead,
-            "department": Department.objects.filter(code__in=selected_departments).all(),
+            "departments": Department.objects.filter(code__in=selected_departments).all(),
         }
 
     # if a GET (or any other method) we'll create a blank form
     else:
         form = EvaluationCreateForm()
-        data = {"title": "", "lead_department": [], "department": []}
+        data = {"title": "", "lead_department": '', "departments": []}
 
     return render(
         request,
