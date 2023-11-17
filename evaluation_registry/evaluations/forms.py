@@ -6,8 +6,9 @@ from evaluation_registry.evaluations.models import Department, Evaluation
 class NullableModelMultipleChoiceField(ModelMultipleChoiceField):
     # Because Django doesn't allow for an empty_label in multiple choice fields
     def clean(self, value):
-        updated_value = [v for v in value if v != ""]
-        return super().clean(updated_value)
+        if value:
+            value = [v for v in value if v != ""]
+        return super().clean(value)
 
 
 class EvaluationCreateForm(ModelForm):
@@ -20,7 +21,7 @@ class EvaluationCreateForm(ModelForm):
         super(EvaluationCreateForm, self).__init__(*args, **kwargs)
 
         for field in self.fields.values():
-            field.error_messages = {"required": "{fieldname} is required".format(fieldname=field.label)}
+            field.error_messages = {"required": f"{field.label} is required"}
 
     def clean(self):
         super().clean()

@@ -150,7 +150,7 @@ def evaluation_create_view(request, status):
             if form.is_valid():
                 new_evaluation = form.save()
                 EvaluationDepartmentAssociation.objects.create(
-                    evaluation=new_evaluation, department=Department.objects.get(code=selected_lead), is_lead=True
+                    evaluation=new_evaluation, department=form.cleaned_data["lead_department"], is_lead=True
                 )
                 if form.cleaned_data["departments"]:
                     for department in form.cleaned_data["departments"]:
