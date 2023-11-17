@@ -13,11 +13,4 @@ window.addEventListener('load', (event) => {
       selectElement: value
     })
   })
-
-  // for(el in autocompleteElements) {
-  //   console.log(el)
-  //   accessibleAutocomplete.enhanceSelectElement({
-  //     selectElement: el
-  //   })
-  // }
 });

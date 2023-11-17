@@ -1,6 +1,9 @@
 import pytest
 
-from evaluation_registry.evaluations.forms import EvaluationCreateForm, NullableModelMultipleChoiceField
+from evaluation_registry.evaluations.forms import (
+    EvaluationCreateForm,
+    NullableModelMultipleChoiceField,
+)
 from evaluation_registry.evaluations.models import Department
 
 

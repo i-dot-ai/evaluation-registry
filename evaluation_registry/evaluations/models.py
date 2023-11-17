@@ -132,7 +132,7 @@ class Evaluation(TimeStampedModel):
             return None
 
     @property
-    def other_departments(self) -> Optional[Department]:
+    def other_departments(self):
         try:
             return self.departments.filter(evaluationdepartmentassociation__is_lead=False)
         except ObjectDoesNotExist:
