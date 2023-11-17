@@ -11,10 +11,8 @@ update-requirements:
 
 .PHONY: reset-db
 reset-db:
-	docker-compose up --detach ${POSTGRES_HOST}
-	docker-compose run ${POSTGRES_HOST} dropdb -U ${POSTGRES_USER} -h ${POSTGRES_HOST} ${POSTGRES_DB}
-	docker-compose run ${POSTGRES_HOST} createdb -U ${POSTGRES_USER} -h ${POSTGRES_HOST} ${POSTGRES_DB}
-	docker-compose kill
+	docker compose down db --volumes
+	docker compose up -d db
 
 # -------------------------------------- Code Style  -------------------------------------
 
@@ -40,3 +38,4 @@ test:
 lint:
 	isort .
 	black .
+
