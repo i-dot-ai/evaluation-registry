@@ -159,9 +159,8 @@ def evaluation_create_view(request, status):
                             department=department,
                         )
 
-                return redirect("/")  # TODO: redirect to next page of form & show success of saving
+                return redirect('evaluation-detail', uuid=new_evaluation.id)  # TODO: redirect to next page of form
             else:
-                print(form.errors.as_data())
                 errors = form.errors.as_data()
 
         if department_to_remove and (department_to_remove in selected_departments):
