@@ -5,12 +5,14 @@ from django.contrib.postgres.search import (
 )
 from django.core.paginator import Paginator
 from django.db.models import QuerySet
-from django.forms import formset_factory
 from django.http import Http404
 from django.shortcuts import redirect, render
 from django.views.decorators.http import require_http_methods
 
-from evaluation_registry.evaluations.forms import EvaluationCreateForm, EvaluationDesignTypeDetailForm
+from evaluation_registry.evaluations.forms import (
+    EvaluationCreateForm,
+    EvaluationDesignTypeDetailForm,
+)
 from evaluation_registry.evaluations.models import (
     Department,
     Evaluation,
@@ -206,13 +208,22 @@ def update_evaluation_design_objects(existing_objects, existing_design_types, fo
 
 
 @require_http_methods(["GET", "POST"])
-def evaluation_update_type_view(request, uuid):
+def evaluation_update_type_view(request, uuid, parent=None):
     try:
         evaluation = Evaluation.objects.get(id=uuid)
     except Evaluation.DoesNotExist:
         raise Http404("No %(verbose_name)s found matching the query" % {"verbose_name": Evaluation._meta.verbose_name})
 
-    options = EvaluationDesignType.root_objects.all()
+    if parent:
+        parent_type = EvaluationDesignType.objects.get(code=parent)
+        options = EvaluationDesignType.objects.filter(parent=parent_type)
+        if options.count() == 0:
+            raise Http404(
+                "No %(verbose_name)s found matching the query"
+                % {"verbose_name": EvaluationDesignType._meta.verbose_name}
+            )
+    else:
+        options = EvaluationDesignType.root_objects.all()
 
     data = {"evaluation": evaluation, "design_types": [], "design_types_codes": [], "text": ""}
     existing_links = EvaluationDesignTypeDetail.objects.filter(evaluation=evaluation, design_type__in=options)
@@ -257,5 +268,6 @@ def evaluation_update_type_view(request, uuid):
             "options": options,
             "errors": errors,
             "data": data,
+            "parent": parent_type,
         },
     )

@@ -15,6 +15,11 @@ other_urlpatterns = [
     path("admin/", admin.site.urls),
     path("evaluation/<uuid:uuid>/", views.evaluation_detail_view, name="evaluation-detail"),
     path("evaluation/<uuid:uuid>/update-type/", views.evaluation_update_type_view, name="evaluation-update-type"),
+    path(
+        "evaluation/<uuid:uuid>/update-type/<str:parent>",
+        views.evaluation_update_type_view,
+        name="evaluation-update-type-child",
+    ),
     path("evaluation/create", views.start_form_view, name="start-form"),
     path("evaluation/create/<str:status>", views.evaluation_create_view, name="evaluation-create"),
     path("accounts/", include("allauth.urls")),

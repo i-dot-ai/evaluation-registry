@@ -3,7 +3,14 @@
 
 {% block content %}
   <div class="govuk-grid-row">
-    <form action="{{url('evaluation-update-type', data.evaluation.id)}}" method="post">
+    <form 
+    {% if parent %}
+      action="{{url('evaluation-update-type-child', data.evaluation.id, parent.code)}}"
+    {% else %}
+      action="{{url('evaluation-update-type', data.evaluation.id)}}"
+    {% endif %}
+    method="post"
+    >
       {{csrf_input}}
       <input type="hidden" id="evaluation" name="evaluation" value="{{data.evaluation.id}}" />
 
@@ -11,7 +18,11 @@
         <fieldset class="govuk-fieldset" aria-describedby="design_types-hint {% if errors %}design_types-error{% endif %}">
           <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
             <h2 class="govuk-fieldset__heading">
-              Type of evaluation
+              Type of {% if parent %}
+                {{parent.display}}
+              {% else %}
+                evaluation
+              {% endif %}
             </h2>
           </legend>
           <div id="design_types-hint" class="govuk-hint">
