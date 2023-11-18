@@ -5,16 +5,18 @@ from django.contrib.postgres.search import (
 )
 from django.core.paginator import Paginator
 from django.db.models import QuerySet
+from django.forms import formset_factory
 from django.http import Http404
 from django.shortcuts import redirect, render
 from django.views.decorators.http import require_http_methods
 
-from evaluation_registry.evaluations.forms import EvaluationCreateForm
+from evaluation_registry.evaluations.forms import EvaluationCreateForm, EvaluationDesignTypeDetailForm
 from evaluation_registry.evaluations.models import (
     Department,
     Evaluation,
     EvaluationDepartmentAssociation,
     EvaluationDesignType,
+    EvaluationDesignTypeDetail,
 )
 
 
@@ -134,10 +136,8 @@ def start_form_view(request):
 @require_http_methods(["GET", "POST"])
 def evaluation_create_view(request, status):
     errors = {}
-    # if this is a POST request we need to process the form data
     departments = Department.objects.all()
     if request.method == "POST":
-        # create a form instance and populate it with data from the request:
         form = EvaluationCreateForm(request.POST)
 
         form_complete = request.POST.get("form_complete")
@@ -170,8 +170,8 @@ def evaluation_create_view(request, status):
             "departments": Department.objects.filter(code__in=selected_departments).all(),
         }
 
-    # if a GET (or any other method) we'll create a blank form
     else:
+        # create a blank form
         form = EvaluationCreateForm()
         data = {"title": "", "lead_department": "", "departments": []}
 
@@ -179,4 +179,83 @@ def evaluation_create_view(request, status):
         request,
         "share-form/evaluation-create.html",
         {"form": form, "status": status, "departments": departments, "data": data, "errors": errors},
+    )
+
+
+def update_evaluation_design_objects(existing_objects, existing_design_type_codes, form_data, should_update_text):
+    to_add = set(form_data["design_types"]).difference(existing_design_type_codes)
+    for design_type in to_add:
+        EvaluationDesignTypeDetail.objects.create(
+            evaluation=form_data["evaluation"],
+            design_type=design_type,
+            text=form_data["text"] if design_type.collect_description else None,
+        )
+        if design_type.collect_description:
+            should_update_text = False  # text has been updated by creating this new object
+
+    to_remove = set(existing_design_type_codes).difference(form_data["design_types"])
+    for design_type in to_remove:
+        for dt in existing_objects.filter(design_type=design_type):
+            dt.delete()
+
+    if should_update_text:  # handles the case where the 'Other' text has been updated
+        for dt in existing_objects.filter(design_type__collect_description=True):
+            dt.text = form_data["text"]
+            dt.save()
+
+
+@require_http_methods(["GET", "POST"])
+def evaluation_update_type_view(request, uuid):
+    try:
+        evaluation = Evaluation.objects.get(id=uuid)
+    except Evaluation.DoesNotExist:
+        raise Http404("No %(verbose_name)s found matching the query" % {"verbose_name": Evaluation._meta.verbose_name})
+
+    options = EvaluationDesignType.root_objects.all()
+
+    data = {"evaluation": evaluation, "design_types": [], "design_types_codes": [], "text": ""}
+    existing_links = EvaluationDesignTypeDetail.objects.filter(evaluation=evaluation, design_type__in=options)
+
+    for existing_link in existing_links:
+        data["design_types"].append(existing_link.design_type)
+        data["design_types_codes"].append(existing_link.design_type.code)
+        if existing_link.design_type.collect_description and existing_link.text:
+            data["text"] = existing_link.text
+
+    errors = {}
+
+    if request.method == "POST":
+        form = EvaluationDesignTypeDetailForm(request.POST, initial=data)
+
+        if form.is_valid():
+            if form.has_changed():
+                update_evaluation_design_objects(
+                    existing_objects=existing_links,
+                    existing_design_type_codes=data["design_types"],
+                    form_data=form.cleaned_data,
+                    should_update_text="text" in form.changed_data,
+                )
+
+            return redirect(
+                "evaluation-detail", uuid=form.cleaned_data["evaluation"].id
+            )  # TODO: redirect to next page of form
+
+        else:
+            errors = form.errors.as_data().values()
+
+            data["design_types_codes"] = request.POST.get("design_types") or []
+            data["text"] = request.POST.get("text") or ""
+
+    else:
+        form = EvaluationDesignTypeDetailForm()
+
+    return render(
+        request,
+        "share-form/evaluation-update-type.html",
+        {
+            "evaluation": evaluation,
+            "options": options,
+            "errors": errors,
+            "data": data,
+        },
     )
