@@ -50,7 +50,7 @@ class EvaluationCreateForm(ModelForm):
 
 
 class EvaluationDesignTypeDetailForm(Form):
-    evaluation = ModelChoiceField(queryset=Evaluation.objects.all())
+    evaluation = ModelChoiceField(queryset=Evaluation.objects.all(), label="Evaluation")
     design_types = ModelMultipleChoiceField(
         queryset=EvaluationDesignType.objects.all(), label="Evaluation type", to_field_name="code"
     )

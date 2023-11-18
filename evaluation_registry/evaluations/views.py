@@ -182,25 +182,26 @@ def evaluation_create_view(request, status):
     )
 
 
-def update_evaluation_design_objects(existing_objects, existing_design_type_codes, form_data, should_update_text):
-    to_add = set(form_data["design_types"]).difference(existing_design_type_codes)
+def update_evaluation_design_objects(existing_objects, existing_design_types, form):
+    should_update_text = "text" in form.changed_data
+    to_add = set(form.cleaned_data["design_types"]).difference(existing_design_types)
     for design_type in to_add:
         EvaluationDesignTypeDetail.objects.create(
-            evaluation=form_data["evaluation"],
+            evaluation=form.cleaned_data["evaluation"],
             design_type=design_type,
-            text=form_data["text"] if design_type.collect_description else None,
+            text=form.cleaned_data["text"] if design_type.collect_description else None,
         )
         if design_type.collect_description:
             should_update_text = False  # text has been updated by creating this new object
 
-    to_remove = set(existing_design_type_codes).difference(form_data["design_types"])
+    to_remove = set(existing_design_types).difference(form.cleaned_data["design_types"])
     for design_type in to_remove:
         for dt in existing_objects.filter(design_type=design_type):
             dt.delete()
 
     if should_update_text:  # handles the case where the 'Other' text has been updated
         for dt in existing_objects.filter(design_type__collect_description=True):
-            dt.text = form_data["text"]
+            dt.text = form.cleaned_data["text"]
             dt.save()
 
 
@@ -231,9 +232,8 @@ def evaluation_update_type_view(request, uuid):
             if form.has_changed():
                 update_evaluation_design_objects(
                     existing_objects=existing_links,
-                    existing_design_type_codes=data["design_types"],
-                    form_data=form.cleaned_data,
-                    should_update_text="text" in form.changed_data,
+                    existing_design_types=data["design_types"],
+                    form=form,
                 )
 
             return redirect(
