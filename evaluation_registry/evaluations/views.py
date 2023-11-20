@@ -224,6 +224,7 @@ def evaluation_update_type_view(request, uuid, parent=None):
             )
     else:
         options = EvaluationDesignType.root_objects.all()
+        parent_type = None
 
     data = {"evaluation": evaluation, "design_types": [], "design_types_codes": [], "text": ""}
     existing_links = EvaluationDesignTypeDetail.objects.filter(evaluation=evaluation, design_type__in=options)
