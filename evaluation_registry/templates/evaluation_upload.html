@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <form action="{{url('evaluation-upload')}}" method="POST" enctype=multipart/form-data>
+
+        {% if errors %}
+          <div class="govuk-error-summary__body">
+            <ul class="govuk-list govuk-error-summary__list">
+              {% for field, error_list in errors.items() %}
+                {% for error in error_list %}
+                  <li>
+                    <a href="#{{field}}"> {{ field }} : {{error.message}}</a>
+                  </li>
+                {% endfor %}
+              {% endfor %}
+            </ul>
+          </div>
+        {% endif %}
+
+        {{ csrf_input }}
+        <input type="file" id="file" name="file" value="upload me" />
+        <button type="submit">Submit</button>
+    </form>
+
+{% endblock %}

@@ -1,3 +1,7 @@
+import asyncio
+import json
+
+import pdfplumber
 from django.contrib.postgres.search import (
     SearchQuery,
     SearchRank,
@@ -8,13 +12,22 @@ from django.db.models import QuerySet
 from django.http import Http404
 from django.shortcuts import redirect, render
 from django.views.decorators.http import require_http_methods
+from openai import OpenAI
 
-from evaluation_registry.evaluations.forms import EvaluationCreateForm
+from evaluation_registry import settings
+from evaluation_registry.evaluations.auto_fill import (
+    evaluation_initial_data_schema,
+)
+from evaluation_registry.evaluations.forms import (
+    EvaluationCreateForm,
+    EvaluationFileForm,
+)
 from evaluation_registry.evaluations.models import (
     Department,
     Evaluation,
     EvaluationDepartmentAssociation,
     EvaluationDesignType,
+    EvaluationFile,
 )
 
 
@@ -180,3 +193,87 @@ def evaluation_create_view(request, status):
         "share-form/evaluation-create.html",
         {"form": form, "status": status, "departments": departments, "data": data, "errors": errors},
     )
+
+
+def extract_structured_text(plain_text: str) -> dict:
+    client = OpenAI(api_key=settings.OPENAI_KEY)
+
+    prompt = {
+        "name": "extract_evaluation_info",
+        "description": "Extract evaluation information from the body of the input text",
+        "type": "object",
+        "parameters": evaluation_initial_data_schema,
+    }
+
+    print("sending data...")
+    response = client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=[{"role": "user", "content": " ".join(plain_text.split(" ")[:2500])}],
+        tools=[{"type": "function", "function": prompt}],
+        tool_choice="auto",
+    )
+    print("...got data!")
+
+    return json.loads(response.choices[0].message.tool_calls[0].function.arguments)
+
+
+def clean_structured_data(structured_data):
+    if lead_department := structured_data.get("lead_department"):
+        structured_data["lead_department"] = (
+            Department.objects.annotate(search=SearchVector("code", "display"))
+            .filter(search=lead_department)
+            .first()
+            .code
+        )
+
+    for i, evaluation_design_type in enumerate(structured_data["evaluation_design_types"]):
+        structured_data["evaluation_design_types"][i] = (
+            EvaluationDesignType.objects.annotate(search=SearchVector("code", "display"))
+            .filter(search=evaluation_design_type)
+            .first()
+            .code
+        )
+    return structured_data
+
+
+def evaluation_upload(request):
+    if request.method == "POST":
+        # Process form data
+        form = EvaluationFileForm(request.POST, request.FILES)
+        if form.is_valid():
+            instance = form.save()
+
+            with pdfplumber.open(form.cleaned_data["file"].file) as pdf:
+                plain_text = "".join(page.extract_text() for page in pdf.pages)
+
+            print(plain_text)
+
+            instance.plain_text = plain_text
+            instance.save()
+
+            structured_text = extract_structured_text(plain_text)
+            instance.structured_text = structured_text
+            instance.save()
+
+            print(structured_text)
+
+            instance.structured_text = clean_structured_data(instance.structured_text)
+            instance.save()
+
+            return render(
+                request,
+                "share-form/evaluation-create.html",
+                {
+                    "form": form,
+                    "status": "who-knows",
+                    "departments": Department.objects.all(),
+                    "data": structured_text,
+                    "errors": [],
+                },
+            )
+
+        errors = form.errors.as_data()
+        return render(request, "evaluation_upload.html", context={"errors": errors})
+
+    # Render the form page for GET requests
+    return render(request, "evaluation_upload.html")

@@ -31,7 +31,6 @@ DATABASES = {
         "PASSWORD": env.str("POSTGRES_PASSWORD"),
         "HOST": env.str("POSTGRES_HOST"),
         "PORT": env.str("POSTGRES_PORT"),
-        "ATOMIC_REQUESTS": True,
         "DISABLE_SERVER_SIDE_CURSORS": True,
     }
 }

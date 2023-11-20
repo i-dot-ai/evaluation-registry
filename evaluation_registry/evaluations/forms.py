@@ -1,6 +1,10 @@
 from django.forms import ModelChoiceField, ModelForm, ModelMultipleChoiceField
 
-from evaluation_registry.evaluations.models import Department, Evaluation
+from evaluation_registry.evaluations.models import (
+    Department,
+    Evaluation,
+    EvaluationFile,
+)
 
 
 class NullableModelMultipleChoiceField(ModelMultipleChoiceField):
@@ -37,3 +41,9 @@ class EvaluationCreateForm(ModelForm):
     class Meta:
         model = Evaluation
         fields = ["status", "title"]
+
+
+class EvaluationFileForm(ModelForm):
+    class Meta:
+        model = EvaluationFile
+        fields = ["file"]
