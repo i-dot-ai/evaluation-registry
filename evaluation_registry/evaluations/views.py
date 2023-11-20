@@ -5,6 +5,7 @@ from django.contrib.postgres.search import (
 )
 from django.core.paginator import Paginator
 from django.db.models import QuerySet
+from django.forms import modelform_factory
 from django.http import Http404
 from django.shortcuts import redirect, render
 from django.views.decorators.http import require_http_methods
@@ -267,5 +268,49 @@ def evaluation_update_type_view(request, uuid, parent=None):
             "errors": errors,
             "data": data,
             "parent": parent_object,
+        },
+    )
+
+
+@require_http_methods(["GET", "POST"])
+def evaluation_update_view(request, uuid):
+    try:
+        evaluation = Evaluation.objects.get(id=uuid)
+    except Evaluation.DoesNotExist:
+        raise Http404("No %(verbose_name)s found matching the query" % {"verbose_name": Evaluation._meta.verbose_name})
+
+    errors = {}
+    form_fields = [
+        "brief_description",
+        "grant_number",
+        "has_grant_number",
+        "major_project_number",
+        "has_major_project_number",
+    ]
+    EvaluationForm = modelform_factory(Evaluation, fields=form_fields)  # noqa: N806
+
+    if request.method == "POST":
+        form = EvaluationForm(request.POST, instance=evaluation)
+
+        if form.is_valid():
+            for field in form_fields:
+                setattr(evaluation, field, form.cleaned_data[field])
+            evaluation.save(update_fields=form_fields)
+
+            return redirect("evaluation-detail", uuid=evaluation.id)  # TODO: redirect to next page of form
+
+        else:
+            errors = form.errors.as_data()
+
+    else:
+        form = EvaluationForm(instance=evaluation)
+
+    return render(
+        request,
+        "share-form/evaluation-description.html",
+        {
+            "evaluation": evaluation,
+            "form": form,
+            "errors": errors,
         },
     )
