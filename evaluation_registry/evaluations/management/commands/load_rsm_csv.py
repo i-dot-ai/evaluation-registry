@@ -1,4 +1,5 @@
 # TODO: update this, pending dicussion with RSM team about data structures
+import csv
 
 # flake8: noqa
 import json
@@ -17,11 +18,6 @@ from evaluation_registry.evaluations.models import (
     EventDate,
     Report,
 )
-
-
-def parse_row(text):
-    return json.loads(f"[{text}]")
-
 
 DEPARTMENTS = {
     None: [],
@@ -471,8 +467,7 @@ class Command(BaseCommand):
         admin, _ = get_user_model().objects.get_or_create(email="i-dot-ai-team@cabinetoffice.gov.uk")
 
         with open(file) as f:
-            header, *rows = map(parse_row, f)
-            records = [dict(zip(header, row)) for row in rows]
+            records = list(csv.DictReader(f))
 
         Evaluation.objects.filter(created_by=admin).delete()
 
@@ -486,7 +481,7 @@ class Command(BaseCommand):
             if len(published_evaluation_link or "") > 1024:
                 published_evaluation_link = None
 
-            if record["Major projects identifier"] == "Y":
+            if record["\ufeffMajor projects identifier"] == "Y":
                 continue
 
             if record["Evaluation title"] is None:
@@ -561,6 +556,9 @@ class Command(BaseCommand):
             make_event_date(evaluation, record, EventDate.Category.OTHER, "Event start date")
 
             self.stdout.write(self.style.SUCCESS('Successfully created Evaluation "%s"' % record["Evaluation title"]))
+
+            if not record["Client"]:
+                continue
 
             for department in Department.objects.filter(code__in=DEPARTMENTS[record["Client"]]):
                 EvaluationDepartmentAssociation.objects.create(

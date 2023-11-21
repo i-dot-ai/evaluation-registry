@@ -5,7 +5,7 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("evaluations", "0005_historicalevaluation"),
+        ("evaluations", "0006_historicalevaluation"),
     ]
 
     operations = [

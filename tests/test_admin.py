@@ -12,7 +12,7 @@ def test_rsm_upload(admin_client):
     1. upload a new RSM csv
     2. call the import_csv action on it
     """
-    file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "rsm-data-2023-07-21.scsv")
+    file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "rsm-data-2023-07-21.csv")
 
     with open(file_path, "rb") as file:
         file_data = file.read()
