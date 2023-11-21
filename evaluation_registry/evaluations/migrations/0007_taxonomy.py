@@ -16,7 +16,7 @@ def populate_taxonomy_model(apps, schema_editor):
 
     for code, display, parent in TAXONOMIES:
         Taxonomy.objects.get_or_create(
-            code=code.replace("https://www.gov.uk/api/content/", ""),
+            code=code,
             display=display,
         )
 
@@ -26,7 +26,7 @@ def update_taxonomy_parents(apps, schema_editor):
 
     for code, _, parent in TAXONOMIES:
         if parent:
-            parent_instance = Taxonomy.objects.get(code=parent.replace("https://www.gov.uk/api/content/", ""))
+            parent_instance = Taxonomy.objects.get(code=parent)
 
             Taxonomy.objects.filter(code=code).update(
                 parent=parent_instance,
