@@ -198,13 +198,10 @@ def update_evaluation_design_objects(existing_objects, existing_design_types, fo
 
     to_remove = set(existing_design_types).difference(form.cleaned_data["design_types"])
     for design_type in to_remove:
-        for dt in existing_objects.filter(design_type=design_type):
-            dt.delete()
+        existing_objects.filter(design_type=design_type).delete()
 
     if should_update_text:  # handles the case where the 'Other' text has been updated
-        for dt in existing_objects.filter(design_type__collect_description=True):
-            dt.text = form.cleaned_data["text"]
-            dt.save()
+        existing_objects.filter(design_type__collect_description=True).update(text=form.cleaned_data["text"])
 
 
 @require_http_methods(["GET", "POST"])
@@ -215,16 +212,16 @@ def evaluation_update_type_view(request, uuid, parent=None):
         raise Http404("No %(verbose_name)s found matching the query" % {"verbose_name": Evaluation._meta.verbose_name})
 
     if parent:
-        parent_type = EvaluationDesignType.objects.get(code=parent)
-        options = EvaluationDesignType.objects.filter(parent=parent_type)
-        if options.count() == 0:
+        parent_object = EvaluationDesignType.objects.get(code=parent)
+        options = EvaluationDesignType.objects.filter(parent__code=parent)
+        if not options.exists():
             raise Http404(
                 "No %(verbose_name)s found matching the query"
                 % {"verbose_name": EvaluationDesignType._meta.verbose_name}
             )
     else:
         options = EvaluationDesignType.root_objects.all()
-        parent_type = None
+        parent_object = None
 
     data = {"evaluation": evaluation, "design_types": [], "design_types_codes": [], "text": ""}
     existing_links = EvaluationDesignTypeDetail.objects.filter(evaluation=evaluation, design_type__in=options)
@@ -269,6 +266,6 @@ def evaluation_update_type_view(request, uuid, parent=None):
             "options": options,
             "errors": errors,
             "data": data,
-            "parent": parent_type,
+            "parent": parent_object,
         },
     )
