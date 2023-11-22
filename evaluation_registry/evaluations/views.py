@@ -5,7 +5,7 @@ from django.contrib.postgres.search import (
 )
 from django.core.paginator import Paginator
 from django.db.models import QuerySet
-from django.forms import modelform_factory
+from django.forms import modelform_factory, modelformset_factory
 from django.http import Http404
 from django.shortcuts import redirect, render
 from django.views.decorators.http import require_http_methods
@@ -13,6 +13,7 @@ from django.views.decorators.http import require_http_methods
 from evaluation_registry.evaluations.forms import (
     EvaluationCreateForm,
     EvaluationDesignTypeDetailForm,
+    EventDateForm,
 )
 from evaluation_registry.evaluations.models import (
     Department,
@@ -20,6 +21,7 @@ from evaluation_registry.evaluations.models import (
     EvaluationDepartmentAssociation,
     EvaluationDesignType,
     EvaluationDesignTypeDetail,
+    EventDate,
 )
 
 
@@ -312,5 +314,53 @@ def evaluation_update_view(request, uuid):
             "evaluation": evaluation,
             "form": form,
             "errors": errors,
+        },
+    )
+
+
+@require_http_methods(["GET", "POST"])
+def evaluation_update_dates_view(request, uuid):
+    try:
+        evaluation = Evaluation.objects.get(id=uuid)
+    except Evaluation.DoesNotExist:
+        raise Http404("No %(verbose_name)s found matching the query" % {"verbose_name": Evaluation._meta.verbose_name})
+
+    form_fields = ["evaluation", "month", "year", "other_description", "category"]
+    errors = {}
+    existing_date_count = EventDate.objects.filter(evaluation=evaluation).count()
+    DateFormset = modelformset_factory(  # noqa: N806
+        EventDate,
+        form=EventDateForm,
+        fields=form_fields,
+        extra=1 if existing_date_count else 3,
+    )
+
+    if request.method == "POST":
+        formset = DateFormset(request.POST, queryset=EventDate.objects.filter(evaluation=evaluation))
+
+        for form in formset:
+            form.initial["evaluation"] = evaluation  # required so the blank form is ignored if unchanged
+
+        if formset.is_valid():
+            formset.save()
+
+            if request.POST.get("addanother"):
+                return redirect("evaluation-update-dates", uuid=evaluation.id)
+
+            return redirect("evaluation-detail", uuid=evaluation.id)  # TODO: redirect to next page of form
+
+        errors = formset.errors
+
+    formset = DateFormset(queryset=EventDate.objects.filter(evaluation=evaluation))
+
+    return render(
+        request,
+        "share-form/evaluation-dates.html",
+        {
+            "evaluation": evaluation,
+            "formset": formset,
+            "errors": errors,
+            "categories": EventDate.Category,
+            "existing_date_count": existing_date_count,
         },
     )

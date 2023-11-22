@@ -21,17 +21,19 @@ class NullableModelMultipleChoiceField(ModelMultipleChoiceField):
         return super().clean(value)
 
 
-class EvaluationCreateForm(ModelForm):
+class BetterErrorsModelForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(BetterErrorsModelForm, self).__init__(*args, **kwargs)
+
+        for field in self.fields.values():
+            field.error_messages = {"required": f"{field.label} is required"}
+
+
+class EvaluationCreateForm(BetterErrorsModelForm):
     lead_department = ModelChoiceField(queryset=Department.objects.all(), to_field_name="code", label="Lead Department")
     departments = NullableModelMultipleChoiceField(
         queryset=Department.objects.all(), to_field_name="code", required=False
     )
-
-    def __init__(self, *args, **kwargs):
-        super(EvaluationCreateForm, self).__init__(*args, **kwargs)
-
-        for field in self.fields.values():
-            field.error_messages = {"required": f"{field.label} is required"}
 
     def clean(self):
         super().clean()
@@ -70,3 +72,7 @@ class EvaluationDesignTypeDetailForm(Form):
         if design_types:
             if design_types.filter(collect_description=True).exists() and not text:
                 self.add_error("text", "Please provide additional description for the 'Other' choice")
+
+
+class EventDateForm(BetterErrorsModelForm):
+    pass

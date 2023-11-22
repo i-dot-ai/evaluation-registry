@@ -21,6 +21,7 @@ other_urlpatterns = [
         name="evaluation-update-type-child",
     ),
     path("evaluation/<uuid:uuid>/update-description/", views.evaluation_update_view, name="evaluation-update"),
+    path("evaluation/<uuid:uuid>/update-dates/", views.evaluation_update_dates_view, name="evaluation-update-dates"),
     path("evaluation/create", views.start_form_view, name="start-form"),
     path("evaluation/create/<str:status>", views.evaluation_create_view, name="evaluation-create"),
     path("accounts/", include("allauth.urls")),

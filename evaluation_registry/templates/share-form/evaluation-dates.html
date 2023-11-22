@@ -1,0 +1,283 @@
+{% extends "base.html" %}
+
+
+
+{% block content %}
+
+
+<div class="govuk-grid-row">
+  <form action="{{url('evaluation-update-dates', evaluation.id)}}" method="post">
+    {{csrf_input}}
+    {{ formset.management_form }}
+
+    <h2 class="govuk-heading-l">Dates</h1>
+
+    {% if errors %}
+      <div class="govuk-error-summary" data-module="govuk-error-summary">
+        <div role="alert">
+          <h3 class="govuk-error-summary__title">
+            There is a problem
+          </h3>
+          <div class="govuk-error-summary__body">
+            <ul class="govuk-list govuk-error-summary__list">
+              {% for form_errors in errors %}
+                {% set outer_loop = loop %}
+                {% for field, error_list in form_errors.items() %}
+                  {% for error in error_list %}
+                    <li>
+                      <a href="#id_form-{{outer_loop.index0}}-{{field}}">{{error}}</a>
+                    </li>
+                  {% endfor %}
+                {% endfor %}
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+
+    {% if existing_date_count %}
+      <h3 class="govuk-heading-m">Existing Dates</h1>
+      {% for date_key in range(0, existing_date_count) %}
+        <div class="govuk-form-group {% if errors[date_key] %}govuk-form-group--error{% endif %}">
+          {{ formset[date_key].id }}
+          <input type="hidden" id="id_form-{{date_key}}-evaluation" name="form-{{date_key}}-evaluation" value="{{evaluation.id}}" />
+          <fieldset class="govuk-fieldset" role="group" aria-describedby="id_form-{{date_key}}-hint">
+            <legend class="govuk-fieldset__legend">
+              <h4 class="govuk-fieldset__heading">Existing date {{date_key + 1}}</h4>
+            </legend>
+            {% if errors[date_key] %}
+              <div id="id_form-{{date_key}}-error" class="govuk-error-message">
+                {% for error_list in errors[date_key].values() %}
+                  {% for error in error_list %}
+                    <p><span class="govuk-visually-hidden">Error:</span> {{error}}</p>
+                  {% endfor %}
+                {% endfor %}
+              </div>
+            {% endif %}
+            <div class="govuk-form-group">
+              <label class="govuk-label" for="id_form-{{date_key}}-category">
+                Event type
+              </label>
+              <select class="govuk-select" id="id_form-{{date_key}}-category" name="form-{{date_key}}-category">
+                {% for category in categories %}
+                  <option value="{{category.value}}" {% if formset[date_key].category.value() == category.value %}selected{% endif %}>{{category.label}}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="govuk-date-input" id="id_form-{{date_key}}">
+              <div class="govuk-date-input__item">
+                <div class="govuk-form-group">
+                  <label class="govuk-label govuk-date-input__label" for="id_form-{{date_key}}-month">
+                    Month
+                  </label>
+                  <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="id_form-{{date_key}}-month" name="form-{{date_key}}-month" type="text" inputmode="numeric" value="{{formset[date_key].month.value() or ''}}">
+                </div>
+              </div>
+              <div class="govuk-date-input__item">
+                <div class="govuk-form-group">
+                  <label class="govuk-label govuk-date-input__label" for="id_form-{{date_key}}-year">
+                    Year
+                  </label>
+                  <input class="govuk-input govuk-date-input__input govuk-input--width-4" id="id_form-{{date_key}}-year" name="form-{{date_key}}-year" type="text" inputmode="numeric" value="{{formset[date_key].year.value() or ''}}">
+                </div>
+              </div>
+            </div>
+          </fieldset>
+        </div>
+      {% endfor %}
+
+      <h3 class="govuk-heading-m">New date information (optional)</h1>
+      {% set date_key = existing_date_count %}
+      <div class="govuk-form-group {% if errors[date_key] %}govuk-form-group--error{% endif %}">
+        {{ formset[date_key].id }}
+        <input type="hidden" id="id_form-{{date_key}}-evaluation" name="form-{{date_key}}-evaluation" value="{{evaluation.id}}" />
+        <fieldset class="govuk-fieldset" role="group" aria-describedby="id_form-{{date_key}}-hint">
+          <legend class="govuk-fieldset__legend">
+            <h4 class="govuk-fieldset__heading">Add new date details here</h4>
+          </legend>
+          {% if errors[date_key] %}
+            <div id="id_form-{{date_key}}-error" class="govuk-error-message">
+              {% for error_list in errors[date_key].values() %}
+                {% for error in error_list %}
+                  <p><span class="govuk-visually-hidden">Error:</span> {{error}}</p>
+                {% endfor %}
+              {% endfor %}
+            </div>
+          {% endif %}
+          <div class="govuk-form-group">
+            <label class="govuk-label" for="id_form-{{date_key}}-category">
+              Event type
+            </label>
+            <select class="govuk-select" id="id_form-{{date_key}}-category" name="form-{{date_key}}-category">
+              {% for category in categories %}
+                <option value="{{category.value}}" {% if formset[date_key].category.value() == category.value %}selected{% endif %}>{{category.label}}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="govuk-date-input" id="id_form-{{date_key}}">
+            <div class="govuk-date-input__item">
+              <div class="govuk-form-group">
+                <label class="govuk-label govuk-date-input__label" for="id_form-{{date_key}}-month">
+                  Month
+                </label>
+                <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="id_form-{{date_key}}-month" name="form-{{date_key}}-month" type="text" inputmode="numeric" value="{{formset[date_key].month.value() or ''}}">
+              </div>
+            </div>
+            <div class="govuk-date-input__item">
+              <div class="govuk-form-group">
+                <label class="govuk-label govuk-date-input__label" for="id_form-{{date_key}}-year">
+                  Year
+                </label>
+                <input class="govuk-input govuk-date-input__input govuk-input--width-4" id="id_form-{{date_key}}-year" name="form-{{date_key}}-year" type="text" inputmode="numeric" value="{{formset[date_key].year.value() or ''}}">
+              </div>
+            </div>
+          </div>
+        </fieldset>
+      </div>
+
+    {% else %}
+      <div class="govuk-form-group {% if errors[0] %}govuk-form-group--error{% endif %}">
+        <input type="hidden" id="id_form-0-category" name="form-0-category" value="{{categories.EVALUATION_START}}" />
+        <input type="hidden" id="id_form-0-evaluation" name="form-0-evaluation" value="{{evaluation.id}}" />
+        <fieldset class="govuk-fieldset" role="group" aria-describedby="id_form-0-hint">
+          <legend class="govuk-fieldset__legend">
+            <h3 class="govuk-fieldset__heading">Evaluation start date</h3>
+          </legend>
+          <div id="id_form-0-hint" class="govuk-hint">
+            For example, 27 3 2007, this could be in the future or the past
+          </div>
+          {% if errors[0] %}
+            <div id="id_form-0-error" class="govuk-error-message">
+              {% for error_list in errors[0].values() %}
+                {% for error in error_list %}
+                  <p><span class="govuk-visually-hidden">Error:</span> {{error}}</p>
+                {% endfor %}
+              {% endfor %}
+            </div>
+          {% endif %}
+          <div class="govuk-date-input" id="id_form-0">
+            <div class="govuk-date-input__item">
+              <div class="govuk-form-group">
+                <label class="govuk-label govuk-date-input__label" for="id_form-0-month">
+                  Month
+                </label>
+                <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="id_form-0-month" name="form-0-month" type="text" inputmode="numeric">
+              </div>
+            </div>
+            <div class="govuk-date-input__item">
+              <div class="govuk-form-group">
+                <label class="govuk-label govuk-date-input__label" for="id_form-0-year">
+                  Year
+                </label>
+                <input class="govuk-input govuk-date-input__input govuk-input--width-4" id="id_form-0-year" name="form-0-year" type="text" inputmode="numeric">
+              </div>
+            </div>
+          </div>
+        </fieldset>
+      </div>
+
+      <div class="govuk-form-group {% if errors[1] %}govuk-form-group--error{% endif %}">
+        <input type="hidden" id="id_form-1-category" name="form-1-category" value="{{categories.EVALUATION_END}}" />
+        <input type="hidden" id="id_form-1-evaluation" name="form-1-evaluation" value="{{evaluation.id}}" />
+        <fieldset class="govuk-fieldset" role="group" aria-describedby="id_form-1-hint">
+          <legend class="govuk-fieldset__legend">
+            <h3 class="govuk-fieldset__heading">Evaluation end date</h3>
+          </legend>
+          <div id="id_form-1-hint" class="govuk-hint">
+            When the evaluation is planned to finish
+          </div>
+          {% if errors[1] %}
+            <div id="id_form-1-error" class="govuk-error-message">
+              {% for error_list in errors[1].values() %}
+                {% for error in error_list %}
+                  <p><span class="govuk-visually-hidden">Error:</span> {{error}}</p>
+                {% endfor %}
+              {% endfor %}
+            </div>
+          {% endif %}
+          <div class="govuk-date-input" id="id_form-1">
+            <div class="govuk-date-input__item">
+              <div class="govuk-form-group">
+                <label class="govuk-label govuk-date-input__label" for="id_form-1-month">
+                  Month
+                </label>
+                <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="id_form-1-month" name="form-1-month" type="text" inputmode="numeric">
+              </div>
+            </div>
+            <div class="govuk-date-input__item">
+              <div class="govuk-form-group">
+                <label class="govuk-label govuk-date-input__label" for="id_form-1-year">
+                  Year
+                </label>
+                <input class="govuk-input govuk-date-input__input govuk-input--width-4" id="id_form-1-year" name="form-1-year" type="text" inputmode="numeric">
+              </div>
+            </div>
+          </div>
+        </fieldset>
+      </div>
+
+      <div class="govuk-form-group {% if errors[2] %}govuk-form-group--error{% endif %}">
+        <input type="hidden" id="id_form-2-category" name="form-2-category" value="{{categories.PUBLICATION_FINAL_RESULTS}}" />
+        <input type="hidden" id="id_form-2-evaluation" name="form-2-evaluation" value="{{evaluation.id}}" />
+        <fieldset class="govuk-fieldset" role="group" aria-describedby="id_form-2-hint">
+          <legend class="govuk-fieldset__legend">
+            <h3 class="govuk-fieldset__heading">Publication of evaluation report</h3>
+          </legend>
+          <div id="id_form-2-hint" class="govuk-hint">
+            When the final evaluation report is planned to be published
+          </div>
+          {% if errors[2] %}
+            <div id="id_form-2-error" class="govuk-error-message">
+              {% for error_list in errors[2].values() %}
+                {% for error in error_list %}
+                  <p><span class="govuk-visually-hidden">Error:</span> {{error}}</p>
+                {% endfor %}
+              {% endfor %}
+            </div>
+          {% endif %}
+          <div class="govuk-date-input" id="id_form-2">
+            <div class="govuk-date-input__item">
+              <div class="govuk-form-group">
+                <label class="govuk-label govuk-date-input__label" for="id_form-2-month">
+                  Month
+                </label>
+                <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="id_form-2-month" name="form-2-month" type="text" inputmode="numeric">
+              </div>
+            </div>
+            <div class="govuk-date-input__item">
+              <div class="govuk-form-group">
+                <label class="govuk-label govuk-date-input__label" for="id_form-2-year">
+                  Year
+                </label>
+                <input class="govuk-input govuk-date-input__input govuk-input--width-4" id="id_form-2-year" name="form-2-year" type="text" inputmode="numeric">
+              </div>
+            </div>
+          </div>
+        </fieldset>
+      </div>
+
+    {% endif %}
+
+    <button
+      class="govuk-button govuk-button--secondary"
+      data-module="govuk-button"
+      formaction="{{url('evaluation-update-dates', evaluation.id)}}"
+      name="addanother"
+      value="date"
+    >
+      Save and add another date
+    </button>
+    <br>
+
+    <button
+      data-prevent-double-click="true"
+      class="govuk-button"
+      data-module="govuk-button"
+    >
+      Save and continue
+    </button>
+  </form>
+</div>
+
+{% endblock %}
