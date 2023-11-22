@@ -7,7 +7,7 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("evaluations", "0007_taxonomy"),
+        ("evaluations", "0002_populate_reference_data"),
     ]
 
     operations = [
