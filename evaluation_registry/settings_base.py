@@ -65,6 +65,7 @@ INSTALLED_APPS = [
     "django.contrib.sites",
     "django.contrib.staticfiles",
     "simple_history",
+    "storages",
 ]
 
 MIDDLEWARE = [

@@ -263,3 +263,10 @@ class EventDate(TimeStampedModel):
         if self.month:
             return f"{calendar.month_name[self.month]} {self.year}"
         return f"{self.year}"
+
+
+class RSMFile(TimeStampedModel):
+    """raw RSM data files"""
+
+    csv = models.FileField(upload_to="rsm_csv_files/")
+    last_successfully_loaded_at = models.DateTimeField(null=True, blank=True)
