@@ -1,4 +1,5 @@
-rsm_csv_files/
+rsm_csv_files/*
+*.zip
 .idea/
 *.pyc
 /staticfiles/
