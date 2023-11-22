@@ -70,7 +70,13 @@ class EvaluationDesignTypeAdmin(admin.ModelAdmin):
     list_filter = ["parent"]
 
 
+class TaxonomyAdmin(admin.ModelAdmin):
+    list_display = ["code", "display", "parent"]
+    list_filter = ["parent"]
+
+
 admin.site.register(models.Evaluation, EvaluationAdmin)
 admin.site.register(models.Department, DepartmentAdmin)
 admin.site.register(models.EvaluationDesignType, EvaluationDesignTypeAdmin)
+admin.site.register(models.Taxonomy, TaxonomyAdmin)
 admin.site.register(models.User)

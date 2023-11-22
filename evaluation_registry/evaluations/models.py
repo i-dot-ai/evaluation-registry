@@ -52,7 +52,7 @@ class RootDesignTypeManager(models.Manager):
         return super().get_queryset().filter(parent__isnull=True)
 
 
-class EvaluationDesignType(TimeStampedModel):
+class AbstractChoice(TimeStampedModel):
     code = models.SlugField(
         max_length=128,
         unique=True,
@@ -60,6 +60,15 @@ class EvaluationDesignType(TimeStampedModel):
     )
     display = models.CharField(max_length=512, help_text="display name")
     parent = models.ForeignKey("self", related_name="children", on_delete=models.CASCADE, blank=True, null=True)
+
+    def __str__(self):
+        return self.display
+
+    class Meta:
+        abstract = True
+
+
+class EvaluationDesignType(AbstractChoice):
     collect_description = models.BooleanField(
         default=False, help_text="Use for 'other' types to prompt further information"
     )
@@ -67,8 +76,9 @@ class EvaluationDesignType(TimeStampedModel):
     objects = models.Manager()
     root_objects = RootDesignTypeManager()
 
-    def __str__(self):
-        return self.display
+
+class Taxonomy(AbstractChoice):
+    pass
 
 
 class Evaluation(TimeStampedModel):
