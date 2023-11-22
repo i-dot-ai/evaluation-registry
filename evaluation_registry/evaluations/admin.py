@@ -38,6 +38,7 @@ import_csv.short_description = "Import selected CSV file"  # type: ignore
 class RSMFileAdmin(admin.ModelAdmin):
     actions = [import_csv]
     list_display = ["id", "csv", "last_successfully_loaded_at"]
+    readonly_fields = ["last_successfully_loaded_at"]
 
 
 class EventDateInline(admin.TabularInline):
