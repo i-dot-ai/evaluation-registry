@@ -24,7 +24,7 @@ jobs:
     - name: Set up Python 3.11
       uses: actions/setup-python@v3
       with:
-        python-version: 3.11
+        python-version: 3.11.2
 
     - name: Install dependencies
       run: |
@@ -75,6 +75,11 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v3
+      with:
+        python-version: 3.11.2
+
     - name: Install Requirements
       run: |
         python3 -m pip install --upgrade pip setuptools
@@ -82,4 +87,4 @@ jobs:
 
     - name: Run tests
       run: |
-        POSTGRES_HOST=localhost python3.11 -m pytest . --cov=evaluation_registry  --cov-fail-under 50
+        POSTGRES_HOST=localhost python3 -m pytest . --cov=evaluation_registry  --cov-fail-under 50
