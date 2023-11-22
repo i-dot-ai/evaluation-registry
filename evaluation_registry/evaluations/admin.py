@@ -6,8 +6,8 @@ from django.contrib.postgres.search import (
     SearchRank,
     SearchVector,
 )
-from simple_history.admin import SimpleHistoryAdmin
 from django.core.management import call_command
+from simple_history.admin import SimpleHistoryAdmin
 
 from . import models
 from .models import (
