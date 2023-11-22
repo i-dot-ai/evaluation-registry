@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
                 ("created_at", models.DateTimeField(auto_now_add=True)),
                 ("modified_at", models.DateTimeField(auto_now=True)),
                 ("csv", models.FileField(upload_to="rsm_csv_files/")),
-                ("last_successfully_loaded_at", models.DateTimeField(null=True)),
+                ("last_successfully_loaded_at", models.DateTimeField(null=True, blank=True)),
             ],
             options={
                 "abstract": False,

@@ -64,7 +64,11 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.sites",
     "django.contrib.staticfiles",
+<<<<<<< HEAD
     "simple_history",
+=======
+    "storages",
+>>>>>>> ea39801 (added django storage)
 ]
 
 MIDDLEWARE = [
