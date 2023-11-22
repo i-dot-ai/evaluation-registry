@@ -77,7 +77,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "csp.middleware.CSPMiddleware",
+    # "csp.middleware.CSPMiddleware",
     "django_permissions_policy.PermissionsPolicyMiddleware",
     "django_permissions_policy.PermissionsPolicyMiddleware",
     "allauth.account.middleware.AccountMiddleware",
@@ -149,9 +149,9 @@ PERMISSIONS_POLICY: dict[str, list] = {
 }
 
 
-CSP_DEFAULT_SRC = ("'self'", "'sha256-oFNrsKhzOBUVceDuefWEqtXEXMM9LIL4cUnoVkDYPzA='")
+# CSP_DEFAULT_SRC = ("'self'", "'sha256-oFNrsKhzOBUVceDuefWEqtXEXMM9LIL4cUnoVkDYPzA='")
 
-CSP_STYLE_SRC = "'self'"
+# CSP_STYLE_SRC = "'self'"
 
 
 OTP_TOTP_ISSUER = ""  # TODO: Add issuer name
