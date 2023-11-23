@@ -173,3 +173,5 @@ CSP_FRAME_ANCESTORS = ("'none'",)
 
 
 CSRF_COOKIE_HTTPONLY = True
+
+DATA_UPLOAD_MAX_MEMORY_SIZE = 100 * 1024 * 1024  # 100 megabytes in bytes
