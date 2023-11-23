@@ -71,7 +71,7 @@ def reformat_text(modeladmin, request, queryset):
         reformat_evaluation(evaluation)
 
 
-reformat_text.short_description = "Reformat selected Evaluation"  # type: ignore
+reformat_text.short_description = "Reformat selected evaluations"  # type: ignore
 
 
 class EvaluationAdmin(SimpleHistoryAdmin):
