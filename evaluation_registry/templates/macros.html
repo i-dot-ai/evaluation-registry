@@ -1,5 +1,5 @@
-{% macro govuk_input(id, label, hint) -%}
-  <div class="govuk-form-group {% if errors[id] %}govuk-form-group--error{% endif %}">
+{% macro govuk_input(id, label, hint, hidden=False) -%}
+  <div id="{{id}}-form-group" class="govuk-form-group {% if errors[id] %}govuk-form-group--error{% endif %} {% if hidden %}govuk-!-display-none{% endif %}">
     <h3 class="govuk-label-wrapper">
       <label class="govuk-label govuk-label--m" for="{{id}}">
         {{ label }}
