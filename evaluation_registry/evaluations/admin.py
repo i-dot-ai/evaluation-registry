@@ -1,3 +1,4 @@
+import csv
 import datetime
 
 from django.contrib import admin
@@ -6,10 +7,10 @@ from django.contrib.postgres.search import (
     SearchRank,
     SearchVector,
 )
-from django.core.management import call_command
 from simple_history.admin import SimpleHistoryAdmin
 
 from . import models
+from .management.commands import load_rsm_csv
 from .models import (
     Evaluation,
     EvaluationDepartmentAssociation,
@@ -27,7 +28,10 @@ def import_csv(modeladmin, request, queryset):
         return
 
     file = queryset.first()
-    call_command("load_rsm_csv", file.csv.file)
+    text_file = (line.decode() for line in file.csv.file)
+    records = list(csv.DictReader(text_file))
+    cmd = load_rsm_csv.Command()
+    cmd.process_tabular_data(records)
     file.last_successfully_loaded_at = datetime.datetime.now()
     file.save()
 
