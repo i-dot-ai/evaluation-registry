@@ -28,7 +28,7 @@ def import_csv(modeladmin, request, queryset):
 
     file = queryset.first()
     cmd = load_rsm_csv.Command()
-    cmd.handle(file=file.csv.path)
+    cmd.handle(file=file.csv.file)
     file.last_successfully_loaded_at = datetime.datetime.now()
     file.save()
 
