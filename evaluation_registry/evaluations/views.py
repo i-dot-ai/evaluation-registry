@@ -9,7 +9,6 @@ from django.forms import modelform_factory
 from django.http import Http404
 from django.shortcuts import redirect, render
 from django.views.decorators.http import require_http_methods
-from openai import OpenAI
 
 from evaluation_registry.evaluations.forms import (
     EvaluationCreateForm,

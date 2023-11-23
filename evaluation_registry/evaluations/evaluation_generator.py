@@ -42,7 +42,6 @@ def extract_structured_text(plain_text: str) -> dict:
         "parameters": evaluation_initial_data_schema,
     }
 
-    print("sending data...")
     response = client.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[{"role": "user", "content": " ".join(plain_text.split(" ")[:2500])}],

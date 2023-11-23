@@ -24,7 +24,6 @@ other_urlpatterns = [
     path("evaluation/create", views.start_form_view, name="start-form"),
     path("evaluation/create/<str:status>", views.evaluation_create_view, name="evaluation-create"),
     path("accounts/", include("allauth.urls")),
-    path("evaluation/upload/", views.evaluation_upload, name="evaluation-upload"),
 ]
 
 urlpatterns = info_urlpatterns + other_urlpatterns
