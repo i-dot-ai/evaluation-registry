@@ -24,7 +24,7 @@ jobs:
     - name: Set up Python 3.11
       uses: actions/setup-python@v3
       with:
-        python-version: 3.11.2
+        python-version: 3.11
 
     - name: Install dependencies
       run: |
@@ -78,7 +78,7 @@ jobs:
     - name: Set up Python 3.11
       uses: actions/setup-python@v3
       with:
-        python-version: 3.11.2
+        python-version: 3.11
 
     - name: Install Requirements
       run: |

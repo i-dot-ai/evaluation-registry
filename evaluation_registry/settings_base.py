@@ -166,11 +166,6 @@ CSP_FONT_SRC = (
 )
 CSP_STYLE_SRC = (
     "'self'",
-    # "'sha256-fcj8P58DtlrZPJORF4roitkoFbboHXWREAnRvlkaL/4='",
-    # "'sha256-tQXF0Wlb56M85KYggqICk/Ilfk/1hedv8R+hl100x9A='",
-    # "'sha256-tTdrU1nKvQs8zqccGq1fR/jBCiOnDxdVSAwz5FZiBKU='",
-    # "'sha256-RKeoQVHvW0lTyBUziYRZregOJdAAl2UB0BpKHFM43zM='",
-    # "'sha256-OTF45AC9dUy3d+Pn5nw3L04uKoswYSiQARqrXlLoxdo='",
     "evaluation-registry-files-dev.s3.amazonaws.com",
     "evaluation-registry-files-prod.s3.amazonaws.com",
 )
