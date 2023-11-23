@@ -11,6 +11,7 @@ from simple_history.admin import SimpleHistoryAdmin
 
 from . import models
 from .management.commands import load_rsm_csv
+from .management.commands.reformat_description import reformat_evaluation
 from .models import (
     Evaluation,
     EvaluationDepartmentAssociation,
@@ -65,11 +66,20 @@ class EvaluationDesignTypeDetailInline(admin.TabularInline):
     extra = 0
 
 
+def reformat_text(modeladmin, request, queryset):
+    for evaluation in queryset:
+        reformat_evaluation(evaluation)
+
+
+reformat_text.short_description = "Reformat selected Evaluation"  # type: ignore
+
+
 class EvaluationAdmin(SimpleHistoryAdmin):
     list_display = ["rsm_evaluation_id", "title", "lead_department", "visibility"]
     list_filter = ["visibility", "evaluation_design_types__display"]
     search_fields = ("title", "brief_description")
     inlines = [ReportInline, EventDateInline, EvaluationDepartmentAssociationInline, EvaluationDesignTypeDetailInline]
+    actions = [reformat_text]
 
     def get_search_results(self, request, queryset, search_term):
         if not search_term:

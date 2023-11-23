@@ -34,5 +34,6 @@ env = [
     "POSTGRES_DB=evaluation-registry",
     "POSTGRES_USER=evaluation-registry",
     "POSTGRES_PASSWORD=insecure",
-    "EMAIL_BACKEND_TYPE=CONSOLE"
+    "EMAIL_BACKEND_TYPE=CONSOLE",
+    "OPENAI_KEY=vmdvmfdvdm"
 ]

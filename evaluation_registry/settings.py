@@ -94,3 +94,6 @@ if env.str("AWS_STORAGE_BUCKET_NAME", default=None):
     AWS_S3_REGION_NAME = env.str("AWS_REGION_NAME")
 else:
     DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
+
+
+OPENAI_KEY = env.str("OPENAI_KEY", default=None)

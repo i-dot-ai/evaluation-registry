@@ -11,3 +11,4 @@ DATABASE_URL="postgres://evaluation-registry:insecure@db:5432/evaluation-registr
 EMAIL_BACKEND_TYPE=CONSOLE
 ENVIRONMENT=LOCAL
 BASE_URL=http://localhost:8020/
+OPENAI_KEY=blahblahblah
