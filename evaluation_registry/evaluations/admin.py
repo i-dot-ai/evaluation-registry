@@ -48,22 +48,22 @@ class RSMFileAdmin(admin.ModelAdmin):
 
 class EventDateInline(admin.TabularInline):
     model = EventDate
-    extra = 0
+    extra = 1
 
 
 class EvaluationDepartmentAssociationInline(admin.TabularInline):
     model = EvaluationDepartmentAssociation
-    extra = 0
+    extra = 1
 
 
 class ReportInline(admin.TabularInline):
     model = Report
-    extra = 0
+    extra = 1
 
 
 class EvaluationDesignTypeDetailInline(admin.TabularInline):
     model = EvaluationDesignTypeDetail
-    extra = 0
+    extra = 1
 
 
 def reformat_text(modeladmin, request, queryset):
