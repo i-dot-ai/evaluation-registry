@@ -469,7 +469,7 @@ class Command(BaseCommand):
 
     def process_tabular_data(self, records: list[dict]):
         """this only exists so that we can pass a s3 file in as an argument directly"""
-        admin, _ = get_user_model().objects.get_or_create(email="i-dot-ai-team@cabinetoffice.gov.uk")
+        admin, _ = get_user_model().objects.get_or_create(email="i-dot-ai-admin@cabinetoffice.gov.uk")
 
         Evaluation.objects.filter(created_by=admin).delete()
 
