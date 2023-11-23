@@ -77,7 +77,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    # "csp.middleware.CSPMiddleware",
+    "csp.middleware.CSPMiddleware",
     "django_permissions_policy.PermissionsPolicyMiddleware",
     "django_permissions_policy.PermissionsPolicyMiddleware",
     "allauth.account.middleware.AccountMiddleware",
@@ -149,15 +149,33 @@ PERMISSIONS_POLICY: dict[str, list] = {
 }
 
 
-# CSP_DEFAULT_SRC = ("'self'", "'sha256-oFNrsKhzOBUVceDuefWEqtXEXMM9LIL4cUnoVkDYPzA='")
+CSP_DEFAULT_SRC = (
+    "'self'",
+    "s3.amazonaws.com",
+    "evaluation-registry-files-dev.s3.amazonaws.com",
+    "evaluation-registry-files-prod.s3.amazonaws.com",
+)
+CSP_OBJECT_SRC = ("'none'",)
+CSP_REQUIRE_TRUSTED_TYPES_FOR = ("'script'",)
+# Hash for styles for font in base template
+CSP_FONT_SRC = (
+    "'self'",
+    "s3.amazonaws.com",
+    "evaluation-registry-files-dev.s3.amazonaws.com",
+    "evaluation-registry-files-prod.s3.amazonaws.com",
+)
+CSP_STYLE_SRC = (
+    "'self'",
+    # "'sha256-fcj8P58DtlrZPJORF4roitkoFbboHXWREAnRvlkaL/4='",
+    # "'sha256-tQXF0Wlb56M85KYggqICk/Ilfk/1hedv8R+hl100x9A='",
+    # "'sha256-tTdrU1nKvQs8zqccGq1fR/jBCiOnDxdVSAwz5FZiBKU='",
+    # "'sha256-RKeoQVHvW0lTyBUziYRZregOJdAAl2UB0BpKHFM43zM='",
+    # "'sha256-OTF45AC9dUy3d+Pn5nw3L04uKoswYSiQARqrXlLoxdo='",
+    "evaluation-registry-files-dev.s3.amazonaws.com",
+    "evaluation-registry-files-prod.s3.amazonaws.com",
+)
+CSP_FRAME_ANCESTORS = ("'none'",)
 
-# CSP_STYLE_SRC = "'self'"
-
-
-OTP_TOTP_ISSUER = ""  # TODO: Add issuer name
-OTP_TOTP_AUTOCONF = True
-OTP_TOTP_KEY_LENGTH = 16
-OTP_TOTP_THROTTLE_FACTOR = 1.0
 
 CSRF_COOKIE_HTTPONLY = True
 
