@@ -1,13 +1,7 @@
 import json
 
 from django.conf import settings
-from django.contrib.postgres.search import SearchVector
 from openai import OpenAI
-
-from evaluation_registry.evaluations.models import (
-    Department,
-    EvaluationDesignType,
-)
 
 evaluation_initial_data_schema = {
     "type": "object",
@@ -50,22 +44,3 @@ def extract_structured_text(plain_text: str) -> dict:
     )
 
     return json.loads(response.choices[0].message.tool_calls[0].function.arguments)
-
-
-def clean_structured_data(structured_data):
-    if lead_department := structured_data.get("lead_department"):
-        structured_data["lead_department"] = (
-            Department.objects.annotate(search=SearchVector("code", "display"))
-            .filter(search=lead_department)
-            .first()
-            .code
-        )
-
-    for i, evaluation_design_type in enumerate(structured_data["evaluation_design_types"]):
-        structured_data["evaluation_design_types"][i] = (
-            EvaluationDesignType.objects.annotate(search=SearchVector("code", "display"))
-            .filter(search=evaluation_design_type)
-            .first()
-            .code
-        )
-    return structured_data

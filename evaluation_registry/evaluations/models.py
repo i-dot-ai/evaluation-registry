@@ -3,6 +3,7 @@ import uuid
 from typing import Optional
 
 from django.contrib.postgres.fields import ArrayField
+from django.contrib.postgres.search import SearchVector
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
@@ -270,3 +271,51 @@ class RSMFile(TimeStampedModel):
 
     csv = models.FileField(upload_to="rsm_csv_files/")
     last_successfully_loaded_at = models.DateTimeField(null=True, blank=True)
+
+
+class PdfEvaluationFile(TimeStampedModel):
+    """raw PDF evaluation file"""
+
+    pdf = models.FileField(upload_to="rsm_csv_files/")
+    last_successfully_loaded_at = models.DateTimeField(null=True, blank=True)
+    plain_text = models.TextField(null=True, blank=True, help_text="plain text extracted form pdf.")
+    structured_text = models.JSONField(null=True, blank=True, help_text="text structured by chatgpt.")
+    evaluation = models.ForeignKey(
+        Evaluation, on_delete=models.CASCADE, null=True, blank=True, help_text="evaluation generated from pdf."
+    )
+
+    def build_evaluation(self):
+        """build an evaluation from structured-text"""
+        self.evaluation = Evaluation.objects.create(
+            title=self.structured_text["title"],
+            brief_description=self.structured_text["brief_description"],
+            status=self.structured_text["status"],
+            visibility=self.structured_text["visibility"],
+        )
+
+        if lead_department := self.structured_text.get("lead_department"):
+            lead_department = (
+                Department.objects.annotate(
+                    search=SearchVector("code", "display"),
+                )
+                .filter(search=lead_department)
+                .first()
+            )
+            EvaluationDepartmentAssociation.objects.create(
+                evaluation=self.evaluation,
+                is_lead=True,
+                department=lead_department,
+            )
+
+        for i, evaluation_design_type in enumerate(self.structured_text["evaluation_design_types"]):
+            design_type = (
+                EvaluationDesignType.objects.annotate(
+                    search=SearchVector("code", "display"),
+                )
+                .filter(search=evaluation_design_type)
+                .first()
+            )
+            EvaluationDesignTypeDetail.objects.create(
+                evaluation=self.evaluation,
+                design_type=design_type,
+            )

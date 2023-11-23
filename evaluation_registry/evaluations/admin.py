@@ -10,11 +10,7 @@ from django.contrib.postgres.search import (
 )
 from simple_history.admin import SimpleHistoryAdmin
 
-from . import models
-from .evaluation_generator import (
-    clean_structured_data,
-    extract_structured_text,
-)
+from .evaluation_generator import extract_structured_text
 from .management.commands import load_rsm_csv
 from .models import (
     Department,
@@ -23,10 +19,34 @@ from .models import (
     EvaluationDesignType,
     EvaluationDesignTypeDetail,
     EventDate,
+    PdfEvaluationFile,
     Report,
+    RSMFile,
+    Taxonomy,
+    User,
 )
 
 admin_site = admin.AdminSite()
+
+
+def upload_evaluation(modeladmin, request, queryset):
+    for pdf_evaluation in queryset:
+        with pdfplumber.open(pdf_evaluation.pdf.file) as pdf:
+            pdf_evaluation.plain_text = "".join(page.extract_text() for page in pdf.pages)
+
+        pdf_evaluation.structured_text = extract_structured_text(pdf_evaluation.plain_text)
+        pdf_evaluation.save()
+
+        pdf_evaluation.build_evaluation()
+
+
+upload_evaluation.short_description = "Generate Evaluation from pdf"  # type: ignore
+
+
+class PdfEvaluationFileAdmin(admin.ModelAdmin):
+    actions = [upload_evaluation]
+    list_display = ["id", "pdf", "last_successfully_loaded_at"]
+    readonly_fields = ["last_successfully_loaded_at"]
 
 
 def import_csv(modeladmin, request, queryset):
@@ -48,6 +68,7 @@ import_csv.short_description = "Import selected CSV file"  # type: ignore
 
 class RSMFileAdmin(admin.ModelAdmin):
     actions = [import_csv]
+
     list_display = ["id", "csv", "last_successfully_loaded_at"]
     readonly_fields = ["last_successfully_loaded_at"]
 
@@ -72,45 +93,11 @@ class EvaluationDesignTypeDetailInline(admin.TabularInline):
     extra = 0
 
 
-def upload_evaluation(modeladmin, request, queryset):
-    for instance in queryset:
-        with pdfplumber.open(instance.csv.file) as pdf:
-            instance.plain_text = "".join(page.extract_text() for page in pdf.pages)
-
-        instance.structured_text = extract_structured_text(instance.plain_text)
-
-        instance.structured_text = clean_structured_data(instance.structured_text)
-
-        instance.save()
-
-        evaluation = Evaluation.objects.create(
-            title=instance.structured_text["title"],
-            brief_description=instance.structured_text["brief_description"],
-            status=instance.structured_text["status"],
-            visibility=instance.structured_text["visibility"],
-        )
-
-        EvaluationDepartmentAssociation.objects.create(
-            evaluation=evaluation,
-            is_lead=True,
-            department=Department.objects.get(code=instance.structured_text["lead_department"]),
-        )
-
-        for evaluation_design_type in instance.structured_text["evaluation_design_types"]:
-            EvaluationDesignTypeDetail.objects.create(
-                evaluation=evaluation, design_type=EvaluationDesignType.objects.get(code=evaluation_design_type)
-            )
-
-
-upload_evaluation.short_description = "Generate Evaluation from pdf"  # type: ignore
-
-
 class EvaluationAdmin(SimpleHistoryAdmin):
     list_display = ["rsm_evaluation_id", "title", "lead_department", "visibility"]
     list_filter = ["visibility", "evaluation_design_types__display"]
     search_fields = ("title", "brief_description")
     inlines = [ReportInline, EventDateInline, EvaluationDepartmentAssociationInline, EvaluationDesignTypeDetailInline]
-    actions = [upload_evaluation]
 
     def get_search_results(self, request, queryset, search_term):
         if not search_term:
@@ -143,9 +130,10 @@ class TaxonomyAdmin(admin.ModelAdmin):
     list_filter = ["parent"]
 
 
-admin.site.register(models.Evaluation, EvaluationAdmin)
-admin.site.register(models.Department, DepartmentAdmin)
-admin.site.register(models.EvaluationDesignType, EvaluationDesignTypeAdmin)
-admin.site.register(models.RSMFile, RSMFileAdmin)
-admin.site.register(models.Taxonomy, TaxonomyAdmin)
-admin.site.register(models.User)
+admin.site.register(Evaluation, EvaluationAdmin)
+admin.site.register(Department, DepartmentAdmin)
+admin.site.register(EvaluationDesignType, EvaluationDesignTypeAdmin)
+admin.site.register(RSMFile, RSMFileAdmin)
+admin.site.register(PdfEvaluationFile, PdfEvaluationFileAdmin)
+admin.site.register(Taxonomy, TaxonomyAdmin)
+admin.site.register(User)
