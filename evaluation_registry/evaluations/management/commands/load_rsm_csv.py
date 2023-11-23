@@ -463,11 +463,13 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         file = options["file"]
         self.stdout.write(self.style.SUCCESS('loading "%s"' % file))
-
-        admin, _ = get_user_model().objects.get_or_create(email="i-dot-ai-team@cabinetoffice.gov.uk")
-
         with open(file) as f:
             records = list(csv.DictReader(f))
+        self.process_tabular_data(records)
+
+    def process_tabular_data(self, records: list[dict]):
+        """this only exists so that we can pass a s3 file in as an argument directly"""
+        admin, _ = get_user_model().objects.get_or_create(email="i-dot-ai-team@cabinetoffice.gov.uk")
 
         Evaluation.objects.filter(created_by=admin).delete()
 
@@ -565,5 +567,4 @@ class Command(BaseCommand):
                     evaluation=evaluation,
                     department=department,
                 )
-
                 self.stdout.write(self.style.SUCCESS(f'Associated "{evaluation.title}" with "{department.display}"'))
