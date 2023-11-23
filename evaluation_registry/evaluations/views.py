@@ -15,6 +15,7 @@ from django.views.decorators.http import require_http_methods
 
 from evaluation_registry.evaluations.forms import (
     EvaluationDesignTypeDetailForm,
+    EvaluationShareForm,
     EventDateForm,
 )
 from evaluation_registry.evaluations.models import (
@@ -320,3 +321,30 @@ def evaluation_update_dates_view(request, uuid):
         raise Http404("No %(verbose_name)s found matching the query" % {"verbose_name": Evaluation._meta.verbose_name})
 
     return evaluation_dates_view(request, evaluation)
+
+
+@require_http_methods(["GET", "POST"])
+def evaluation_share_view(request, uuid):
+    if request.method == "POST":
+        form = EvaluationShareForm(request.POST)
+        return render(
+            request,
+            "share-form/share-evaluation.html",
+            {
+                "errors": [],
+            },
+        )
+    else:
+        return render(
+            request,
+            "share-form/share-evaluation.html",
+            {
+                "errors": [],
+                "options": Evaluation.UnpublishedReason.choices,
+            },
+        )
+
+
+@require_http_methods(["GET", "POST"])
+def evaluation_share_confirmation_view(request, uuid):
+    return render(request, "share-form/share-evaluation-confirmation.html")
