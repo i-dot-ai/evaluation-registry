@@ -28,7 +28,8 @@ def import_csv(modeladmin, request, queryset):
         return
 
     file = queryset.first()
-    records = list(csv.DictReader(file.csv.file))
+    text_file = (line.decode() for line in file.csv.file)
+    records = list(csv.DictReader(text_file))
     cmd = load_rsm_csv.Command()
     cmd.process_tabular_data(records)
     file.last_successfully_loaded_at = datetime.datetime.now()
