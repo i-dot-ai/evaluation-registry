@@ -4,8 +4,12 @@ from django.forms import (
     ModelChoiceField,
     ModelForm,
     ModelMultipleChoiceField,
+    BooleanField,
+    URLField,
+    ChoiceField,
 )
 
+from evaluation_registry.evaluations import models
 from evaluation_registry.evaluations.models import (
     Department,
     Evaluation,
@@ -73,6 +77,32 @@ class EvaluationDesignTypeDetailForm(Form):
         if design_types:
             if design_types.filter(collect_description=True).exists() and not text:
                 self.add_error("text", "Please provide additional description for the 'Other' choice")
+
+
+class EvaluationShareForm(Form):
+    is_final_report_published = BooleanField(label="Is final report published?", required=True)
+    link_to_published_evaluation = URLField(max_length=1024, label="Link to published evaluation", required=False)
+    plan_link = URLField(required=False)
+    reasons_unpublished = ChoiceField(choices=models.Evaluation.UnpublishedReason.choices, required=False)
+
+    def __init__(self, *args, **kwargs):
+        super(EvaluationShareForm, self).__init__(*args, **kwargs)
+
+    def clean(self):
+        super().clean()
+        is_final_report_published = self.cleaned_data.get("is_final_report_published")
+
+        if is_final_report_published:
+            link_to_published_evaluation = self.cleaned_data.get("link_to_published_evaluation")
+            plan_link = self.cleaned_data.get("plan_link")
+            if not plan_link:
+                self.add_error("plan_link", "Please provide a link to a strategy, plan or framework")
+            if not link_to_published_evaluation:
+                self.add_error("link_to_published_evaluation", "Please provide a link to a published evaluation")
+        else:
+            reasons_unpublished = self.cleaned_data.get("reasons_unpublished")
+            if not reasons_unpublished:
+                self.add_error("reasons_unpublished", "Please provide a reason this evaluation is unpublished")
 
 
 class EventDateForm(NamedErrorsModelForm):
