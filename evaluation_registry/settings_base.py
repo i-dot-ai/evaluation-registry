@@ -6,7 +6,7 @@ from pathlib import Path
 
 import environ
 
-LOCALHOST = socket.gethostbyname(socket.gethostname())
+# LOCALHOST = socket.gethostbyname(socket.gethostname())
 
 
 def get_environ_vars() -> dict:
@@ -32,7 +32,7 @@ SECRET_KEY = env.str("DJANGO_SECRET_KEY")
 
 # Add AWS URLS to ALLOWED_HOSTS once known
 ALLOWED_HOSTS = [
-    LOCALHOST,
+    # LOCALHOST,
     "localhost",
     "127.0.0.1",
     "evaluation-registry-dev.eba-izdb4qxe.eu-west-2.elasticbeanstalk.com",

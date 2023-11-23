@@ -1,12 +1,12 @@
 from django.forms import (
+    BooleanField,
     CharField,
+    ChoiceField,
     Form,
     ModelChoiceField,
     ModelForm,
     ModelMultipleChoiceField,
-    BooleanField,
     URLField,
-    ChoiceField,
 )
 
 from evaluation_registry.evaluations import models
