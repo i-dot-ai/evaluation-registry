@@ -2,7 +2,7 @@
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
 
-from .settings_base import *
+from evaluation_registry.settings_base import *
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool("DEBUG", default=False)
@@ -84,3 +84,12 @@ if not DEBUG:
     SESSION_COOKIE_HTTPONLY = True
     SESSION_COOKIE_AGE = 60 * 60 * 24 * 120  # 120 days
     SESSION_COOKIE_SAMESITE = "Strict"
+
+
+if env.str("AWS_STORAGE_BUCKET_NAME", default=None):
+    STATICFILES_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+    DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+    AWS_STORAGE_BUCKET_NAME = env.str("AWS_STORAGE_BUCKET_NAME")
+    AWS_S3_REGION_NAME = env.str("AWS_REGION_NAME")
+else:
+    DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"

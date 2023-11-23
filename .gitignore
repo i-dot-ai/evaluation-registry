@@ -1,4 +1,6 @@
-evaluation_uploads/
+rsm_csv_files/*
+tests/rsm_csv_files/*
+*.zip
 .idea/
 *.pyc
 /staticfiles/

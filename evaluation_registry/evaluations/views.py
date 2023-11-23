@@ -1,7 +1,3 @@
-import asyncio
-import json
-
-import pdfplumber
 from django.contrib.postgres.search import (
     SearchQuery,
     SearchRank,
@@ -9,25 +5,22 @@ from django.contrib.postgres.search import (
 )
 from django.core.paginator import Paginator
 from django.db.models import QuerySet
+from django.forms import modelform_factory
 from django.http import Http404
 from django.shortcuts import redirect, render
 from django.views.decorators.http import require_http_methods
 from openai import OpenAI
 
-from evaluation_registry import settings
-from evaluation_registry.evaluations.auto_fill import (
-    evaluation_initial_data_schema,
-)
 from evaluation_registry.evaluations.forms import (
     EvaluationCreateForm,
-    EvaluationFileForm,
+    EvaluationDesignTypeDetailForm,
 )
 from evaluation_registry.evaluations.models import (
     Department,
     Evaluation,
     EvaluationDepartmentAssociation,
     EvaluationDesignType,
-    EvaluationFile,
+    EvaluationDesignTypeDetail,
 )
 
 
@@ -147,10 +140,8 @@ def start_form_view(request):
 @require_http_methods(["GET", "POST"])
 def evaluation_create_view(request, status):
     errors = {}
-    # if this is a POST request we need to process the form data
     departments = Department.objects.all()
     if request.method == "POST":
-        # create a form instance and populate it with data from the request:
         form = EvaluationCreateForm(request.POST)
 
         form_complete = request.POST.get("form_complete")
@@ -183,8 +174,8 @@ def evaluation_create_view(request, status):
             "departments": Department.objects.filter(code__in=selected_departments).all(),
         }
 
-    # if a GET (or any other method) we'll create a blank form
     else:
+        # create a blank form
         form = EvaluationCreateForm()
         data = {"title": "", "lead_department": "", "departments": []}
 
@@ -192,6 +183,137 @@ def evaluation_create_view(request, status):
         request,
         "share-form/evaluation-create.html",
         {"form": form, "status": status, "departments": departments, "data": data, "errors": errors},
+    )
+
+
+def update_evaluation_design_objects(existing_objects, existing_design_types, form):
+    should_update_text = "text" in form.changed_data
+    to_add = set(form.cleaned_data["design_types"]).difference(existing_design_types)
+    for design_type in to_add:
+        EvaluationDesignTypeDetail.objects.create(
+            evaluation=form.cleaned_data["evaluation"],
+            design_type=design_type,
+            text=form.cleaned_data["text"] if design_type.collect_description else None,
+        )
+        if design_type.collect_description:
+            should_update_text = False  # text has been updated by creating this new object
+
+    to_remove = set(existing_design_types).difference(form.cleaned_data["design_types"])
+    for design_type in to_remove:
+        existing_objects.filter(design_type=design_type).delete()
+
+    if should_update_text:  # handles the case where the 'Other' text has been updated
+        existing_objects.filter(design_type__collect_description=True).update(text=form.cleaned_data["text"])
+
+
+@require_http_methods(["GET", "POST"])
+def evaluation_update_type_view(request, uuid, parent=None):
+    try:
+        evaluation = Evaluation.objects.get(id=uuid)
+    except Evaluation.DoesNotExist:
+        raise Http404("No %(verbose_name)s found matching the query" % {"verbose_name": Evaluation._meta.verbose_name})
+
+    if parent:
+        parent_object = EvaluationDesignType.objects.get(code=parent)
+        options = EvaluationDesignType.objects.filter(parent__code=parent)
+        if not options.exists():
+            raise Http404(
+                "No %(verbose_name)s found matching the query"
+                % {"verbose_name": EvaluationDesignType._meta.verbose_name}
+            )
+    else:
+        options = EvaluationDesignType.root_objects.all()
+        parent_object = None
+
+    data = {"evaluation": evaluation, "design_types": [], "design_types_codes": [], "text": ""}
+    existing_links = EvaluationDesignTypeDetail.objects.filter(evaluation=evaluation, design_type__in=options)
+
+    for existing_link in existing_links:
+        data["design_types"].append(existing_link.design_type)
+        data["design_types_codes"].append(existing_link.design_type.code)
+        if existing_link.design_type.collect_description and existing_link.text:
+            data["text"] = existing_link.text
+
+    errors = {}
+
+    if request.method == "POST":
+        form = EvaluationDesignTypeDetailForm(request.POST, initial=data)
+
+        if form.is_valid():
+            if form.has_changed():
+                update_evaluation_design_objects(
+                    existing_objects=existing_links,
+                    existing_design_types=data["design_types"],
+                    form=form,
+                )
+
+            return redirect(
+                "evaluation-detail", uuid=form.cleaned_data["evaluation"].id
+            )  # TODO: redirect to next page of form
+
+        else:
+            errors = form.errors.as_data().values()
+
+            data["design_types_codes"] = request.POST.get("design_types") or []
+            data["text"] = request.POST.get("text") or ""
+
+    else:
+        form = EvaluationDesignTypeDetailForm()
+
+    return render(
+        request,
+        "share-form/evaluation-update-type.html",
+        {
+            "evaluation": evaluation,
+            "options": options,
+            "errors": errors,
+            "data": data,
+            "parent": parent_object,
+        },
+    )
+
+
+@require_http_methods(["GET", "POST"])
+def evaluation_update_view(request, uuid):
+    try:
+        evaluation = Evaluation.objects.get(id=uuid)
+    except Evaluation.DoesNotExist:
+        raise Http404("No %(verbose_name)s found matching the query" % {"verbose_name": Evaluation._meta.verbose_name})
+
+    errors = {}
+    form_fields = [
+        "brief_description",
+        "grant_number",
+        "has_grant_number",
+        "major_project_number",
+        "has_major_project_number",
+    ]
+    EvaluationForm = modelform_factory(Evaluation, fields=form_fields)  # noqa: N806
+
+    if request.method == "POST":
+        form = EvaluationForm(request.POST, instance=evaluation)
+
+        if form.is_valid():
+            for field in form_fields:
+                setattr(evaluation, field, form.cleaned_data[field])
+            evaluation.save(update_fields=form_fields)
+
+            return redirect("evaluation-detail", uuid=evaluation.id)  # TODO: redirect to next page of form
+
+        else:
+            errors = form.errors.as_data()
+
+    else:
+        form = EvaluationForm(instance=evaluation)
+
+    return render(
+        request,
+        "share-form/evaluation-description.html",
+        {
+            "evaluation": evaluation,
+            "form": form,
+            "errors": errors,
+        },
     )
 
 

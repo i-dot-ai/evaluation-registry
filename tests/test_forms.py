@@ -2,6 +2,7 @@ import pytest
 
 from evaluation_registry.evaluations.forms import (
     EvaluationCreateForm,
+    EvaluationDesignTypeDetailForm,
     NullableModelMultipleChoiceField,
 )
 from evaluation_registry.evaluations.models import Department
@@ -26,3 +27,11 @@ def test_evaluation_create_form(cabinet_office):
 
     assert form.errors["title"] == ["Title is required"]
     assert form.errors["departments"] == [f"This department has been listed more than once: {cabinet_office.display}"]
+
+
+@pytest.mark.django_db
+def test_evaluation_design_type_detail_form(impact, other):
+    form = EvaluationDesignTypeDetailForm(data={"design_types": [impact.code, other.code], "text": ""})
+
+    assert form.errors["evaluation"] == ["Evaluation is required"]
+    assert form.errors["text"] == ["Please provide additional description for the 'Other' choice"]

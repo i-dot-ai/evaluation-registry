@@ -3,8 +3,7 @@ import uuid
 from typing import Optional
 
 from django.contrib.postgres.fields import ArrayField
-from django.contrib.postgres.search import SearchVector
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models.query import QuerySet
@@ -53,7 +52,7 @@ class RootDesignTypeManager(models.Manager):
         return super().get_queryset().filter(parent__isnull=True)
 
 
-class EvaluationDesignType(TimeStampedModel):
+class AbstractChoice(TimeStampedModel):
     code = models.SlugField(
         max_length=128,
         unique=True,
@@ -61,6 +60,15 @@ class EvaluationDesignType(TimeStampedModel):
     )
     display = models.CharField(max_length=512, help_text="display name")
     parent = models.ForeignKey("self", related_name="children", on_delete=models.CASCADE, blank=True, null=True)
+
+    def __str__(self):
+        return self.display
+
+    class Meta:
+        abstract = True
+
+
+class EvaluationDesignType(AbstractChoice):
     collect_description = models.BooleanField(
         default=False, help_text="Use for 'other' types to prompt further information"
     )
@@ -68,8 +76,9 @@ class EvaluationDesignType(TimeStampedModel):
     objects = models.Manager()
     root_objects = RootDesignTypeManager()
 
-    def __str__(self):
-        return self.display
+
+class Taxonomy(AbstractChoice):
+    pass
 
 
 class Evaluation(TimeStampedModel):
@@ -109,7 +118,9 @@ class Evaluation(TimeStampedModel):
 
     brief_description = models.TextField(blank=True, null=True)
     # In the future, there may be canonical lists to select from for these
+    has_grant_number = models.BooleanField(default=False)
     grant_number = models.CharField(max_length=256, blank=True, null=True)
+    has_major_project_number = models.BooleanField(default=False)
     major_project_number = models.CharField(max_length=256, blank=True, null=True)
 
     plan_link = models.URLField(max_length=1024, blank=True, null=True)
@@ -158,6 +169,12 @@ class Evaluation(TimeStampedModel):
 
     def __str__(self):
         return str(self.title)
+
+    def clean(self):
+        if self.has_grant_number and self.grant_number is None:
+            raise ValidationError({"has_grant_number": "Please enter a value for the Grant Number"})
+        if self.has_major_project_number and self.major_project_number is None:
+            raise ValidationError({"has_major_project_number": "Please enter a value for the Major Project Number"})
 
 
 class EvaluationDepartmentAssociation(models.Model):
@@ -248,7 +265,8 @@ class EventDate(TimeStampedModel):
         return f"{self.year}"
 
 
-class EvaluationFile(models.Model):
-    file = models.FileField(upload_to="evaluation_uploads")
-    plain_text = models.TextField(null=True, blank=True)
-    structured_text = models.JSONField(null=True, blank=True)
+class RSMFile(TimeStampedModel):
+    """raw RSM data files"""
+
+    csv = models.FileField(upload_to="rsm_csv_files/")
+    last_successfully_loaded_at = models.DateTimeField(null=True, blank=True)

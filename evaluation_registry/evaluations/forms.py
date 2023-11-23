@@ -1,9 +1,15 @@
-from django.forms import ModelChoiceField, ModelForm, ModelMultipleChoiceField
+from django.forms import (
+    CharField,
+    Form,
+    ModelChoiceField,
+    ModelForm,
+    ModelMultipleChoiceField,
+)
 
 from evaluation_registry.evaluations.models import (
     Department,
     Evaluation,
-    EvaluationFile,
+    EvaluationDesignType,
 )
 
 
@@ -43,7 +49,24 @@ class EvaluationCreateForm(ModelForm):
         fields = ["status", "title"]
 
 
-class EvaluationFileForm(ModelForm):
-    class Meta:
-        model = EvaluationFile
-        fields = ["file"]
+class EvaluationDesignTypeDetailForm(Form):
+    evaluation = ModelChoiceField(queryset=Evaluation.objects.all(), label="Evaluation")
+    design_types = ModelMultipleChoiceField(
+        queryset=EvaluationDesignType.objects.all(), label="Evaluation type", to_field_name="code"
+    )
+    text = CharField(max_length=1024, required=False)
+
+    def __init__(self, *args, **kwargs):
+        super(EvaluationDesignTypeDetailForm, self).__init__(*args, **kwargs)
+
+        for field in self.fields.values():
+            field.error_messages = {"required": f"{field.label} is required"}
+
+    def clean(self):
+        super().clean()
+        design_types = self.cleaned_data.get("design_types")
+        text = self.cleaned_data.get("text")
+
+        if design_types:
+            if design_types.filter(collect_description=True).exists() and not text:
+                self.add_error("text", "Please provide additional description for the 'Other' choice")
