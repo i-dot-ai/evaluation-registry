@@ -46,3 +46,27 @@ def test_evaluation_duplicate_constraint(cabinet_office_led_evaluation, cabinet_
         )
 
     assert 'duplicate key value violates unique constraint "unique-evaluation-department"' in error.value.args[0]
+
+
+@pytest.mark.pdf_to_json
+@pytest.mark.django_db
+def test_extract_plain_text(pdf_evaluation_file):
+    pdf_evaluation_file.extract_plain_text()
+    assert pdf_evaluation_file.plain_text == "Dummy PDF file"
+
+
+@pytest.mark.pdf_to_json
+@pytest.mark.django_db
+def test_build_evaluation(pdf_evaluation_file_with_text):
+    """here we test that chatGPT's guesses for:
+    * department 'HM Revenue and Customs' gets mapped to `hm-revenue-customs`
+    * design-type 'qualitative' gets mapped to `qualitative_process`
+    using the unsung hero of NLP: postgres full text search
+    """
+    pdf_evaluation_file_with_text.build_evaluation()
+    assert list(pdf_evaluation_file_with_text.evaluation.departments.values_list("code", flat=True)) == [
+        "hm-revenue-customs"
+    ]
+    assert list(pdf_evaluation_file_with_text.evaluation.evaluation_design_types.values_list("code", flat=True)) == [
+        "qualitative_process"
+    ]

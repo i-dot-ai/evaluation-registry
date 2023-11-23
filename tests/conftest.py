@@ -1,5 +1,6 @@
 import pytest
 import pytz
+from django.core.files.uploadedfile import SimpleUploadedFile
 
 from evaluation_registry.evaluations.models import (
     Department,
@@ -7,6 +8,7 @@ from evaluation_registry.evaluations.models import (
     EvaluationDepartmentAssociation,
     EvaluationDesignType,
     EvaluationDesignTypeDetail,
+    PdfEvaluationFile,
     User,
 )
 
@@ -83,3 +85,24 @@ def evaluation_other_type_link(basic_evaluation, other):
         text="hello world",
     )
     yield evaluation_type_link
+
+
+@pytest.fixture
+def pdf_evaluation_file():
+    pdf = SimpleUploadedFile("report.pdf", open("tests/report.pdf", "rb").read())
+    file = PdfEvaluationFile(pdf=pdf)
+    yield file
+
+
+@pytest.fixture
+def pdf_evaluation_file_with_text():
+    structured_text = {
+        "title": "Research into the Behavioural Effects of building in Risk Triggers to Third Party Software",
+        "status": "complete",
+        "lead_department": "HM Revenue and Customs",
+        "brief_description": "This research report explores ... returns.",
+        "evaluation_design_types": ["qualitative"],
+    }
+    pdf = SimpleUploadedFile("report.pdf", open("tests/report.pdf", "rb").read())
+    file = PdfEvaluationFile(pdf=pdf, structured_text=structured_text)
+    yield file

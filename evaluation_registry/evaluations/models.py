@@ -2,6 +2,7 @@ import calendar
 import uuid
 from typing import Optional
 
+import pdfplumber
 from django.contrib.postgres.fields import ArrayField
 from django.contrib.postgres.search import SearchVector
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
@@ -10,6 +11,10 @@ from django.db import models
 from django.db.models.query import QuerySet
 from django_use_email_as_username.models import BaseUser, BaseUserManager
 from simple_history.models import HistoricalRecords
+
+from evaluation_registry.evaluations.evaluation_generator import (
+    extract_structured_text,
+)
 
 
 class UUIDPrimaryKeyBase(models.Model):
@@ -284,14 +289,25 @@ class PdfEvaluationFile(TimeStampedModel):
         Evaluation, on_delete=models.CASCADE, null=True, blank=True, help_text="evaluation generated from pdf."
     )
 
+    def extract_plain_text(self):
+        """convert pdf to plain text"""
+        with pdfplumber.open(self.pdf.file) as pdf:
+            self.plain_text = "".join(page.extract_text() for page in pdf.pages)
+        self.save()
+
+    def extract_structured_text(self):
+        """convert plain text to structured text"""
+        self.structured_text = extract_structured_text(self.plain_text)
+        self.save()
+
     def build_evaluation(self):
         """build an evaluation from structured-text"""
         self.evaluation = Evaluation.objects.create(
             title=self.structured_text["title"],
             brief_description=self.structured_text["brief_description"],
             status=self.structured_text["status"],
-            visibility=self.structured_text["visibility"],
         )
+        self.save()
 
         if lead_department := self.structured_text.get("lead_department"):
             lead_department = (
@@ -313,6 +329,7 @@ class PdfEvaluationFile(TimeStampedModel):
                     search=SearchVector("code", "display"),
                 )
                 .filter(search=evaluation_design_type)
+                .order_by("-code")
                 .first()
             )
             EvaluationDesignTypeDetail.objects.create(

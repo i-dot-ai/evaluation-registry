@@ -20,7 +20,6 @@ evaluation_initial_data_schema = {
                 "description": "design type of this evaluation",
             },
         },
-        "visibility": {"enum": ["draft", "civil_service", "public"], "description": "intended audience"},
     },
     "required": ["title", "brief_description", "lead_department", "status", "evaluation_design_types"],
 }
@@ -36,7 +35,7 @@ def extract_structured_text(plain_text: str) -> dict:
         "parameters": evaluation_initial_data_schema,
     }
 
-    response = client.chat.completions.create(
+    response = client.chat.completions.create(  # type: ignore
         model="gpt-3.5-turbo",
         messages=[{"role": "user", "content": " ".join(plain_text.split(" ")[:2500])}],
         tools=[{"type": "function", "function": prompt}],

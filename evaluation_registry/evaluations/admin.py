@@ -1,7 +1,6 @@
 import csv
 import datetime
 
-import pdfplumber
 from django.contrib import admin
 from django.contrib.postgres.search import (
     SearchQuery,
@@ -10,7 +9,6 @@ from django.contrib.postgres.search import (
 )
 from simple_history.admin import SimpleHistoryAdmin
 
-from .evaluation_generator import extract_structured_text
 from .management.commands import load_rsm_csv
 from .models import (
     Department,
@@ -31,12 +29,8 @@ admin_site = admin.AdminSite()
 
 def upload_evaluation(modeladmin, request, queryset):
     for pdf_evaluation in queryset:
-        with pdfplumber.open(pdf_evaluation.pdf.file) as pdf:
-            pdf_evaluation.plain_text = "".join(page.extract_text() for page in pdf.pages)
-
-        pdf_evaluation.structured_text = extract_structured_text(pdf_evaluation.plain_text)
-        pdf_evaluation.save()
-
+        pdf_evaluation.extract_plain_text()
+        pdf_evaluation.extract_structured_text()
         pdf_evaluation.build_evaluation()
 
 
