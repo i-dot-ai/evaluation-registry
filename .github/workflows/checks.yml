@@ -43,6 +43,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v3
+        with:
+          python-version: 3.11
+
       - name: Install Requirements
         run: |
           python3 -m pip install --upgrade pip setuptools
@@ -50,7 +55,8 @@ jobs:
 
       - name: Run Checks
         run: |
-          DJANGO_SETTINGS_MODULE=evaluation_registry.settings_base DJANGO_SECRET_KEY=temp POSTGRES_HOST=tmp python manage.py check
+          export $(cat envs/web | xargs)
+          DJANGO_SETTINGS_MODULE=evaluation_registry.settings_base python manage.py check
 
   run_tests:
     name: Run tests
