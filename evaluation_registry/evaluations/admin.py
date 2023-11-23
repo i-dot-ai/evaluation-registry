@@ -1,6 +1,7 @@
 import csv
 import datetime
 
+import pdfplumber
 from django.contrib import admin
 from django.contrib.postgres.search import (
     SearchQuery,
@@ -10,10 +11,16 @@ from django.contrib.postgres.search import (
 from simple_history.admin import SimpleHistoryAdmin
 
 from . import models
+from .evaluation_generator import (
+    clean_structured_data,
+    extract_structured_text,
+)
 from .management.commands import load_rsm_csv
 from .models import (
+    Department,
     Evaluation,
     EvaluationDepartmentAssociation,
+    EvaluationDesignType,
     EvaluationDesignTypeDetail,
     EventDate,
     Report,
@@ -65,11 +72,45 @@ class EvaluationDesignTypeDetailInline(admin.TabularInline):
     extra = 0
 
 
+def upload_evaluation(modeladmin, request, queryset):
+    for instance in queryset:
+        with pdfplumber.open(instance.csv.file) as pdf:
+            instance.plain_text = "".join(page.extract_text() for page in pdf.pages)
+
+        instance.structured_text = extract_structured_text(instance.plain_text)
+
+        instance.structured_text = clean_structured_data(instance.structured_text)
+
+        instance.save()
+
+        evaluation = Evaluation.objects.create(
+            title=instance.structured_text["title"],
+            brief_description=instance.structured_text["brief_description"],
+            status=instance.structured_text["status"],
+            visibility=instance.structured_text["visibility"],
+        )
+
+        EvaluationDepartmentAssociation.objects.create(
+            evaluation=evaluation,
+            is_lead=True,
+            department=Department.objects.get(code=instance.structured_text["lead_department"]),
+        )
+
+        for evaluation_design_type in instance.structured_text["evaluation_design_types"]:
+            EvaluationDesignTypeDetail.objects.create(
+                evaluation=evaluation, design_type=EvaluationDesignType.objects.get(code=evaluation_design_type)
+            )
+
+
+upload_evaluation.short_description = "Generate Evaluation from pdf"  # type: ignore
+
+
 class EvaluationAdmin(SimpleHistoryAdmin):
     list_display = ["rsm_evaluation_id", "title", "lead_department", "visibility"]
     list_filter = ["visibility", "evaluation_design_types__display"]
     search_fields = ("title", "brief_description")
     inlines = [ReportInline, EventDateInline, EvaluationDepartmentAssociationInline, EvaluationDesignTypeDetailInline]
+    actions = [upload_evaluation]
 
     def get_search_results(self, request, queryset, search_term):
         if not search_term:
