@@ -326,7 +326,6 @@ def evaluation_update_dates_view(request, uuid):
         raise Http404("No %(verbose_name)s found matching the query" % {"verbose_name": Evaluation._meta.verbose_name})
 
     form_fields = ["evaluation", "month", "year", "other_description", "category"]
-    errors = {}
     existing_date_count = EventDate.objects.filter(evaluation=evaluation).count()
     DateFormset = modelformset_factory(  # noqa: N806
         EventDate,
@@ -349,8 +348,6 @@ def evaluation_update_dates_view(request, uuid):
 
             return redirect("evaluation-detail", uuid=evaluation.id)  # TODO: redirect to next page of form
 
-        errors = formset.errors
-
     else:
         formset = DateFormset(queryset=EventDate.objects.filter(evaluation=evaluation))
 
@@ -360,7 +357,7 @@ def evaluation_update_dates_view(request, uuid):
         {
             "evaluation": evaluation,
             "formset": formset,
-            "errors": errors,
+            "errors": formset.errors,
             "categories": EventDate.Category,
             "existing_date_count": existing_date_count,
         },

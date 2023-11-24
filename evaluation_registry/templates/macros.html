@@ -61,10 +61,10 @@
           </select>
         </div>
         <div class="govuk-form-group">
-          <label class="govuk-label" for="other_description">
+          <label class="govuk-label" for="id_form-{{form_id}}-other_description">
             If event type is 'Other', please add more information
           </label>
-          <input class="govuk-input govuk-!-width-two-thirds {% if errors and errors['other_description'] %}govuk-input--error{% endif %}" id="other_description" name="otherDescription" type="text">
+          <input class="govuk-input govuk-!-width-two-thirds {% if errors and errors['other_description'] %}govuk-input--error{% endif %}" id="id_form-{{form_id}}-other_description" name="form-{{form_id}}-other_description" type="text" value="{{date_obj.other_description.value() or ''}}">
         </div>
       {% endif %}
 

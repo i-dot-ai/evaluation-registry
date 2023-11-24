@@ -85,9 +85,8 @@ class EventDateForm(NamedErrorsModelForm):
         category = self.cleaned_data.get("category")
         other_description = self.cleaned_data.get("other_description")
 
-        if category:
-            if (category == "other") and not other_description:
-                self.add_error("other_description", "Please provide additional description for the 'Other' choice")
+        if (category == "other") and not other_description:
+            self.add_error("other_description", "Please provide additional description for the 'Other' choice")
 
     class Meta:
         model = EventDate
