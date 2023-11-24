@@ -78,8 +78,7 @@ class EvaluationDesignTypeDetailForm(Form):
 class EventDateForm(NamedErrorsModelForm):
     def __init__(self, *args, **kwargs):
         super(EventDateForm, self).__init__(*args, **kwargs)
-        self.fields['month'].error_messages['invalid_choice'] = 'Please enter a month number from 1-12'
-        self.fields['year'].error_messages['invalid_choice'] = 'Please enter a valid year'
+        self.fields["month"].error_messages["invalid_choice"] = "Please enter a month number from 1-12"
 
     def clean(self):
         super().clean()
@@ -87,7 +86,7 @@ class EventDateForm(NamedErrorsModelForm):
         other_description = self.cleaned_data.get("other_description")
 
         if category:
-            if (category == 'other') and not other_description:
+            if (category == "other") and not other_description:
                 self.add_error("other_description", "Please provide additional description for the 'Other' choice")
 
     class Meta:
