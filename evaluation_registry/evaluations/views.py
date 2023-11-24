@@ -351,7 +351,8 @@ def evaluation_update_dates_view(request, uuid):
 
         errors = formset.errors
 
-    formset = DateFormset(queryset=EventDate.objects.filter(evaluation=evaluation))
+    else:
+        formset = DateFormset(queryset=EventDate.objects.filter(evaluation=evaluation))
 
     return render(
         request,
