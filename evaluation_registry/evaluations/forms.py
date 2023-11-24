@@ -10,6 +10,7 @@ from evaluation_registry.evaluations.models import (
     Department,
     Evaluation,
     EvaluationDesignType,
+    EventDate,
 )
 
 
@@ -21,15 +22,15 @@ class NullableModelMultipleChoiceField(ModelMultipleChoiceField):
         return super().clean(value)
 
 
-class BetterErrorsModelForm(ModelForm):
+class NamedErrorsModelForm(ModelForm):
     def __init__(self, *args, **kwargs):
-        super(BetterErrorsModelForm, self).__init__(*args, **kwargs)
+        super(NamedErrorsModelForm, self).__init__(*args, **kwargs)
 
         for field in self.fields.values():
-            field.error_messages = {"required": f"{field.label} is required"}
+            field.error_messages["required"] = f"{field.label} is required"
 
 
-class EvaluationCreateForm(BetterErrorsModelForm):
+class EvaluationCreateForm(NamedErrorsModelForm):
     lead_department = ModelChoiceField(queryset=Department.objects.all(), to_field_name="code", label="Lead Department")
     departments = NullableModelMultipleChoiceField(
         queryset=Department.objects.all(), to_field_name="code", required=False
@@ -74,5 +75,21 @@ class EvaluationDesignTypeDetailForm(Form):
                 self.add_error("text", "Please provide additional description for the 'Other' choice")
 
 
-class EventDateForm(BetterErrorsModelForm):
-    pass
+class EventDateForm(NamedErrorsModelForm):
+    def __init__(self, *args, **kwargs):
+        super(EventDateForm, self).__init__(*args, **kwargs)
+        self.fields['month'].error_messages['invalid_choice'] = 'Please enter a month number from 1-12'
+        self.fields['year'].error_messages['invalid_choice'] = 'Please enter a valid year'
+
+    def clean(self):
+        super().clean()
+        category = self.cleaned_data.get("category")
+        other_description = self.cleaned_data.get("other_description")
+
+        if category:
+            if (category == 'other') and not other_description:
+                self.add_error("other_description", "Please provide additional description for the 'Other' choice")
+
+    class Meta:
+        model = EventDate
+        fields = ["evaluation", "category", "other_description", "month", "year"]
