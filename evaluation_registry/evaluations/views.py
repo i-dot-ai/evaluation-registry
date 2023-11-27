@@ -325,13 +325,37 @@ def evaluation_update_dates_view(request, uuid):
 
 @require_http_methods(["GET", "POST"])
 def evaluation_share_view(request, uuid):
+    errors = {}
     if request.method == "POST":
-        form = EvaluationShareForm(request.POST)
+        instance = Evaluation.objects.get(pk=uuid)
+        form_data = request.POST.dict()
+        form = EvaluationShareForm(form_data)
+        data = {}
+        if form.is_valid():
+            if form.has_changed():
+                if form.cleaned_data["is_final_report_published"]:
+                    instance.plan_link = form.cleaned_data["plan_link"]
+                    instance.link_to_published_evaluation = form.cleaned_data["link_to_published_evaluation"]
+                else:
+                    instance.reasons_unpublished = list(form.cleaned_data["reasons_unpublished"])
+                instance.is_final_report_published = form.cleaned_data["is_final_report_published"]
+                instance.save()
+            return redirect("evaluation-detail", uuid=uuid)
+
+        else:
+            errors = form.errors.as_data()
+
+            data["is_final_report_published"] = request.POST.get("is_final_report_published") or None
+            data["link_to_published_evaluation"] = request.POST.get("link_to_published_evaluation") or None
+            data["plan_link"] = request.POST.get("plan_link") or None
+            data["reasons_unpublished"] = request.POST.get("reasons_unpublished") or []
         return render(
             request,
             "share-form/share-evaluation.html",
             {
-                "errors": [],
+                "errors": errors,
+                "data": data,
+                "options": Evaluation.UnpublishedReason.choices,
             },
         )
     else:
@@ -339,12 +363,7 @@ def evaluation_share_view(request, uuid):
             request,
             "share-form/share-evaluation.html",
             {
-                "errors": [],
+                "errors": errors,
                 "options": Evaluation.UnpublishedReason.choices,
             },
         )
-
-
-@require_http_methods(["GET", "POST"])
-def evaluation_share_confirmation_view(request, uuid):
-    return render(request, "share-form/share-evaluation-confirmation.html")
