@@ -5,7 +5,7 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("evaluations", "0006_alter_evaluation_title_and_more"),
+        ("evaluations", "0003_rsmfile"),
     ]
 
     operations = [
