@@ -8,7 +8,7 @@ import environ
 
 env = environ.Env()
 
-if env.str("ENVIRONMENT") != "LOCAL":
+if env.str("ENVIRONMENT", None) != "LOCAL":
     LOCALHOST = socket.gethostbyname(socket.gethostname())
 
 
@@ -45,7 +45,7 @@ ALLOWED_HOSTS = [
     "dev.evaluation-registry.cabinetoffice.gov.uk",
 ]
 
-if env.str("ENVIRONMENT") != "LOCAL":
+if env.str("ENVIRONMENT", None) != "LOCAL":
     ALLOWED_HOSTS = ALLOWED_HOSTS + [LOCALHOST]
 
 # CSRF settings
