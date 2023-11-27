@@ -6,7 +6,10 @@ from pathlib import Path
 
 import environ
 
-# LOCALHOST = socket.gethostbyname(socket.gethostname())
+env = environ.Env()
+
+if env.str("ENVIRONMENT") != "LOCAL":
+    LOCALHOST = socket.gethostbyname(socket.gethostname())
 
 
 def get_environ_vars() -> dict:
@@ -20,7 +23,6 @@ def get_environ_vars() -> dict:
     return ast.literal_eval(completed_process.stdout)
 
 
-env = environ.Env()
 if "POSTGRES_HOST" not in os.environ:
     for key, value in get_environ_vars().items():
         env(key, default=value)
@@ -32,7 +34,6 @@ SECRET_KEY = env.str("DJANGO_SECRET_KEY")
 
 # Add AWS URLS to ALLOWED_HOSTS once known
 ALLOWED_HOSTS = [
-    # LOCALHOST,
     "localhost",
     "127.0.0.1",
     "evaluation-registry-dev.eba-izdb4qxe.eu-west-2.elasticbeanstalk.com",
@@ -43,6 +44,9 @@ ALLOWED_HOSTS = [
     "evaluation-registry.cabinetoffice.gov.uk",
     "dev.evaluation-registry.cabinetoffice.gov.uk",
 ]
+
+if env.str("ENVIRONMENT") != "LOCAL":
+    ALLOWED_HOSTS = ALLOWED_HOSTS + [LOCALHOST]
 
 # CSRF settings
 CSRF_COOKIE_HTTPONLY = True
