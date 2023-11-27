@@ -11,14 +11,12 @@ from django.shortcuts import redirect, render
 from django.views.decorators.http import require_http_methods
 
 from evaluation_registry.evaluations.forms import (
-    EvaluationCreateForm,
     EvaluationDesignTypeDetailForm,
     EventDateForm,
 )
 from evaluation_registry.evaluations.models import (
     Department,
     Evaluation,
-    EvaluationDepartmentAssociation,
     EvaluationDesignType,
     EvaluationDesignTypeDetail,
     EventDate,
@@ -127,66 +125,6 @@ def evaluation_detail_view(request, uuid):
     return render(request, "evaluation_detail.html", {"evaluation": evaluation, "dates": dates})
 
 
-@require_http_methods(["GET", "POST"])
-def start_form_view(request):
-    options = Evaluation.Status.choices
-    if request.method == "GET":
-        return render(request, "share-form/evaluation-status.html", {"options": options, "error": False})
-    status = request.POST.get("status")
-    if not status:
-        return render(request, "share-form/evaluation-status.html", {"options": options, "error": True})
-    return redirect("evaluation-create", status=status)
-
-
-@require_http_methods(["GET", "POST"])
-def evaluation_create_view(request, status):
-    errors = {}
-    departments = Department.objects.all()
-    if request.method == "POST":
-        form = EvaluationCreateForm(request.POST)
-
-        form_complete = request.POST.get("form_complete")
-        selected_departments = request.POST.getlist("departments")
-        selected_lead = request.POST.get("lead_department")
-        department_to_remove = request.POST.get("remove_department")
-
-        if form_complete:
-            if form.is_valid():
-                new_evaluation = form.save()
-                EvaluationDepartmentAssociation.objects.create(
-                    evaluation=new_evaluation, department=form.cleaned_data["lead_department"], is_lead=True
-                )
-                if form.cleaned_data["departments"]:
-                    for department in form.cleaned_data["departments"]:
-                        EvaluationDepartmentAssociation.objects.create(
-                            evaluation=new_evaluation,
-                            department=department,
-                        )
-
-                return redirect("evaluation-detail", uuid=new_evaluation.id)  # TODO: redirect to next page of form
-            errors = form.errors.as_data()
-
-        if department_to_remove and (department_to_remove in selected_departments):
-            selected_departments.remove(department_to_remove)
-
-        data = {
-            "title": request.POST.get("title"),
-            "lead_department": selected_lead,
-            "departments": Department.objects.filter(code__in=selected_departments).all(),
-        }
-
-    else:
-        # create a blank form
-        form = EvaluationCreateForm()
-        data = {"title": "", "lead_department": "", "departments": []}
-
-    return render(
-        request,
-        "share-form/evaluation-create.html",
-        {"form": form, "status": status, "departments": departments, "data": data, "errors": errors},
-    )
-
-
 def update_evaluation_design_objects(existing_objects, existing_design_types, form):
     should_update_text = "text" in form.changed_data
     to_add = set(form.cleaned_data["design_types"]).difference(existing_design_types)
@@ -207,13 +145,7 @@ def update_evaluation_design_objects(existing_objects, existing_design_types, fo
         existing_objects.filter(design_type__collect_description=True).update(text=form.cleaned_data["text"])
 
 
-@require_http_methods(["GET", "POST"])
-def evaluation_update_type_view(request, uuid, parent=None):
-    try:
-        evaluation = Evaluation.objects.get(id=uuid)
-    except Evaluation.DoesNotExist:
-        raise Http404("No %(verbose_name)s found matching the query" % {"verbose_name": Evaluation._meta.verbose_name})
-
+def evaluation_type_view(request, evaluation, parent=None, next_page=None):
     if parent:
         parent_object = EvaluationDesignType.objects.get(code=parent)
         options = EvaluationDesignType.objects.filter(parent__code=parent)
@@ -248,9 +180,14 @@ def evaluation_update_type_view(request, uuid, parent=None):
                     form=form,
                 )
 
+            if next_page:
+                return redirect(
+                    "share", uuid=form.cleaned_data["evaluation"].id, page_number=next_page
+                )
+
             return redirect(
                 "evaluation-detail", uuid=form.cleaned_data["evaluation"].id
-            )  # TODO: redirect to next page of form
+            )
 
         else:
             errors = form.errors.as_data().values()
@@ -275,12 +212,16 @@ def evaluation_update_type_view(request, uuid, parent=None):
 
 
 @require_http_methods(["GET", "POST"])
-def evaluation_update_view(request, uuid):
+def evaluation_update_type_view(request, uuid, parent=None):
     try:
         evaluation = Evaluation.objects.get(id=uuid)
     except Evaluation.DoesNotExist:
         raise Http404("No %(verbose_name)s found matching the query" % {"verbose_name": Evaluation._meta.verbose_name})
 
+    return evaluation_type_view(request, evaluation, parent=parent)
+
+
+def evaluation_update_description(request, evaluation, next_page=None):
     errors = {}
     form_fields = [
         "brief_description",
@@ -299,7 +240,11 @@ def evaluation_update_view(request, uuid):
                 setattr(evaluation, field, form.cleaned_data[field])
             evaluation.save(update_fields=form_fields)
 
-            return redirect("evaluation-detail", uuid=evaluation.id)  # TODO: redirect to next page of form
+            if next_page:
+                return redirect(
+                    "share", uuid=evaluation.id, page_number=next_page
+                )
+            return redirect("evaluation-detail", uuid=evaluation.id)
 
         else:
             errors = form.errors.as_data()
@@ -316,6 +261,16 @@ def evaluation_update_view(request, uuid):
             "errors": errors,
         },
     )
+
+
+@require_http_methods(["GET", "POST"])
+def evaluation_update_view(request, uuid):
+    try:
+        evaluation = Evaluation.objects.get(id=uuid)
+    except Evaluation.DoesNotExist:
+        raise Http404("No %(verbose_name)s found matching the query" % {"verbose_name": Evaluation._meta.verbose_name})
+
+    return evaluation_update_description(request, evaluation)
 
 
 @require_http_methods(["GET", "POST"])

@@ -4,11 +4,7 @@
 {% block content %}
   <div class="govuk-grid-row">
     <form 
-    {% if parent %}
-      action="{{url('evaluation-update-type-child', data.evaluation.id, parent.code)}}"
-    {% else %}
-      action="{{url('evaluation-update-type', data.evaluation.id)}}"
-    {% endif %}
+    action="{{ request.path }}"
     method="post"
     >
       {{csrf_input}}
