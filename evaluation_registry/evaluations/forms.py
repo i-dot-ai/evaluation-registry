@@ -90,8 +90,10 @@ class EvaluationShareForm(Form):
 
     def clean(self):
         super().clean()
-        is_final_report_published = self.cleaned_data.get("is_final_report_published")
+        is_final_report_published = self.data.get("is_final_report_published")
 
+        self.cleaned_data["is_final_report_published"] = is_final_report_published == "1"
+        is_final_report_published = self.cleaned_data["is_final_report_published"]
         if is_final_report_published:
             link_to_published_evaluation = self.cleaned_data.get("link_to_published_evaluation")
             plan_link = self.cleaned_data.get("plan_link")
