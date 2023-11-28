@@ -59,13 +59,13 @@ def evaluation_create_view(request, status):
                 return redirect("share", uuid=new_evaluation.id, page_number=1)
             errors = form.errors.as_data()
 
-        if department_to_remove and (department_to_remove in selected_departments):
+        if department_to_remove in selected_departments:
             selected_departments.remove(department_to_remove)
 
         data = {
             "title": request.POST.get("title"),
             "lead_department": selected_lead,
-            "departments": Department.objects.filter(code__in=selected_departments).all(),
+            "departments": Department.objects.filter(code__in=selected_departments),
         }
 
     else:
