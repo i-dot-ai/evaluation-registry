@@ -182,3 +182,4 @@ CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SAMESITE = None
 SESSION_COOKIE_SAMESITE = None
+CORS_ALLOWED_ORIGINS = ["https://test.cola.service.cabinetoffice.gov.uk"]
