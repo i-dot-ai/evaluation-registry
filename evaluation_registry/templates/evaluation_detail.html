@@ -137,7 +137,11 @@
             Link to a published evaluation
         </dt>
         <dd class="govuk-summary-list__value">
+            {% if evaluation.link_to_published_evaluation %}
           <a href="{{evaluation.link_to_published_evaluation}}" class="govuk-link">{{ evaluation.link_to_published_evaluation }}</a>
+            {% else %}
+                No link provided
+            {% endif %}
         </dd>
       </div>
     </div>
