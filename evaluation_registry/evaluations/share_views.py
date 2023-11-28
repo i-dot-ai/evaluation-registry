@@ -10,74 +10,8 @@ from evaluation_registry.evaluations.models import (
 )
 from evaluation_registry.evaluations.views import (
     evaluation_type_view,
-    evaluation_update_description
+    evaluation_update_description,
 )
-
-SHARE_VIEWS_ORDER = [
-    {
-        "view": "evaluation type root",
-        "condition": "all"
-    },
-    {
-        "view": "evaluation type impact",
-        "condition": "is impact type"
-    },
-    {
-        "view": "evaluation type rct",
-        "condition": "is rct type"
-    },
-    {
-        "view": "evaluation type quasi_experimental",
-        "condition": "is quasi_experimental type"
-    },
-    {
-        "view": "evaluation type theory",
-        "condition": "is theory type"
-    },
-    {
-        "view": "evaluation type generic",
-        "condition": "is generic type"
-    },
-    {
-        "view": "evaluation type process",
-        "condition": "is process type"
-    },
-    {
-        "view": "evaluation type economic",
-        "condition": "is economic type"
-    },
-    {
-        "view": "evaluation description",
-        "condition": "all"
-    },
-    # TODO:
-    # {
-    #     "view": "evaluation policy taxonomy",
-    #     "condition": "is economic type"
-    # },
-    {
-        "view": "dates",
-        "condition": "all"
-    },
-    # TODO:
-    # {
-    #     "view": "share report",
-    #     "condition": "is completed report"
-    # },
-    # TODO:
-    # {
-    #     "view": "share planned report",
-    #     "condition": "is not completed"
-    # },
-    {
-        "view": "confirmation to share",
-        "condition": "all"
-    },
-    {
-        "view": "success",
-        "condition": "all"
-    }
-]
 
 
 @require_http_methods(["GET"])
@@ -146,8 +80,12 @@ def evaluation_create_view(request, status):
 
 
 @require_http_methods(["GET", "POST"])
-def create_view(request, page_number=1, status=None):
+def share_confirmation_view(request, evaluation, next_page):
+    return render(request, "share-form/confirmation.html", {"evaluation": evaluation})
 
+
+@require_http_methods(["GET", "POST"])
+def create_view(request, page_number=1, status=None):
     if page_number == 1:
         return before_create_view(request)
 
@@ -163,7 +101,6 @@ def create_view(request, page_number=1, status=None):
 
 
 # MAKE SURE YOU ADD PARAM TO SHOW THIS IS SHARE VIEW
-# TODO: remove GET option
 @require_http_methods(["GET", "POST"])
 def share_view(request, uuid, page_number):
     try:
@@ -171,50 +108,49 @@ def share_view(request, uuid, page_number):
     except Evaluation.DoesNotExist:
         raise Http404("No %(verbose_name)s found matching the query" % {"verbose_name": Evaluation._meta.verbose_name})
 
+    # TODO: add all of these
     view_options = [
         {
             "view": evaluation_type_view,
             "kwargs": {
-                'parent': None,
-                'next_page': 2
+                "parent": None,
             },
             "condition": True,
         },
         {
             "view": evaluation_type_view,
             "kwargs": {
-                'parent': 'impact',
-                'next_page': 3
+                "parent": "impact",
             },
-            "condition": evaluation.evaluation_design_types.filter(code='impact').exists(),
+            "condition": evaluation.evaluation_design_types.filter(code="impact").exists(),
         },
         {
             "view": evaluation_type_view,
             "kwargs": {
-                'parent': 'rct',
-                'next_page': 4
+                "parent": "rct",
             },
-            "condition": evaluation.evaluation_design_types.filter(code='rct').exists(),
+            "condition": evaluation.evaluation_design_types.filter(code="rct").exists(),
         },
         {
             "view": evaluation_update_description,
-            "kwargs": {'next_page': 5},
+            "kwargs": {},
             "condition": True,
         },
-
+        {
+            "view": share_confirmation_view,
+            "kwargs": {},
+            "condition": True,
+        },
     ]
 
     if (page_number) > len(view_options):
         raise Http404("No page number %(verbose_name)s found" % {"verbose_name": page_number})
 
-    for i in range(page_number-1, len(view_options)):
+    for i in range(page_number - 1, len(view_options)):
         view = view_options[i]
+        view["kwargs"]["next_page"] = i + 2
 
         if view["condition"]:
             return view["view"](request, evaluation, **view["kwargs"])
 
-    # TODO: handle last view
-
-    return redirect(
-                "evaluation-detail", uuid=evaluation.id
-            )
+    return redirect("evaluation-detail", uuid=evaluation.id)

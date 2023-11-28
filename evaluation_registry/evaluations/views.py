@@ -181,13 +181,9 @@ def evaluation_type_view(request, evaluation, parent=None, next_page=None):
                 )
 
             if next_page:
-                return redirect(
-                    "share", uuid=form.cleaned_data["evaluation"].id, page_number=next_page
-                )
+                return redirect("share", uuid=form.cleaned_data["evaluation"].id, page_number=next_page)
 
-            return redirect(
-                "evaluation-detail", uuid=form.cleaned_data["evaluation"].id
-            )
+            return redirect("evaluation-detail", uuid=form.cleaned_data["evaluation"].id)
 
         else:
             errors = form.errors.as_data().values()
@@ -241,9 +237,7 @@ def evaluation_update_description(request, evaluation, next_page=None):
             evaluation.save(update_fields=form_fields)
 
             if next_page:
-                return redirect(
-                    "share", uuid=evaluation.id, page_number=next_page
-                )
+                return redirect("share", uuid=evaluation.id, page_number=next_page)
             return redirect("evaluation-detail", uuid=evaluation.id)
 
         else:
