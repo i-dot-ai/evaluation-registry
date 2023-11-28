@@ -97,6 +97,14 @@
         </div>
     {% endcall %}
 
+  {% call macros.govuk_input(
+       'reasons_unpublished_details',
+       'Please enter details about the reasons this evaluation is unpublished',
+       None,
+       True)%}
+    <textarea class="govuk-textarea" id="reasons_unpublished_details" name="reasons_unpublished_details" rows="5"></textarea>
+    {% endcall %}
+
     <button
       data-prevent-double-click="true"
       class="govuk-button"
