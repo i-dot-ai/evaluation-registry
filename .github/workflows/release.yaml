@@ -2,7 +2,7 @@ name: Development Release Workflow
 on:
   push:
     branches:
-    - 'main'
+    - 'develop'
 
   workflow_dispatch:
 
