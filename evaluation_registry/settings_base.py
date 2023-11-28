@@ -39,6 +39,7 @@ ALLOWED_HOSTS = [
     "evaluation-registry-prod.eba-izdb4qxe.eu-west-2.elasticbeanstalk.com",
     "dev.evaluation-registry.service.gov.uk",
     "evaluation-registry.service.gov.uk",
+    "*",
 ]
 
 # CSRF settings
