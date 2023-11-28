@@ -14,16 +14,31 @@ window.GOVUK.Modules = window.GOVUK.Modules || {};
     this.$optionsContainer = this.$optionSelect.querySelector('.autofilter-option-select__container')
     this.$optionList = this.$optionsContainer.querySelector('.js-auto-height-inner')
     this.$allCheckboxes = this.$optionsContainer.querySelectorAll('.govuk-checkboxes__item')
-    this.hasFilter = this.$optionSelect.getAttribute('data-filter-element') || ''
+    this.filterLabel = this.$optionSelect.getAttribute('data-filter-element') || ''
 
 
     this.checkedCheckboxes = []
   }
 
   OptionSelect.prototype.init = function () {
-    if (this.hasFilter.length) {
+    if (this.filterLabel.length) {
+
       var filterEl = document.createElement('div')
-      filterEl.innerHTML = this.hasFilter
+      var label = document.createElement('label')
+      label.for = `input-${this.filterLabel}`
+      label.classList = ['govuk-label govuk-visually-hidden']
+      label.textContent = this.filterLabel
+
+      var input = document.createElement('input')
+      input.name='option-select-filter'
+      input.id = `input-${this.filterLabel}`
+      input.classList = ['autofilter-option-select__filter-input govuk-input']
+      input.type = 'text'
+      input.setAttribute('aria-describedby', 'checkboxes-filter-department-count')
+      input.setAttribute('aria-controls', 'checkboxes-filter-department-count')
+      
+      filterEl.appendChild(label)
+      filterEl.appendChild(input)
 
       var optionSelectFilter = filterEl.cloneNode(true)
       optionSelectFilter.classList.add('autofilter-option-select__filter')
@@ -32,7 +47,7 @@ window.GOVUK.Modules = window.GOVUK.Modules || {};
       this.$optionsContainer.parentNode.insertBefore(optionSelectFilter, this.$optionsContainer)
 
       this.$filter = this.$optionSelect.querySelector('input[name="option-select-filter"]')
- 
+
       this.$filterCount = document.getElementById(this.$filter.getAttribute('aria-describedby'))
       this.filterTextSingle = ' ' + this.$filterCount.getAttribute('data-single')
       this.filterTextMultiple = ' ' + this.$filterCount.getAttribute('data-multiple')
@@ -111,13 +126,13 @@ window.GOVUK.Modules = window.GOVUK.Modules || {};
     var lenChecked = obj.$optionsContainer.querySelectorAll('.govuk-checkboxes__input:checked').length
     var len = showCheckboxes.length + lenChecked
     var html = len + (len === 1 ? obj.filterTextSingle : obj.filterTextMultiple) + ', ' + lenChecked + obj.filterTextSelected
-    obj.$filterCount.innerHTML = html
+    obj.$filterCount.textContent(html)
   }
 
   OptionSelect.prototype.attachCheckedCounter = function attachCheckedCounter (checkedString) {
     var element = document.createElement('div')
     element.setAttribute('class', 'autofilter-option-select__selected-counter js-selected-counter')
-    element.innerHTML = checkedString
+    element.textContent(checkedString)
     this.$optionSelect.querySelector('.autofilter-legend').insertAdjacentElement('afterend', element)
   }
 
