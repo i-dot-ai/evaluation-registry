@@ -2,7 +2,7 @@
 
 {% block content %}
   <div class ="govuk-grid-row">
-    <form action="{{url('evaluation-update', evaluation.id)}}" method="post">
+    <form action="{{ request.path }}" method="post">
       {{csrf_input}}
 
       {% if errors %}

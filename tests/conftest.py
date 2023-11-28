@@ -83,3 +83,10 @@ def evaluation_other_type_link(basic_evaluation, other):
         text="hello world",
     )
     yield evaluation_type_link
+
+
+@pytest.fixture
+def impact_evaluation(basic_evaluation, evaluation_impact_type_link):
+    basic_evaluation.evaluationdesigntypedetail_set.add(evaluation_impact_type_link)
+
+    yield basic_evaluation

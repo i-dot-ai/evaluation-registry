@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.urls import include, path
 
-from evaluation_registry.evaluations import info_views, views
+from evaluation_registry.evaluations import info_views, share_views, views
 
 info_urlpatterns = [
     path("privacy-notice/", info_views.privacy_notice_view, name="privacy-notice"),
@@ -22,8 +22,10 @@ other_urlpatterns = [
     ),
     path("evaluation/<uuid:uuid>/update-description/", views.evaluation_update_view, name="evaluation-update"),
     path("evaluation/<uuid:uuid>/update-dates/", views.evaluation_update_dates_view, name="evaluation-update-dates"),
-    path("evaluation/create", views.start_form_view, name="start-form"),
-    path("evaluation/create/<str:status>", views.evaluation_create_view, name="evaluation-create"),
+    path("evaluation/create", share_views.create_view, name="create"),
+    path("evaluation/create/<int:page_number>/", share_views.create_view, name="create"),
+    path("evaluation/create/<int:page_number>/<str:status>", share_views.create_view, name="create"),
+    path("evaluation/<uuid:uuid>/share/<int:page_number>/", share_views.share_view, name="share"),
     path("accounts/", include("allauth.urls")),
 ]
 
