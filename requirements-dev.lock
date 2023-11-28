@@ -1,7 +1,7 @@
 annotated-types==0.6.0
 anyio==3.7.1
 asgiref==3.7.2
-automatilib==0.2.1
+automatilib==1.0.2
 bandit==1.7.5
 black==23.11.0
 boto3==1.33.1
