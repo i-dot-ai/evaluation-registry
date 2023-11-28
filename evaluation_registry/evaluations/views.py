@@ -339,6 +339,7 @@ def evaluation_share_view(request, uuid):
                     instance.link_to_published_evaluation = form.cleaned_data["link_to_published_evaluation"]
                 else:
                     instance.reasons_unpublished = list(form.cleaned_data["reasons_unpublished"])
+                    instance.reasons_unpublished_details = form.cleaned_data["reasons_unpublished_details"]
                 instance.is_final_report_published = form.cleaned_data["is_final_report_published"]
                 instance.save()
             return redirect("evaluation-detail", uuid=uuid)
