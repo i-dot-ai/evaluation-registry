@@ -28,9 +28,8 @@ other_urlpatterns = [
     path("evaluation/create/<int:page_number>/", share_views.create_view, name="create"),
     path("evaluation/create/<int:page_number>/<str:status>", share_views.create_view, name="create"),
     path("evaluation/<uuid:uuid>/share/<int:page_number>/", share_views.share_view, name="share"),
-    path("evaluation/<uuid:uuid>/share", views.evaluation_share_view, name="evaluation-share"),
+    path("evaluation/<uuid:uuid>/share", share_views.evaluation_share_view, name="evaluation-share"),
     path("accounts/", include("allauth.urls")),
-    path("evaluation/<uuid:uuid>/", views.evaluation_detail_view, name="evaluation-detail"),
 ]
 
 urlpatterns = info_urlpatterns + other_urlpatterns + cola_url_patterns
