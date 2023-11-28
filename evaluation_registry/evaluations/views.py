@@ -217,7 +217,7 @@ def evaluation_update_type_view(request, uuid, parent=None):
     return evaluation_type_view(request, evaluation, parent=parent)
 
 
-def evaluation_update_description(request, evaluation, next_page=None):
+def evaluation_description_view(request, evaluation, next_page=None):
     errors = {}
     form_fields = [
         "brief_description",
@@ -264,16 +264,10 @@ def evaluation_update_view(request, uuid):
     except Evaluation.DoesNotExist:
         raise Http404("No %(verbose_name)s found matching the query" % {"verbose_name": Evaluation._meta.verbose_name})
 
-    return evaluation_update_description(request, evaluation)
+    return evaluation_description_view(request, evaluation)
 
 
-@require_http_methods(["GET", "POST"])
-def evaluation_update_dates_view(request, uuid):
-    try:
-        evaluation = Evaluation.objects.get(id=uuid)
-    except Evaluation.DoesNotExist:
-        raise Http404("No %(verbose_name)s found matching the query" % {"verbose_name": Evaluation._meta.verbose_name})
-
+def evaluation_dates_view(request, evaluation, next_page=None):
     form_fields = ["evaluation", "month", "year", "other_description", "category"]
     existing_date_count = EventDate.objects.filter(evaluation=evaluation).count()
     DateFormset = modelformset_factory(  # noqa: N806
@@ -295,7 +289,9 @@ def evaluation_update_dates_view(request, uuid):
             if request.POST.get("addanother"):
                 return redirect("evaluation-update-dates", uuid=evaluation.id)
 
-            return redirect("evaluation-detail", uuid=evaluation.id)  # TODO: redirect to next page of form
+            if next_page:
+                return redirect("share", uuid=evaluation.id, page_number=next_page)
+            return redirect("evaluation-detail", uuid=evaluation.id)
 
     else:
         formset = DateFormset(queryset=EventDate.objects.filter(evaluation=evaluation))
@@ -311,3 +307,13 @@ def evaluation_update_dates_view(request, uuid):
             "existing_date_count": existing_date_count,
         },
     )
+
+
+@require_http_methods(["GET", "POST"])
+def evaluation_update_dates_view(request, uuid):
+    try:
+        evaluation = Evaluation.objects.get(id=uuid)
+    except Evaluation.DoesNotExist:
+        raise Http404("No %(verbose_name)s found matching the query" % {"verbose_name": Evaluation._meta.verbose_name})
+
+    return evaluation_dates_view(request, evaluation)

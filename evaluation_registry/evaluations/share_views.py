@@ -9,8 +9,9 @@ from evaluation_registry.evaluations.models import (
     EvaluationDepartmentAssociation,
 )
 from evaluation_registry.evaluations.views import (
+    evaluation_dates_view,
+    evaluation_description_view,
     evaluation_type_view,
-    evaluation_update_description,
 )
 
 
@@ -100,7 +101,6 @@ def create_view(request, page_number=1, status=None):
     raise Http404("No page number %(verbose_name)s found" % {"verbose_name": page_number})
 
 
-# MAKE SURE YOU ADD PARAM TO SHOW THIS IS SHARE VIEW
 @require_http_methods(["GET", "POST"])
 def share_view(request, uuid, page_number):
     try:
@@ -108,7 +108,6 @@ def share_view(request, uuid, page_number):
     except Evaluation.DoesNotExist:
         raise Http404("No %(verbose_name)s found matching the query" % {"verbose_name": Evaluation._meta.verbose_name})
 
-    # TODO: add all of these
     view_options = [
         {
             "view": evaluation_type_view,
@@ -132,10 +131,54 @@ def share_view(request, uuid, page_number):
             "condition": evaluation.evaluation_design_types.filter(code="rct").exists(),
         },
         {
-            "view": evaluation_update_description,
+            "view": evaluation_type_view,
+            "kwargs": {
+                "parent": "quasi_experimental",
+            },
+            "condition": evaluation.evaluation_design_types.filter(code="quasi_experimental").exists(),
+        },
+        {
+            "view": evaluation_type_view,
+            "kwargs": {
+                "parent": "theory",
+            },
+            "condition": evaluation.evaluation_design_types.filter(code="theory").exists(),
+        },
+        {
+            "view": evaluation_type_view,
+            "kwargs": {
+                "parent": "generic",
+            },
+            "condition": evaluation.evaluation_design_types.filter(code="generic").exists(),
+        },
+        {
+            "view": evaluation_type_view,
+            "kwargs": {
+                "parent": "process",
+            },
+            "condition": evaluation.evaluation_design_types.filter(code="process").exists(),
+        },
+        {
+            "view": evaluation_type_view,
+            "kwargs": {
+                "parent": "economic",
+            },
+            "condition": evaluation.evaluation_design_types.filter(code="economic").exists(),
+        },
+        {
+            "view": evaluation_description_view,
             "kwargs": {},
             "condition": True,
         },
+        # TODO: Add whitehall policy taxonomy
+        {
+            "view": evaluation_dates_view,
+            "kwargs": {},
+            "condition": True,
+        },
+        # TODO: Add share links
+        # TODO: Add cost
+        # TODO: Add confirmation allowed to share (and handle change of state on save)
         {
             "view": share_confirmation_view,
             "kwargs": {},
