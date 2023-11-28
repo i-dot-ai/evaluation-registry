@@ -329,6 +329,7 @@ def evaluation_share_view(request, uuid):
     if request.method == "POST":
         instance = Evaluation.objects.get(pk=uuid)
         form_data = request.POST.dict()
+        form_data["reasons_unpublished"] = request.POST.getlist("reasons_unpublished[]")
         form = EvaluationShareForm(form_data)
         data = {}
         if form.is_valid():
