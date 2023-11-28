@@ -130,6 +130,7 @@ class Evaluation(TimeStampedModel):
     reasons_unpublished = ArrayField(
         models.CharField(max_length=256, choices=UnpublishedReason.choices), blank=True, null=True
     )
+    reasons_unpublished_details = models.TextField(blank=True, null=True, max_length=4096)
 
     history = HistoricalRecords()
 

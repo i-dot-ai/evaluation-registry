@@ -84,6 +84,11 @@ class EvaluationShareForm(Form):
     link_to_published_evaluation = URLField(max_length=1024, label="Link to published evaluation", required=False)
     plan_link = URLField(required=False)
     reasons_unpublished = MultipleChoiceField(choices=models.Evaluation.UnpublishedReason.choices, required=False)
+    reasons_unpublished_details = CharField(
+        label="Please specify additional details about the reasons this evaluation is unpublished",
+        required=False,
+        max_length=2096,
+    )
 
     def __init__(self, *args, **kwargs):
         super(EvaluationShareForm, self).__init__(*args, **kwargs)
@@ -105,6 +110,12 @@ class EvaluationShareForm(Form):
             reasons_unpublished = self.cleaned_data.get("reasons_unpublished")
             if not reasons_unpublished:
                 self.add_error("reasons_unpublished", "Please provide a reason this evaluation is unpublished")
+                fields_that_requires_other_info = ["other", "quality"]
+                if any(field in reasons_unpublished for field in fields_that_requires_other_info):
+                    self.add_error(
+                        "reasons_unpublished_details",
+                        "Please enter details about the reasons this evaluation is unpublished",
+                    )
 
 
 class EventDateForm(NamedErrorsModelForm):
