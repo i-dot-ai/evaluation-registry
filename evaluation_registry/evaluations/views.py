@@ -25,6 +25,7 @@ from evaluation_registry.evaluations.models import (
     EvaluationDesignType,
     EvaluationDesignTypeDetail,
     EventDate,
+    Taxonomy
     User,
 )
 
@@ -400,3 +401,50 @@ def evaluation_update_links_view(request, uuid):
     evaluation = check_evaluation_and_user(request, uuid)
 
     return evaluation_links_view(request, evaluation)
+
+
+def evaluation_policies_view(request, evaluation, next_page=None):
+    EvaluationForm = modelform_factory(Evaluation, fields=["policies"])  # noqa: N806
+    EvaluationForm.base_fields["policies"].to_field_name = "code"
+    policies = Taxonomy.objects.all()
+
+    selected_policies = list(map(lambda p: p.code, evaluation.policies.all()))
+
+    if request.method == "POST":
+        form = EvaluationForm(request.POST, instance=evaluation)
+
+        if form.is_valid():
+            form.save()
+
+            if next_page:
+                return redirect("share", uuid=evaluation.id, page_number=next_page)
+            return redirect("evaluation-detail", uuid=evaluation.id)
+
+        else:
+            errors = form.errors.as_data()
+
+    else:
+        form = EvaluationForm(instance=evaluation)
+        errors = {}
+
+    return render(
+        request,
+        "share-form/evaluation-policies.html",
+        {
+            "evaluation": evaluation,
+            "form": form,
+            "errors": errors,
+            "policies": policies,
+            "selected_policies": selected_policies,
+        },
+    )
+
+
+@require_http_methods(["GET", "POST"])
+def evaluation_update_policies_view(request, uuid):
+    try:
+        evaluation = Evaluation.objects.get(id=uuid)
+    except Evaluation.DoesNotExist:
+        raise Http404("No %(verbose_name)s found matching the query" % {"verbose_name": Evaluation._meta.verbose_name})
+
+    return evaluation_policies_view(request, evaluation)
