@@ -88,7 +88,7 @@
     <div class="govuk-checkboxes" data-module="govuk-checkboxes">
           {% for option in options %}
             <div class="govuk-checkboxes__item">
-              <input class="govuk-checkboxes__input" id="reasons_unpublished-{{ loop.index }}" name="reasons_unpublished" type="checkbox" value="{{ option[0] }}">
+              <input class="govuk-checkboxes__input" id="reasons_unpublished" name="reasons_unpublished[]" type="checkbox" value="{{ option[0] }}">
               <label class="govuk-label govuk-checkboxes__label" for="reasons_unpublished-{{ loop.index }}">
                 {{ option[1] }}
               </label>
