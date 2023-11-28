@@ -6,8 +6,8 @@ from django.forms import (
     ModelChoiceField,
     ModelForm,
     ModelMultipleChoiceField,
-    URLField,
     MultipleChoiceField,
+    URLField,
 )
 
 from evaluation_registry.evaluations import models
