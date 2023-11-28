@@ -7,6 +7,7 @@ from django.forms import (
     ModelForm,
     ModelMultipleChoiceField,
     URLField,
+    MultipleChoiceField,
 )
 
 from evaluation_registry.evaluations import models
@@ -83,7 +84,7 @@ class EvaluationShareForm(Form):
     is_final_report_published = BooleanField(label="Is final report published?", required=True)
     link_to_published_evaluation = URLField(max_length=1024, label="Link to published evaluation", required=False)
     plan_link = URLField(required=False)
-    reasons_unpublished = ChoiceField(choices=models.Evaluation.UnpublishedReason.choices, required=False)
+    reasons_unpublished = MultipleChoiceField(choices=models.Evaluation.UnpublishedReason.choices, required=False)
 
     def __init__(self, *args, **kwargs):
         super(EvaluationShareForm, self).__init__(*args, **kwargs)
