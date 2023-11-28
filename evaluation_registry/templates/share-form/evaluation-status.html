@@ -2,7 +2,7 @@
 
 {% block content %}
 <div class="govuk-grid-row">
-  <form action="{{url('start-form')}}" method="post">
+  <form action="{{url('create', 2)}}" method="post">
     {{csrf_input}}
 
     <div class="govuk-form-group {% if error %}govuk-form-group--error{% endif %}">

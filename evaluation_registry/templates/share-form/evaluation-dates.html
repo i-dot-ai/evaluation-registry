@@ -6,7 +6,7 @@
 
 
 <div class="govuk-grid-row">
-  <form action="{{url('evaluation-update-dates', evaluation.id)}}" method="post">
+  <form action="{{ request.path }}" method="post">
     {{csrf_input}}
     {{ formset.management_form }}
 
@@ -98,7 +98,7 @@
     <button
       class="govuk-button govuk-button--secondary"
       data-module="govuk-button"
-      formaction="{{url('evaluation-update-dates', evaluation.id)}}"
+      formaction="{{ request.path }}"
       name="addanother"
       value="date"
     >
