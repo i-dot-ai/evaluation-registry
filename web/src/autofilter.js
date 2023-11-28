@@ -34,8 +34,8 @@ window.GOVUK.Modules = window.GOVUK.Modules || {};
       input.id = `input-${this.filterLabel}`
       input.classList = ['autofilter-option-select__filter-input govuk-input']
       input.type = 'text'
-      input.setAttribute('aria-describedby', 'checkboxes-filter-department-count')
-      input.setAttribute('aria-controls', 'checkboxes-filter-department-count')
+      input.setAttribute('aria-describedby', `checkboxes-${this.filterLabel}-count`)
+      input.setAttribute('aria-controls', `checkboxes-${this.filterLabel}-count`)
       
       filterEl.appendChild(label)
       filterEl.appendChild(input)
@@ -126,13 +126,13 @@ window.GOVUK.Modules = window.GOVUK.Modules || {};
     var lenChecked = obj.$optionsContainer.querySelectorAll('.govuk-checkboxes__input:checked').length
     var len = showCheckboxes.length + lenChecked
     var html = len + (len === 1 ? obj.filterTextSingle : obj.filterTextMultiple) + ', ' + lenChecked + obj.filterTextSelected
-    obj.$filterCount.textContent(html)
+    obj.$filterCount.textContent = html
   }
 
   OptionSelect.prototype.attachCheckedCounter = function attachCheckedCounter (checkedString) {
     var element = document.createElement('div')
     element.setAttribute('class', 'autofilter-option-select__selected-counter js-selected-counter')
-    element.textContent(checkedString)
+    element.textContent = checkedString
     this.$optionSelect.querySelector('.autofilter-legend').insertAdjacentElement('afterend', element)
   }
 
