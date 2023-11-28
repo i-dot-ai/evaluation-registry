@@ -16,7 +16,8 @@ django-csp
 django-permissions-policy
 humanize~=4.7.0
 sentry-sdk
-boto
+boto3
+botocore
 django-storages
 django-health-check
 django-simple-history

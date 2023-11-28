@@ -37,6 +37,8 @@ ALLOWED_HOSTS = [
     "127.0.0.1",
     "evaluation-registry-dev.eba-izdb4qxe.eu-west-2.elasticbeanstalk.com",
     "evaluation-registry-prod.eba-izdb4qxe.eu-west-2.elasticbeanstalk.com",
+    "dev.evaluation-registry.service.gov.uk",
+    "evaluation-registry.service.gov.uk",
 ]
 
 # CSRF settings
@@ -67,6 +69,7 @@ INSTALLED_APPS = [
     "django.contrib.sites",
     "django.contrib.staticfiles",
     "simple_history",
+    "storages",
 ]
 
 MIDDLEWARE = [
@@ -151,14 +154,29 @@ PERMISSIONS_POLICY: dict[str, list] = {
 }
 
 
-CSP_DEFAULT_SRC = ("'self'", "'sha256-oFNrsKhzOBUVceDuefWEqtXEXMM9LIL4cUnoVkDYPzA='")
+CSP_DEFAULT_SRC = (
+    "'self'",
+    "s3.amazonaws.com",
+    "evaluation-registry-files-dev.s3.amazonaws.com",
+    "evaluation-registry-files-prod.s3.amazonaws.com",
+)
+CSP_OBJECT_SRC = ("'none'",)
+CSP_REQUIRE_TRUSTED_TYPES_FOR = ("'script'",)
+# Hash for styles for font in base template
+CSP_FONT_SRC = (
+    "'self'",
+    "s3.amazonaws.com",
+    "evaluation-registry-files-dev.s3.amazonaws.com",
+    "evaluation-registry-files-prod.s3.amazonaws.com",
+)
+CSP_STYLE_SRC = (
+    "'self'",
+    "evaluation-registry-files-dev.s3.amazonaws.com",
+    "evaluation-registry-files-prod.s3.amazonaws.com",
+)
+CSP_FRAME_ANCESTORS = ("'none'",)
 
-CSP_STYLE_SRC = "'self'"
-
-
-OTP_TOTP_ISSUER = ""  # TODO: Add issuer name
-OTP_TOTP_AUTOCONF = True
-OTP_TOTP_KEY_LENGTH = 16
-OTP_TOTP_THROTTLE_FACTOR = 1.0
 
 CSRF_COOKIE_HTTPONLY = True
+
+DATA_UPLOAD_MAX_MEMORY_SIZE = 100 * 1024 * 1024  # 100 megabytes in bytes
