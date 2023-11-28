@@ -40,7 +40,8 @@ ALLOWED_HOSTS = [
     "evaluation-registry.cabinetoffice.gov.uk",
     "dev.evaluation-registry.service.gov.uk",
     "evaluation-registry.service.gov.uk",
-    "dev.evaluation-registry.service.gov.uk",
+    "evaluation-registry.cabinetoffice.gov.uk",
+    "dev.evaluation-registry.cabinetoffice.gov.uk",
 ]
 
 # CSRF settings
