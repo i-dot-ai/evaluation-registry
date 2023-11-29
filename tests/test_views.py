@@ -40,7 +40,8 @@ def test_update_evaluation_design_objects_text_only(other, basic_evaluation, eva
 
 @pytest.mark.django_db
 @patch("evaluation_registry.evaluations.views.render", side_effect=render)
-def test_evaluation_update_type_view(mock_render, client, basic_evaluation, impact):
+def test_evaluation_update_type_view(mock_render, client, basic_evaluation, impact, alice):
+    client.force_login(user=alice)
     client.get(f"/evaluation/{basic_evaluation.id}/update-type/")
     _, _, data = mock_render.call_args[0]
     assert data["evaluation"] == basic_evaluation
