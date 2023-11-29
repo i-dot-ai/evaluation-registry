@@ -230,7 +230,7 @@ def share_view(request, uuid, page_number):
             "condition": True,
         },
         {
-            "view": share_view,
+            "view": share_confirmation_view,
             "kwargs": {},
             "condition": True,
         },
