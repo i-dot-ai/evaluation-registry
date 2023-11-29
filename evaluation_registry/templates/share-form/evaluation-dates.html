@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+{% import 'macros.html' as macros with context %}
+
+
+{% block content %}
+
+
+<div class="govuk-grid-row">
+  <form action="{{ request.path }}" method="post">
+    {{csrf_input}}
+    {{ formset.management_form }}
+
+    <h2 class="govuk-heading-l">Dates</h1>
+
+    {% if errors %}
+      <div class="govuk-error-summary" data-module="govuk-error-summary">
+        <div role="alert">
+          <h3 class="govuk-error-summary__title">
+            There is a problem
+          </h3>
+          <div class="govuk-error-summary__body">
+            <ul class="govuk-list govuk-error-summary__list">
+              {% for form_errors in errors %}
+                {% set outer_loop = loop %}
+                {% for field, error_list in form_errors.items() %}
+                  {% for error in error_list %}
+                    <li>
+                      <a href="#id_form-{{outer_loop.index0}}-{{field}}">Date {{outer_loop.index}}: {{error}}</a>
+                    </li>
+                  {% endfor %}
+                {% endfor %}
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+
+    {% if existing_date_count %}
+      <h3 class="govuk-heading-m">Existing Dates</h3>
+      {% for date_key in range(0, existing_date_count) %}
+        {{ macros.formset_eventdate_input(
+          date_key,
+          formset[date_key],
+          evaluation.id,
+          'Existing date ' + (date_key + 1)|string,
+          errors[date_key],
+          categories
+        ) }}
+      {% endfor %}
+
+      <h3 class="govuk-heading-m">New date information (optional)</h3>      
+      {{ macros.formset_eventdate_input(
+        existing_date_count,
+        formset[existing_date_count],
+        evaluation.id,
+        'Add new details here',
+        errors[existing_date_count],
+        categories
+      ) }}
+
+    {% else %}
+      <h3 class="govuk-heading-m">Evaluation start date</h3>
+      {{ macros.formset_eventdate_input(
+        '0',
+        formset[0],
+        evaluation.id,
+        'For example, 3 2007, this could be in the future or the past',
+        errors[0],
+        categories,
+        categories.EVALUATION_START,
+      ) }}
+
+      <h3 class="govuk-heading-m">Evaluation end date</h3>
+      {{ macros.formset_eventdate_input(
+        '1',
+        formset[1],
+        evaluation.id,
+        'When the evaluation is planned to finish',
+        errors[1],
+        categories,
+        categories.EVALUATION_END
+      ) }}
+
+      <h3 class="govuk-heading-m">Publication of evaluation report</h3>
+      {{ macros.formset_eventdate_input(
+        '2',
+        formset[2],
+        evaluation.id,
+        'When the evaluation is planned to finish',
+        errors[2],
+        categories,
+        categories.EVALUATION_START,
+      ) }}
+
+    {% endif %}
+
+    <button
+      class="govuk-button govuk-button--secondary"
+      data-module="govuk-button"
+      formaction="{{ request.path }}"
+      name="addanother"
+      value="date"
+    >
+      Save and add another date
+    </button>
+    <br>
+
+    <button
+      data-prevent-double-click="true"
+      class="govuk-button"
+      data-module="govuk-button"
+    >
+      Save and continue
+    </button>
+  </form>
+</div>
+
+{% endblock %}

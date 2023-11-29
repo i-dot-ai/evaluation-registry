@@ -6,6 +6,7 @@ from evaluation_registry.evaluations.models import (
     Evaluation,
     EvaluationDepartmentAssociation,
     EvaluationDesignType,
+    EvaluationDesignTypeDetail,
     User,
 )
 
@@ -63,3 +64,29 @@ def impact():
 @pytest.fixture
 def other():
     yield EvaluationDesignType.objects.get(code="other")
+
+
+@pytest.fixture
+def evaluation_impact_type_link(basic_evaluation, impact):
+    evaluation_type_link = EvaluationDesignTypeDetail.objects.create(
+        evaluation=basic_evaluation,
+        design_type=impact,
+    )
+    yield evaluation_type_link
+
+
+@pytest.fixture
+def evaluation_other_type_link(basic_evaluation, other):
+    evaluation_type_link = EvaluationDesignTypeDetail.objects.create(
+        evaluation=basic_evaluation,
+        design_type=other,
+        text="hello world",
+    )
+    yield evaluation_type_link
+
+
+@pytest.fixture
+def impact_evaluation(basic_evaluation, evaluation_impact_type_link):
+    basic_evaluation.evaluationdesigntypedetail_set.add(evaluation_impact_type_link)
+
+    yield basic_evaluation

@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% import 'macros.html' as macros with context %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <form 
+    action="{{ request.path }}"
+    method="post"
+    >
+      {{csrf_input}}
+      <input type="hidden" id="evaluation" name="evaluation" value="{{data.evaluation.id}}" />
+
+      <div class="govuk-form-group {% if errors %}govuk-form-group--error{% endif %}">
+        <fieldset class="govuk-fieldset" aria-describedby="design_types-hint {% if errors %}design_types-error{% endif %}">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+            <h2 class="govuk-fieldset__heading">
+              Type of {% if parent %}
+                {{parent.display}}
+              {% else %}
+                evaluation
+              {% endif %}
+            </h2>
+          </legend>
+          <div id="design_types-hint" class="govuk-hint">
+            Select all that apply
+          </div>
+          {% if errors %}
+            <p id="design_types-error" class="govuk-error-message">
+              {% for error_group in errors %}
+                {% for error in error_group %}
+                  <span class="govuk-visually-hidden">Error:</span> {{ error.message }}
+                {% endfor %}
+              {% endfor %}
+            </p>
+          {% endif %}
+          <div class="govuk-checkboxes" data-module="govuk-checkboxes">
+            {% for option in options %}
+              <div class="govuk-checkboxes__item">
+                <input class="govuk-checkboxes__input"
+                  id="design_types-{{ loop.index }}"
+                  name="design_types"
+                  type="checkbox"
+                  value="{{option.code}}"
+                  {% if is_in(option.code, data.design_types_codes) %}checked{% endif %}
+                  {% if option.collect_description %}data-aria-controls="conditional-design_types"{% endif %}
+                >
+                <label class="govuk-label govuk-checkboxes__label" for="design_types-{{ loop.index }}">
+                  {{option.display}}
+                </label>
+              </div>
+              {% if option.collect_description %}
+                <div class="govuk-checkboxes__conditional govuk-checkboxes__conditional--hidden" id="conditional-design_types">
+                  <div class="govuk-form-group">
+                    <label class="govuk-label" for="text">
+                      Please give more details
+                    </label>
+                    <input class="govuk-input govuk-!-width-two-thirds" id="text" name="text" type="text" value="{{data.text}}">
+                  </div>
+                </div>
+              {% endif %}
+            {% endfor %}
+          </div>
+        </fieldset>
+      </div>
+
+      <button
+        data-prevent-double-click="true"
+        class="govuk-button"
+        data-module="govuk-button"
+      >
+        Save and continue
+      </button>
+
+    </form>
+  </div>
+{% endblock %}

@@ -1,3 +1,6 @@
+import csv
+import datetime
+
 from django.contrib import admin
 from django.contrib.postgres.search import (
     SearchQuery,
@@ -7,6 +10,7 @@ from django.contrib.postgres.search import (
 from simple_history.admin import SimpleHistoryAdmin
 
 from . import models
+from .management.commands import load_rsm_csv
 from .models import (
     Evaluation,
     EvaluationDepartmentAssociation,
@@ -16,6 +20,29 @@ from .models import (
 )
 
 admin_site = admin.AdminSite()
+
+
+def import_csv(modeladmin, request, queryset):
+    if queryset.count() > 1:
+        modeladmin.message_user(request, "Please select exactly one file to import.", level="ERROR")
+        return
+
+    file = queryset.first()
+    text_file = (line.decode() for line in file.csv.file)
+    records = list(csv.DictReader(text_file))
+    cmd = load_rsm_csv.Command()
+    cmd.process_tabular_data(records)
+    file.last_successfully_loaded_at = datetime.datetime.now()
+    file.save()
+
+
+import_csv.short_description = "Import selected CSV file"  # type: ignore
+
+
+class RSMFileAdmin(admin.ModelAdmin):
+    actions = [import_csv]
+    list_display = ["id", "csv", "last_successfully_loaded_at"]
+    readonly_fields = ["last_successfully_loaded_at"]
 
 
 class EventDateInline(admin.TabularInline):
@@ -70,7 +97,14 @@ class EvaluationDesignTypeAdmin(admin.ModelAdmin):
     list_filter = ["parent"]
 
 
+class TaxonomyAdmin(admin.ModelAdmin):
+    list_display = ["code", "display", "parent"]
+    list_filter = ["parent"]
+
+
 admin.site.register(models.Evaluation, EvaluationAdmin)
 admin.site.register(models.Department, DepartmentAdmin)
 admin.site.register(models.EvaluationDesignType, EvaluationDesignTypeAdmin)
+admin.site.register(models.RSMFile, RSMFileAdmin)
+admin.site.register(models.Taxonomy, TaxonomyAdmin)
 admin.site.register(models.User)
