@@ -3,7 +3,7 @@
 
 {% block content %}
 <div class="govuk-grid-row">
-  <form method="post" name="share-evaluation-form">
+  <form method="post" name="share-evaluation-form" action="{{ request.path }}">
     {{csrf_input}}
     <input type="hidden" id="status" name="status" value="{{status}}" />
 

@@ -2,10 +2,7 @@ from django.http import Http404
 from django.shortcuts import redirect, render
 from django.views.decorators.http import require_http_methods
 
-from evaluation_registry.evaluations.forms import (
-    EvaluationCreateForm,
-    EvaluationShareForm,
-)
+from evaluation_registry.evaluations.forms import EvaluationCreateForm
 from evaluation_registry.evaluations.models import (
     Department,
     Evaluation,
@@ -14,6 +11,7 @@ from evaluation_registry.evaluations.models import (
 from evaluation_registry.evaluations.views import (
     evaluation_dates_view,
     evaluation_description_view,
+    evaluation_links_view,
     evaluation_type_view,
 )
 
@@ -179,7 +177,11 @@ def share_view(request, uuid, page_number):
             "kwargs": {},
             "condition": True,
         },
-        # TODO: Add share links
+        {
+            "view": evaluation_links_view,
+            "kwargs": {},
+            "condition": evaluation.status == Evaluation.Status.COMPLETE,
+        },
         # TODO: Add cost
         # TODO: Add confirmation allowed to share (and handle change of state on save)
         {
@@ -200,51 +202,3 @@ def share_view(request, uuid, page_number):
             return view["view"](request, evaluation, **view["kwargs"])
 
     return redirect("evaluation-detail", uuid=evaluation.id)
-
-
-@require_http_methods(["GET", "POST"])
-def evaluation_share_view(request, uuid):
-    errors = {}
-    if request.method == "POST":
-        instance = Evaluation.objects.get(pk=uuid)
-        form_data = request.POST.dict()
-        form_data["reasons_unpublished"] = request.POST.getlist("reasons_unpublished[]")
-        form = EvaluationShareForm(form_data)
-        data = {}
-        if form.is_valid():
-            if form.has_changed():
-                if form.cleaned_data["is_final_report_published"]:
-                    instance.plan_link = form.cleaned_data["plan_link"]
-                    instance.link_to_published_evaluation = form.cleaned_data["link_to_published_evaluation"]
-                else:
-                    instance.reasons_unpublished = list(form.cleaned_data["reasons_unpublished"])
-                    instance.reasons_unpublished_details = form.cleaned_data["reasons_unpublished_details"]
-                instance.is_final_report_published = form.cleaned_data["is_final_report_published"]
-                instance.save()
-            return redirect("evaluation-detail", uuid=uuid)
-
-        else:
-            errors = form.errors.as_data()
-
-            data["is_final_report_published"] = request.POST.get("is_final_report_published") or None
-            data["link_to_published_evaluation"] = request.POST.get("link_to_published_evaluation") or None
-            data["plan_link"] = request.POST.get("plan_link") or None
-            data["reasons_unpublished"] = request.POST.get("reasons_unpublished") or []
-        return render(
-            request,
-            "share-form/share-evaluation.html",
-            {
-                "errors": errors,
-                "data": data,
-                "options": Evaluation.UnpublishedReason.choices,
-            },
-        )
-    else:
-        return render(
-            request,
-            "share-form/share-evaluation.html",
-            {
-                "errors": errors,
-                "options": Evaluation.UnpublishedReason.choices,
-            },
-        )

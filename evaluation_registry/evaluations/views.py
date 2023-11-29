@@ -15,6 +15,7 @@ from django.views.decorators.http import require_http_methods
 
 from evaluation_registry.evaluations.forms import (
     EvaluationDesignTypeDetailForm,
+    EvaluationShareForm,
     EventDateForm,
 )
 from evaluation_registry.evaluations.models import (
@@ -320,3 +321,63 @@ def evaluation_update_dates_view(request, uuid):
         raise Http404("No %(verbose_name)s found matching the query" % {"verbose_name": Evaluation._meta.verbose_name})
 
     return evaluation_dates_view(request, evaluation)
+
+
+def evaluation_links_view(request, evaluation, next_page=None):
+    errors = {}
+    if request.method == "POST":
+        instance = evaluation
+        form_data = request.POST.dict()
+        form_data["reasons_unpublished"] = request.POST.getlist("reasons_unpublished[]")
+        form = EvaluationShareForm(form_data)
+        data = {}
+        if form.is_valid():
+            if form.has_changed():
+                if form.cleaned_data["is_final_report_published"]:
+                    instance.plan_link = form.cleaned_data["plan_link"]
+                    instance.link_to_published_evaluation = form.cleaned_data["link_to_published_evaluation"]
+                else:
+                    instance.reasons_unpublished = list(form.cleaned_data["reasons_unpublished"])
+                    instance.reasons_unpublished_details = form.cleaned_data["reasons_unpublished_details"]
+                instance.is_final_report_published = form.cleaned_data["is_final_report_published"]
+                instance.save()
+
+            if next_page:
+                return redirect("share", uuid=evaluation.id, page_number=next_page)
+            return redirect("evaluation-detail", uuid=evaluation.id)
+
+        else:
+            errors = form.errors.as_data()
+
+            data["is_final_report_published"] = request.POST.get("is_final_report_published") or None
+            data["link_to_published_evaluation"] = request.POST.get("link_to_published_evaluation") or None
+            data["plan_link"] = request.POST.get("plan_link") or None
+            data["reasons_unpublished"] = request.POST.get("reasons_unpublished") or []
+        return render(
+            request,
+            "share-form/share-evaluation.html",
+            {
+                "errors": errors,
+                "data": data,
+                "options": Evaluation.UnpublishedReason.choices,
+            },
+        )
+    else:
+        return render(
+            request,
+            "share-form/share-evaluation.html",
+            {
+                "errors": errors,
+                "options": Evaluation.UnpublishedReason.choices,
+            },
+        )
+
+
+@require_http_methods(["GET", "POST"])
+def evaluation_update_links_view(request, uuid):
+    try:
+        evaluation = Evaluation.objects.get(id=uuid)
+    except Evaluation.DoesNotExist:
+        raise Http404("No %(verbose_name)s found matching the query" % {"verbose_name": Evaluation._meta.verbose_name})
+
+    return evaluation_links_view(request, evaluation)
