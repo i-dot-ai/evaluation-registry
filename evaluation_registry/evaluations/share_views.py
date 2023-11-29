@@ -126,6 +126,7 @@ def share_confirmation_view(request, evaluation, next_page):
 
 @require_http_methods(["GET", "POST"])
 @login_required
+@login_required
 def create_view(request, page_number=1, status=None):
     if page_number == 1:
         return before_create_view(request)

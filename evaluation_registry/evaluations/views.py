@@ -212,6 +212,7 @@ def evaluation_type_view(request, evaluation, parent=None, next_page=None):
 
 
 @require_http_methods(["GET", "POST"])
+@login_required
 def evaluation_update_type_view(request, uuid, parent=None):
     try:
         evaluation = Evaluation.objects.get(id=uuid)
@@ -262,6 +263,7 @@ def evaluation_description_view(request, evaluation, next_page=None):
 
 
 @require_http_methods(["GET", "POST"])
+@login_required
 def evaluation_update_view(request, uuid):
     try:
         evaluation = Evaluation.objects.get(id=uuid)
@@ -314,6 +316,7 @@ def evaluation_dates_view(request, evaluation, next_page=None):
 
 
 @require_http_methods(["GET", "POST"])
+@login_required
 def evaluation_update_dates_view(request, uuid):
     try:
         evaluation = Evaluation.objects.get(id=uuid)
