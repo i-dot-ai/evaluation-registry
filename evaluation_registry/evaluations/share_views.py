@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.http import Http404
 from django.shortcuts import redirect, render
 from django.views.decorators.http import require_http_methods
@@ -20,11 +21,13 @@ from evaluation_registry.evaluations.views import (
 
 
 @require_http_methods(["GET"])
+@login_required
 def before_create_view(request):
     return render(request, "share-form/before-start.html")
 
 
 @require_http_methods(["GET", "POST"])
+@login_required
 def choose_evaluation_status_view(request):
     options = Evaluation.Status.choices
     if request.method == "GET":
@@ -36,6 +39,7 @@ def choose_evaluation_status_view(request):
 
 
 @require_http_methods(["GET", "POST"])
+@login_required
 def evaluation_create_view(request, status):
     errors = {}
     departments = Department.objects.all()
@@ -85,6 +89,7 @@ def evaluation_create_view(request, status):
 
 
 @require_http_methods(["GET", "POST"])
+@login_required
 def share_user_confirmation_view(request, evaluation, next_page):
     if request.method == "POST":
         form = EvaluationVisibilityForm(request.POST)
@@ -114,11 +119,13 @@ def share_user_confirmation_view(request, evaluation, next_page):
 
 
 @require_http_methods(["GET", "POST"])
+@login_required
 def share_confirmation_view(request, evaluation, next_page):
     return render(request, "share-form/confirmation.html", {"evaluation": evaluation})
 
 
 @require_http_methods(["GET", "POST"])
+@login_required
 def create_view(request, page_number=1, status=None):
     if page_number == 1:
         return before_create_view(request)
@@ -135,6 +142,7 @@ def create_view(request, page_number=1, status=None):
 
 
 @require_http_methods(["GET", "POST"])
+@login_required
 def share_view(request, uuid, page_number):
     try:
         evaluation = Evaluation.objects.get(id=uuid)

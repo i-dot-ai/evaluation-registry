@@ -7,7 +7,8 @@ from evaluation_registry.evaluations import share_views
 
 
 @pytest.mark.django_db
-def test_create_view(client):
+def test_create_view(client, alice):
+    client.force_login(user=alice)
     with patch.object(share_views, "before_create_view", return_value=HttpResponse()) as mock_first_view:
         client.get("/evaluation/create")
     mock_first_view.assert_called_once()
@@ -27,7 +28,8 @@ def test_create_view(client):
 
 
 @pytest.mark.django_db
-def test_share_view_no_design_types(client, basic_evaluation):
+def test_share_view_no_design_types(client, alice, basic_evaluation):
+    client.force_login(user=alice)
     with patch.object(share_views, "evaluation_type_view", return_value=HttpResponse()) as mock_type_view:
         client.get(f"/evaluation/{basic_evaluation.id}/share/1/")
     mock_type_view.assert_called_once()
@@ -39,7 +41,8 @@ def test_share_view_no_design_types(client, basic_evaluation):
 
 
 @pytest.mark.django_db
-def test_share_view_with_impact_type(client, impact_evaluation):
+def test_share_view_with_impact_type(client, alice, impact_evaluation):
+    client.force_login(user=alice)
     with patch.object(share_views, "evaluation_type_view", return_value=HttpResponse()) as mock_type_view:
         client.get(f"/evaluation/{impact_evaluation.id}/share/2/")
     mock_type_view.assert_called_once()
