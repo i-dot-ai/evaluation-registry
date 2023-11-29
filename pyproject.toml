@@ -35,5 +35,11 @@ env = [
     "POSTGRES_USER=evaluation-registry",
     "POSTGRES_PASSWORD=insecure",
     "EMAIL_BACKEND_TYPE=CONSOLE",
-    "OPENAI_KEY=vmdvmfdvdm"
+    "AWS_REGION_NAME=eu-west-2",
+    "COLA_COOKIE_NAME=cookie",
+    "COLA_COOKIE_DOMAIN=google.com",
+    "COLA_COGNITO_CLIENT_ID=monster",
+    "COLA_COGNITO_USER_POOL_ID=omicron",
+    "COLA_LOGIN_URL=persei",
+     "OPENAI_KEY=vmdvmfdvdm",
 ]

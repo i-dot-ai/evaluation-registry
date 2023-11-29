@@ -56,7 +56,7 @@ jobs:
       - name: Run Checks
         run: |
           export $(cat envs/web | xargs)
-          DJANGO_SETTINGS_MODULE=evaluation_registry.settings_base python manage.py check
+          POSTGRES_HOST=tmp python manage.py check
 
   run_tests:
     name: Run tests

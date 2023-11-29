@@ -37,6 +37,11 @@ ALLOWED_HOSTS = [
     "127.0.0.1",
     "evaluation-registry-dev.eba-izdb4qxe.eu-west-2.elasticbeanstalk.com",
     "evaluation-registry-prod.eba-izdb4qxe.eu-west-2.elasticbeanstalk.com",
+    "evaluation-registry.cabinetoffice.gov.uk",
+    "dev.evaluation-registry.service.gov.uk",
+    "evaluation-registry.service.gov.uk",
+    "evaluation-registry.cabinetoffice.gov.uk",
+    "dev.evaluation-registry.cabinetoffice.gov.uk",
 ]
 
 # CSRF settings
@@ -54,6 +59,8 @@ WSGI_APPLICATION = "evaluation_registry.wsgi.application"
 INSTALLED_APPS = [
     "health_check",
     "evaluation_registry.evaluations",
+    "automatilib.core.apps.IdotAIConfig",
+    "automatilib.cola.apps.ColaAuthConfig",
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
@@ -126,6 +133,7 @@ ACCOUNT_USERNAME_REQUIRED = False
 SITE_ID = 1
 ACCOUNT_EMAIL_VERIFICATION = "none"
 LOGIN_REDIRECT_URL = "homepage"
+LOGIN_URL = "login"
 
 
 STATIC_URL = "/static/"
@@ -154,6 +162,7 @@ CSP_DEFAULT_SRC = (
     "s3.amazonaws.com",
     "evaluation-registry-files-dev.s3.amazonaws.com",
     "evaluation-registry-files-prod.s3.amazonaws.com",
+    "'sha256-oFNrsKhzOBUVceDuefWEqtXEXMM9LIL4cUnoVkDYPzA='",
 )
 CSP_OBJECT_SRC = ("'none'",)
 CSP_REQUIRE_TRUSTED_TYPES_FOR = ("'script'",)
