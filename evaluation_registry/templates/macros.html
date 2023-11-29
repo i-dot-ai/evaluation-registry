@@ -1,5 +1,5 @@
-{% macro govuk_input(id, label, hint) -%}
-  <div class="govuk-form-group {% if errors[id] %}govuk-form-group--error{% endif %}">
+{% macro govuk_input(id, label, hint, hidden=False) -%}
+  <div id="{{id}}-form-group" class="govuk-form-group {% if errors[id] %}govuk-form-group--error{% endif %} {% if hidden %}govuk-!-display-none{% endif %}">
     <h3 class="govuk-label-wrapper">
       <label class="govuk-label govuk-label--m" for="{{id}}">
         {{ label }}
@@ -18,5 +18,76 @@
       </div>
     {% endif %}
     {{ caller() }}
+  </div>
+{%- endmacro %}
+
+{% macro formset_eventdate_input(
+  form_id,
+  date_obj,
+  evaluation_id,
+  heading,
+  errors,
+  categories,
+  selected_category=None
+) -%}
+  <div class="govuk-form-group {% if errors %}govuk-form-group--error{% endif %}">
+    {{ date_obj.id }}
+    {% if selected_category %}
+      <input type="hidden" id="id_form-{{form_id}}-category" name="form-{{form_id}}-category" value="{{selected_category}}" />
+    {% endif %}
+    <input type="hidden" id="id_form-{{form_id}}-evaluation" name="form-{{form_id}}-evaluation" value="{{evaluation_id}}" />
+    <fieldset class="govuk-fieldset" role="group" aria-describedby="id_form-{{form_id}}-hint">
+      <legend class="govuk-fieldset__legend">
+        <h4 class="govuk-fieldset__heading">{{heading}}</h4>
+      </legend>
+      {% if errors %}
+        <div id="id_form-{{form_id}}-error" class="govuk-error-message">
+          {% for error_list in errors.values() %}
+            {% for error in error_list %}
+              <p><span class="govuk-visually-hidden">Error:</span> {{error}}</p>
+            {% endfor %}
+          {% endfor %}
+        </div>
+      {% endif %}
+      {% if not selected_category %}
+        <div class="govuk-form-group">
+          <label class="govuk-label" for="id_form-{{form_id}}-category">
+            Event type
+          </label>
+          <select class="govuk-select" id="id_form-{{form_id}}-category" name="form-{{form_id}}-category">
+            {% for category in categories %}
+              <option value="{{category.value}}" {% if date_obj.category.value() == category.value %}selected{% endif %}>{{category.label}}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="govuk-form-group">
+          <label class="govuk-label" for="id_form-{{form_id}}-other_description">
+            If event type is 'Other', please add more information
+          </label>
+          <input class="govuk-input govuk-!-width-two-thirds {% if errors and errors['other_description'] %}govuk-input--error{% endif %}" id="id_form-{{form_id}}-other_description" name="form-{{form_id}}-other_description" type="text" value="{{date_obj.other_description.value() or ''}}">
+        </div>
+      {% endif %}
+
+
+      <div class="govuk-date-input" id="id_form-{{form_id}}">
+        <div class="govuk-date-input__item">
+          <div class="govuk-form-group">
+            <label class="govuk-label govuk-date-input__label" for="id_form-{{form_id}}-month">
+              Month
+            </label>
+            <input class="govuk-input govuk-date-input__input govuk-input--width-2  {% if errors and errors['month'] %}govuk-input--error{% endif %}" id="id_form-{{form_id}}-month" name="form-{{form_id}}-month" type="text" inputmode="numeric" value="{{date_obj.month.value() or ''}}">
+          </div>
+        </div>
+        <div class="govuk-date-input__item">
+          <div class="govuk-form-group">
+            <label class="govuk-label govuk-date-input__label" for="id_form-{{form_id}}-year">
+              Year
+            </label>
+            <input class="govuk-input govuk-date-input__input govuk-input--width-4  {% if errors and errors['year'] %}govuk-input--error{% endif %}" id="id_form-{{form_id}}-year" name="form-{{form_id}}-year" type="text" inputmode="numeric" value="{{date_obj.year.value() or ''}}">
+          </div>
+        </div>
+      </div>
+
+    </fieldset>
   </div>
 {%- endmacro %}

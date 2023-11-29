@@ -1,3 +1,5 @@
+from django.conf import settings
+from django.contrib.auth.decorators import login_required
 from django.contrib.postgres.search import (
     SearchQuery,
     SearchRank,
@@ -5,34 +7,35 @@ from django.contrib.postgres.search import (
 )
 from django.core.paginator import Paginator
 from django.db.models import QuerySet
-from django.forms import modelform_factory
+from django.forms import modelform_factory, modelformset_factory
 from django.http import Http404
 from django.shortcuts import redirect, render
+from django.urls import reverse
 from django.views.decorators.http import require_http_methods
 
 from evaluation_registry.evaluations.forms import (
-    EvaluationCreateForm,
     EvaluationDesignTypeDetailForm,
+    EventDateForm,
 )
 from evaluation_registry.evaluations.models import (
     Department,
     Evaluation,
-    EvaluationDepartmentAssociation,
     EvaluationDesignType,
     EvaluationDesignTypeDetail,
+    EventDate,
 )
 
 
 @require_http_methods(["GET"])
-def index_view(request):
-    return render(
-        request,
-        template_name="index.html",
-        context={"request": request},
-    )
+def login_to_cola_view(request):
+    if request.user.id:
+        return redirect(reverse("homepage"))
+    cola_url = settings.COLA_LOGIN_URL
+    return render(request, "auth/login.html", {"cola_url": cola_url})
 
 
 @require_http_methods(["GET"])
+@login_required
 def homepage_view(request):
     return render(
         request,
@@ -125,66 +128,6 @@ def evaluation_detail_view(request, uuid):
     return render(request, "evaluation_detail.html", {"evaluation": evaluation, "dates": dates})
 
 
-@require_http_methods(["GET", "POST"])
-def start_form_view(request):
-    options = Evaluation.Status.choices
-    if request.method == "GET":
-        return render(request, "share-form/evaluation-status.html", {"options": options, "error": False})
-    status = request.POST.get("status")
-    if not status:
-        return render(request, "share-form/evaluation-status.html", {"options": options, "error": True})
-    return redirect("evaluation-create", status=status)
-
-
-@require_http_methods(["GET", "POST"])
-def evaluation_create_view(request, status):
-    errors = {}
-    departments = Department.objects.all()
-    if request.method == "POST":
-        form = EvaluationCreateForm(request.POST)
-
-        form_complete = request.POST.get("form_complete")
-        selected_departments = request.POST.getlist("departments")
-        selected_lead = request.POST.get("lead_department")
-        department_to_remove = request.POST.get("remove_department")
-
-        if form_complete:
-            if form.is_valid():
-                new_evaluation = form.save()
-                EvaluationDepartmentAssociation.objects.create(
-                    evaluation=new_evaluation, department=form.cleaned_data["lead_department"], is_lead=True
-                )
-                if form.cleaned_data["departments"]:
-                    for department in form.cleaned_data["departments"]:
-                        EvaluationDepartmentAssociation.objects.create(
-                            evaluation=new_evaluation,
-                            department=department,
-                        )
-
-                return redirect("evaluation-detail", uuid=new_evaluation.id)  # TODO: redirect to next page of form
-            errors = form.errors.as_data()
-
-        if department_to_remove and (department_to_remove in selected_departments):
-            selected_departments.remove(department_to_remove)
-
-        data = {
-            "title": request.POST.get("title"),
-            "lead_department": selected_lead,
-            "departments": Department.objects.filter(code__in=selected_departments).all(),
-        }
-
-    else:
-        # create a blank form
-        form = EvaluationCreateForm()
-        data = {"title": "", "lead_department": "", "departments": []}
-
-    return render(
-        request,
-        "share-form/evaluation-create.html",
-        {"form": form, "status": status, "departments": departments, "data": data, "errors": errors},
-    )
-
-
 def update_evaluation_design_objects(existing_objects, existing_design_types, form):
     should_update_text = "text" in form.changed_data
     to_add = set(form.cleaned_data["design_types"]).difference(existing_design_types)
@@ -205,13 +148,7 @@ def update_evaluation_design_objects(existing_objects, existing_design_types, fo
         existing_objects.filter(design_type__collect_description=True).update(text=form.cleaned_data["text"])
 
 
-@require_http_methods(["GET", "POST"])
-def evaluation_update_type_view(request, uuid, parent=None):
-    try:
-        evaluation = Evaluation.objects.get(id=uuid)
-    except Evaluation.DoesNotExist:
-        raise Http404("No %(verbose_name)s found matching the query" % {"verbose_name": Evaluation._meta.verbose_name})
-
+def evaluation_type_view(request, evaluation, parent=None, next_page=None):
     if parent:
         parent_object = EvaluationDesignType.objects.get(code=parent)
         options = EvaluationDesignType.objects.filter(parent__code=parent)
@@ -246,9 +183,10 @@ def evaluation_update_type_view(request, uuid, parent=None):
                     form=form,
                 )
 
-            return redirect(
-                "evaluation-detail", uuid=form.cleaned_data["evaluation"].id
-            )  # TODO: redirect to next page of form
+            if next_page:
+                return redirect("share", uuid=form.cleaned_data["evaluation"].id, page_number=next_page)
+
+            return redirect("evaluation-detail", uuid=form.cleaned_data["evaluation"].id)
 
         else:
             errors = form.errors.as_data().values()
@@ -273,12 +211,16 @@ def evaluation_update_type_view(request, uuid, parent=None):
 
 
 @require_http_methods(["GET", "POST"])
-def evaluation_update_view(request, uuid):
+def evaluation_update_type_view(request, uuid, parent=None):
     try:
         evaluation = Evaluation.objects.get(id=uuid)
     except Evaluation.DoesNotExist:
         raise Http404("No %(verbose_name)s found matching the query" % {"verbose_name": Evaluation._meta.verbose_name})
 
+    return evaluation_type_view(request, evaluation, parent=parent)
+
+
+def evaluation_description_view(request, evaluation, next_page=None):
     errors = {}
     form_fields = [
         "brief_description",
@@ -297,7 +239,9 @@ def evaluation_update_view(request, uuid):
                 setattr(evaluation, field, form.cleaned_data[field])
             evaluation.save(update_fields=form_fields)
 
-            return redirect("evaluation-detail", uuid=evaluation.id)  # TODO: redirect to next page of form
+            if next_page:
+                return redirect("share", uuid=evaluation.id, page_number=next_page)
+            return redirect("evaluation-detail", uuid=evaluation.id)
 
         else:
             errors = form.errors.as_data()
@@ -314,3 +258,65 @@ def evaluation_update_view(request, uuid):
             "errors": errors,
         },
     )
+
+
+@require_http_methods(["GET", "POST"])
+def evaluation_update_view(request, uuid):
+    try:
+        evaluation = Evaluation.objects.get(id=uuid)
+    except Evaluation.DoesNotExist:
+        raise Http404("No %(verbose_name)s found matching the query" % {"verbose_name": Evaluation._meta.verbose_name})
+
+    return evaluation_description_view(request, evaluation)
+
+
+def evaluation_dates_view(request, evaluation, next_page=None):
+    form_fields = ["evaluation", "month", "year", "other_description", "category"]
+    existing_date_count = EventDate.objects.filter(evaluation=evaluation).count()
+    DateFormset = modelformset_factory(  # noqa: N806
+        EventDate,
+        form=EventDateForm,
+        fields=form_fields,
+        extra=1 if existing_date_count else 3,
+    )
+
+    if request.method == "POST":
+        formset = DateFormset(request.POST, queryset=EventDate.objects.filter(evaluation=evaluation))
+
+        for form in formset:
+            form.initial["evaluation"] = evaluation  # required so the blank form is ignored if unchanged
+
+        if formset.is_valid():
+            formset.save()
+
+            if request.POST.get("addanother"):
+                return redirect("evaluation-update-dates", uuid=evaluation.id)
+
+            if next_page:
+                return redirect("share", uuid=evaluation.id, page_number=next_page)
+            return redirect("evaluation-detail", uuid=evaluation.id)
+
+    else:
+        formset = DateFormset(queryset=EventDate.objects.filter(evaluation=evaluation))
+
+    return render(
+        request,
+        "share-form/evaluation-dates.html",
+        {
+            "evaluation": evaluation,
+            "formset": formset,
+            "errors": formset.errors,
+            "categories": EventDate.Category,
+            "existing_date_count": existing_date_count,
+        },
+    )
+
+
+@require_http_methods(["GET", "POST"])
+def evaluation_update_dates_view(request, uuid):
+    try:
+        evaluation = Evaluation.objects.get(id=uuid)
+    except Evaluation.DoesNotExist:
+        raise Http404("No %(verbose_name)s found matching the query" % {"verbose_name": Evaluation._meta.verbose_name})
+
+    return evaluation_dates_view(request, evaluation)

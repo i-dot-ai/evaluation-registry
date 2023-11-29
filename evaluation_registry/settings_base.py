@@ -6,7 +6,10 @@ from pathlib import Path
 
 import environ
 
-LOCALHOST = socket.gethostbyname(socket.gethostname())
+env = environ.Env()
+
+if env.str("ENVIRONMENT", None) != "LOCAL":
+    LOCALHOST = socket.gethostbyname(socket.gethostname())
 
 
 def get_environ_vars() -> dict:
@@ -20,7 +23,6 @@ def get_environ_vars() -> dict:
     return ast.literal_eval(completed_process.stdout)
 
 
-env = environ.Env()
 if "POSTGRES_HOST" not in os.environ:
     for key, value in get_environ_vars().items():
         env(key, default=value)
@@ -32,12 +34,19 @@ SECRET_KEY = env.str("DJANGO_SECRET_KEY")
 
 # Add AWS URLS to ALLOWED_HOSTS once known
 ALLOWED_HOSTS = [
-    LOCALHOST,
     "localhost",
     "127.0.0.1",
     "evaluation-registry-dev.eba-izdb4qxe.eu-west-2.elasticbeanstalk.com",
     "evaluation-registry-prod.eba-izdb4qxe.eu-west-2.elasticbeanstalk.com",
+    "evaluation-registry.cabinetoffice.gov.uk",
+    "dev.evaluation-registry.service.gov.uk",
+    "evaluation-registry.service.gov.uk",
+    "evaluation-registry.cabinetoffice.gov.uk",
+    "dev.evaluation-registry.cabinetoffice.gov.uk",
 ]
+
+if env.str("ENVIRONMENT", None) != "LOCAL":
+    ALLOWED_HOSTS = ALLOWED_HOSTS + [LOCALHOST]
 
 # CSRF settings
 CSRF_COOKIE_HTTPONLY = True
@@ -54,6 +63,8 @@ WSGI_APPLICATION = "evaluation_registry.wsgi.application"
 INSTALLED_APPS = [
     "health_check",
     "evaluation_registry.evaluations",
+    "automatilib.core.apps.IdotAIConfig",
+    "automatilib.cola.apps.ColaAuthConfig",
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
@@ -126,6 +137,7 @@ ACCOUNT_USERNAME_REQUIRED = False
 SITE_ID = 1
 ACCOUNT_EMAIL_VERIFICATION = "none"
 LOGIN_REDIRECT_URL = "homepage"
+LOGIN_URL = "login"
 
 
 STATIC_URL = "/static/"
@@ -154,6 +166,7 @@ CSP_DEFAULT_SRC = (
     "s3.amazonaws.com",
     "evaluation-registry-files-dev.s3.amazonaws.com",
     "evaluation-registry-files-prod.s3.amazonaws.com",
+    "'sha256-oFNrsKhzOBUVceDuefWEqtXEXMM9LIL4cUnoVkDYPzA='",
 )
 CSP_OBJECT_SRC = ("'none'",)
 CSP_REQUIRE_TRUSTED_TYPES_FOR = ("'script'",)

@@ -1,0 +1,19 @@
+-{% extends "auth/base.html" %}
+
+{% block head_title %}Log in{% endblock %}
+
+{% block content %}
+
+  <section class="wrapper">
+      <h1 class="govuk-heading-l">
+        Log in
+      </h1>
+      <p>Welcome to Evaluation Registry.</p>
+      <p>Login with your Cabinet Office email. Once logged in, you will be redirected back to Evaluation Registry.</p>
+    <div class="govuk-button-group">
+      <a class="govuk-button" href="{{cola_url}}">Login</a>
+    </div>
+  </section>
+
+
+{% endblock %}

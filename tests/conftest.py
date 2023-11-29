@@ -88,6 +88,7 @@ def evaluation_other_type_link(basic_evaluation, other):
 
 
 @pytest.fixture
+
 def pdf_evaluation_file():
     pdf = SimpleUploadedFile("report.pdf", open("tests/report.pdf", "rb").read())
     file = PdfEvaluationFile(pdf=pdf)
@@ -106,3 +107,9 @@ def pdf_evaluation_file_with_text():
     pdf = SimpleUploadedFile("report.pdf", open("tests/report.pdf", "rb").read())
     file = PdfEvaluationFile(pdf=pdf, structured_text=structured_text)
     yield file
+
+def impact_evaluation(basic_evaluation, evaluation_impact_type_link):
+    basic_evaluation.evaluationdesigntypedetail_set.add(evaluation_impact_type_link)
+
+    yield basic_evaluation
+

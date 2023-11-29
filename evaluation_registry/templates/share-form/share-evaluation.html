@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% import 'macros.html' as macros with context %}
+
+{% block content %}
+<div class="govuk-grid-row">
+  <form method="post" name="share-evaluation-form">
+    {{csrf_input}}
+    <input type="hidden" id="status" name="status" value="{{status}}" />
+
+    <h2 class="govuk-heading-l">
+      Share your completed evaluation report
+    </h2>
+    <p>Please share either a link to a published strategy, plan or framework of your evaluation and where the full report will be published.</p>
+
+    {% if errors %}
+      <div class="govuk-error-summary" data-module="govuk-error-summary">
+        <div role="alert">
+          <h2 class="govuk-error-summary__title">
+            There is a problem
+          </h2>
+          <div class="govuk-error-summary__body">
+            <ul class="govuk-list govuk-error-summary__list">
+              {% for field, error_list in errors.items() %}
+                {% for error in error_list %}
+                  <li>
+                    <a href="#{{field}}">{{error.message}}</a>
+                  </li>
+                {% endfor %}
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+
+    {% call macros.govuk_input(
+      'is_final_report_published',
+      'Have you published your final evaluation report?',
+      None ) %}
+      <div class="govuk-radios" data-module="govuk-radios">
+      <div class="govuk-radios__item">
+        <input class="govuk-radios__input" id="yes" name="is_final_report_published" type="radio" value=1>
+        <label class="govuk-label govuk-radios__label" for="yes">
+          Yes
+        </label>
+      </div>
+      <div class="govuk-radios__item">
+        <input class="govuk-radios__input" id="no" name="is_final_report_published" type="radio" value=0>
+        <label class="govuk-label govuk-radios__label" for="no">
+          No
+        </label>
+      </div>
+    </div>
+    {% endcall %}
+
+
+    {% call macros.govuk_input(
+      'plan_link',
+      'Link to a published evaluation strategy, plan or framework',
+      None,
+      True) %}
+      <input
+        class="govuk-input"
+        id="plan_link"
+        name="plan_link"
+        type="text"
+      >
+    {% endcall %}
+
+    {% call macros.govuk_input(
+      'link_to_published_evaluation',
+      'Link to a published evaluation',
+      None,
+      True) %}
+      <input
+        class="govuk-input"
+        id="link_to_published_evaluation"
+        name="link_to_published_evaluation"
+        type="text"
+      >
+    {% endcall %}
+
+    {% call macros.govuk_input(
+       'reasons_unpublished',
+       'Why have you not published the final evaluation report?',
+       None,
+       True)%}
+    <div class="govuk-checkboxes" data-module="govuk-checkboxes">
+          {% for option in options %}
+            <div class="govuk-checkboxes__item">
+              <input class="govuk-checkboxes__input" id="reasons_unpublished" name="reasons_unpublished[]" type="checkbox" value="{{ option[0] }}">
+              <label class="govuk-label govuk-checkboxes__label" for="reasons_unpublished-{{ loop.index }}">
+                {{ option[1] }}
+              </label>
+            </div>
+          {% endfor %}
+        </div>
+    {% endcall %}
+
+  {% call macros.govuk_input(
+       'reasons_unpublished_details',
+       'Please enter details about the reasons this evaluation is unpublished',
+       None,
+       True)%}
+    <textarea class="govuk-textarea" id="reasons_unpublished_details" name="reasons_unpublished_details" rows="5"></textarea>
+    {% endcall %}
+
+    <button
+      data-prevent-double-click="true"
+      class="govuk-button"
+      data-module="govuk-button"
+      name="form_complete"
+      type="submit"
+    >
+      Save and continue
+    </button>
+
+  </form>
+</div>
+{% endblock %}
