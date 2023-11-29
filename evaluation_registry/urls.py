@@ -1,3 +1,4 @@
+from automatilib.cola.urls import url_patterns as cola_url_patterns
 from django.contrib import admin
 from django.urls import include, path
 
@@ -9,9 +10,10 @@ info_urlpatterns = [
 ]
 
 other_urlpatterns = [
-    path("", views.evaluation_list_view, name="index"),
+    path("", views.homepage_view, name="homepage"),
     path("health/", include("health_check.urls")),
-    path("home/", views.homepage_view, name="homepage"),
+    path("login/", views.login_to_cola_view, name="login"),
+    path("search/", views.evaluation_list_view, name="search"),
     path("admin/", admin.site.urls),
     path("evaluation/<uuid:uuid>/", views.evaluation_detail_view, name="evaluation-detail"),
     path("evaluation/<uuid:uuid>/update-type/", views.evaluation_update_type_view, name="evaluation-update-type"),
@@ -29,4 +31,4 @@ other_urlpatterns = [
     path("accounts/", include("allauth.urls")),
 ]
 
-urlpatterns = info_urlpatterns + other_urlpatterns
+urlpatterns = info_urlpatterns + other_urlpatterns + cola_url_patterns

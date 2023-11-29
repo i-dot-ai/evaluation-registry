@@ -1,3 +1,5 @@
+from django.conf import settings
+from django.contrib.auth.decorators import login_required
 from django.contrib.postgres.search import (
     SearchQuery,
     SearchRank,
@@ -8,6 +10,7 @@ from django.db.models import QuerySet
 from django.forms import modelform_factory, modelformset_factory
 from django.http import Http404
 from django.shortcuts import redirect, render
+from django.urls import reverse
 from django.views.decorators.http import require_http_methods
 
 from evaluation_registry.evaluations.forms import (
@@ -24,15 +27,15 @@ from evaluation_registry.evaluations.models import (
 
 
 @require_http_methods(["GET"])
-def index_view(request):
-    return render(
-        request,
-        template_name="index.html",
-        context={"request": request},
-    )
+def login_to_cola_view(request):
+    if request.user.id:
+        return redirect(reverse("homepage"))
+    cola_url = settings.COLA_LOGIN_URL
+    return render(request, "auth/login.html", {"cola_url": cola_url})
 
 
 @require_http_methods(["GET"])
+@login_required
 def homepage_view(request):
     return render(
         request,
