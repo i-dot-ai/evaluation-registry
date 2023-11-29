@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="govuk-grid-row">
+  <form 
+  action="{{ request.path }}"
+  method="post"
+  >
+    {{csrf_input}}
+
+    {% if errors %}
+        <div class="govuk-error-summary" data-module="govuk-error-summary">
+          <div role="alert">
+            <h2 class="govuk-error-summary__title">
+              There is a problem
+            </h2>
+            <div class="govuk-error-summary__body">
+              <ul class="govuk-list govuk-error-summary__list">
+                {% for field, error_list in errors.items() %}
+                  {% for error in error_list %}
+                    <li>
+                      <a href="#{{field}}">{{error.message}}</a>
+                    </li>
+                  {% endfor %}
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+
+    {% if evaluation.status == complete %}
+      <h2 class="govuk-heading-l">
+        Confirm sharing the evaluation
+      </h2>
+
+      <input type="hidden" id="visibility" name="visibility" value="public" />
+    {% else %}
+      <h2 class="govuk-heading-l">
+        Share your planned or ongoing evaluation
+      </h2>
+
+      <div class="govuk-form-group">
+        <fieldset class="govuk-fieldset">
+          <legend class="govuk-fieldset__legend">
+            How would you like your ongoing or planned evaluation to be shared?
+          </legend>
+          {% if errors['visibility'] %}
+            <p id="visibility-error" class="govuk-error-message">
+              {% for error in errors['visibility'] %}
+                <span class="govuk-visually-hidden">Error:</span> {{ error.message }}
+              {% endfor %}
+            </p>
+          {% endif %}
+          <div class="govuk-radios" data-module="govuk-radios">
+            <div class="govuk-radios__item">
+              <input class="govuk-radios__input" id="visibility" name="visibility" type="radio" value="civil_service">
+              <label class="govuk-label govuk-radios__label" for="visibility">
+                In a draft format which will be shared with other departments and relevant public bodies
+              </label>
+            </div>
+            <div class="govuk-radios__item">
+              <input class="govuk-radios__input" id="visibility-2" name="visibility" type="radio" value="public">
+              <label class="govuk-label govuk-radios__label" for="visibility-2">
+                I would like the evaluation to be made public
+              </label>
+            </div>
+          </div>
+        </fieldset>
+      </div>
+    {% endif %}
+
+    <h3>Confirmation</h3>
+    <div class="govuk-form-group {% if errors['permission'] %}govuk-form-group--error{% endif %}">
+      {% if errors['permission'] %}
+            <p id="permission-error" class="govuk-error-message">
+              {% for error in errors['permission'] %}
+                <span class="govuk-visually-hidden">Error:</span> {{ error.message }}
+              {% endfor %}
+            </p>
+          {% endif %}
+      <div class="govuk-checkboxes" data-module="govuk-checkboxes">
+        <div class="govuk-checkboxes__item">
+          <input class="govuk-checkboxes__input" id="permission" name="permission" type="checkbox" value="true">
+          <label class="govuk-label govuk-checkboxes__label" for="permission">
+            I confirm I have permission to share this information
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <button
+      data-prevent-double-click="true"
+      class="govuk-button"
+      data-module="govuk-button"
+    >
+      Save
+    </button>
+  </form>
+</div>
+{% endblock %}
