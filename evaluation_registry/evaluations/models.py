@@ -123,17 +123,15 @@ class Evaluation(TimeStampedModel):
     has_major_project_number = models.BooleanField(default=False)
     major_project_number = models.CharField(max_length=256, blank=True, null=True)
 
-    plan_link = models.URLField(max_length=1024, blank=True, null=True)
     visibility = models.CharField(max_length=512, choices=Visibility.choices, default=Visibility.DRAFT)
+    is_final_report_published = models.BooleanField(null=True, blank=True)
+    link_to_published_evaluation = models.URLField(max_length=1024, blank=True, null=True)
+    plan_link = models.URLField(max_length=1024, blank=True, null=True)
     reasons_unpublished = ArrayField(
         models.CharField(max_length=256, choices=UnpublishedReason.choices), blank=True, null=True
     )
-    quality_reasons_unpublished_description = models.TextField(
-        null=True, blank=True, help_text="description of quality issues preventing publication"
-    )
-    other_reasons_unpublished_description = models.TextField(
-        null=True, blank=True, help_text="description of other issues preventing publication"
-    )
+    reasons_unpublished_details = models.TextField(blank=True, null=True, max_length=4096)
+
     history = HistoricalRecords()
 
     @property

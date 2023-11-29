@@ -121,44 +121,29 @@
 
     <h2 class="govuk-heading-m" id="sharing">Evaluation Sharing</h2>
 
-    <dl class="govuk-summary-list">
+    <div class="govuk-summary-list">
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">Link to a new evaluation plan or an existing plan</dt>
         <dd class="govuk-summary-list__value">
           {% if evaluation.plan_link %}
-            {{evaluation.plan_link}}
+              <a href="{{evaluation.link_to_published_evaluation}}" class="govuk-link">{{evaluation.plan_link}}</a>
           {% else %}
             No link provided
           {% endif %}
         </dd>
       </div>
-      {% if evaluation.reports_with_links|length > 0 %}
-        {% for report in evaluation.reports_with_links %}
-          <div class="govuk-summary-list__row">
-            <dt class="govuk-summary-list__key">
-              {% if report.title %}
-                Published report: {{ report.title }}
-              {% else %}
-                Link to a published evaluation
-              {% endif %}
-            </dt>
-            <dd class="govuk-summary-list__value">
-              <a href="{{evaluation.published_evaluation_link}}" class="govuk-link">{{ report.link }}</a>
-            </dd>
-          </div>
-        {% endfor %}
-      {% else %}
-        <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">Link to a published evaluation</dt>
-          <dd class="govuk-summary-list__value">
-            No link provided
-          </dd>
-        </div>
-      {% endif %}
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+            Link to a published evaluation
+        </dt>
+        <dd class="govuk-summary-list__value">
+            {% if evaluation.link_to_published_evaluation %}
+          <a href="{{evaluation.link_to_published_evaluation}}" class="govuk-link">{{ evaluation.link_to_published_evaluation }}</a>
+            {% else %}
+                No link provided
+            {% endif %}
+        </dd>
       </div>
-    </dl>
-
-
+    </div>
   </div>
-
 {% endblock %}
