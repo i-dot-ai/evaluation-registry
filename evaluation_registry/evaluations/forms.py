@@ -134,3 +134,17 @@ class EventDateForm(NamedErrorsModelForm):
     class Meta:
         model = EventDate
         fields = ["evaluation", "category", "other_description", "month", "year"]
+
+
+class EvaluationVisibilityForm(NamedErrorsModelForm):
+    permission = BooleanField()
+
+    def __init__(self, *args, **kwargs):
+        super(EvaluationVisibilityForm, self).__init__(*args, **kwargs)
+        self.fields["permission"].error_messages[
+            "required"
+        ] = "Please confirm that you have permission to share this data"
+
+    class Meta:
+        model = Evaluation
+        fields = ["visibility"]

@@ -2,7 +2,10 @@ from django.http import Http404
 from django.shortcuts import redirect, render
 from django.views.decorators.http import require_http_methods
 
-from evaluation_registry.evaluations.forms import EvaluationCreateForm
+from evaluation_registry.evaluations.forms import (
+    EvaluationCreateForm,
+    EvaluationVisibilityForm,
+)
 from evaluation_registry.evaluations.models import (
     Department,
     Evaluation,
@@ -78,6 +81,35 @@ def evaluation_create_view(request, status):
         request,
         "share-form/evaluation-create.html",
         {"form": form, "status": status, "departments": departments, "data": data, "errors": errors},
+    )
+
+
+@require_http_methods(["GET", "POST"])
+def share_user_confirmation_view(request, evaluation, next_page):
+    if request.method == "POST":
+        form = EvaluationVisibilityForm(request.POST)
+
+        if form.is_valid():
+            form.save()
+
+            return redirect("share", uuid=evaluation.id, page_number=next_page)
+
+        else:
+            errors = form.errors.as_data()
+
+    else:
+        form = EvaluationVisibilityForm()
+        errors = {}
+
+    return render(
+        request,
+        "share-form/confirm-sharing.html",
+        {
+            "evaluation": evaluation,
+            "form": form,
+            "errors": errors,
+            "complete": Evaluation.Status.COMPLETE,
+        },
     )
 
 
@@ -183,7 +215,11 @@ def share_view(request, uuid, page_number):
             "condition": evaluation.status == Evaluation.Status.COMPLETE,
         },
         # TODO: Add cost
-        # TODO: Add confirmation allowed to share (and handle change of state on save)
+        {
+            "view": share_user_confirmation_view,
+            "kwargs": {},
+            "condition": True,
+        },
         {
             "view": share_confirmation_view,
             "kwargs": {},
