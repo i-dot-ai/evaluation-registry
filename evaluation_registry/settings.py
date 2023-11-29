@@ -15,7 +15,6 @@ COLA_COGNITO_CLIENT_ID = env.str("COLA_COGNITO_CLIENT_ID", "")
 AWS_REGION_NAME = env.str("AWS_REGION_NAME", "")
 COLA_COGNITO_USER_POOL_ID = env.str("COLA_COGNITO_USER_POOL_ID", "")
 COLA_LOGIN_URL = env.str("COLA_LOGIN_URL", "")
-COLA_JWT_EXTRACTION_REGEX_PATTERN = env.str("COLA_JWT_EXTRACTION_REGEX_PATTERN", r"")
 
 
 # Application definition
@@ -102,3 +101,6 @@ if env.str("AWS_STORAGE_BUCKET_NAME", default=None):
     AWS_S3_REGION_NAME = env.str("AWS_REGION_NAME")
 else:
     DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
+
+
+OPENAI_KEY = env.str("OPENAI_KEY", default=None)
