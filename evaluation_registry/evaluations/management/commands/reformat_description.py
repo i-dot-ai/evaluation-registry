@@ -22,21 +22,30 @@ Please return the reformatted text without explanation.
 client = OpenAI(api_key=settings.OPENAI_KEY)
 
 
-def reformat_evaluation(evaluation: Evaluation):
+def reformat_text(txt: str | None) -> str | None:
+    if not txt:
+        return txt
+
     chat_completion = client.chat.completions.create(
         messages=[
             {"role": "system", "content": CHATGPT_ROLE},
-            {"role": "user", "content": evaluation.brief_description},
+            {"role": "user", "content": txt},
         ],
         model="gpt-3.5-turbo",
     )
+    if not chat_completion.choices:
+        raise ValueError("no data returned")
+    return chat_completion.choices[0].message.content
 
-    evaluation.brief_description = chat_completion.choices[0].message.content
+
+def reformat_evaluation(evaluation: Evaluation):
+    evaluation.title = reformat_text(evaluation.title)
+    evaluation.brief_description = reformat_text(evaluation.brief_description)
     evaluation.save()
 
 
 class Command(BaseCommand):
-    help = "Use ChatGPT to reformat evaluation descriptions"
+    help = "Use ChatGPT to reformat evaluation title and description"
 
     def add_arguments(self, parser):
         parser.add_argument("max_number_to_process", type=int, nargs="?", default=None)
