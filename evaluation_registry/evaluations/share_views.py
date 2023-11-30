@@ -13,6 +13,7 @@ from evaluation_registry.evaluations.models import (
     EvaluationDepartmentAssociation,
 )
 from evaluation_registry.evaluations.views import (
+    check_evaluation_and_user,
     evaluation_dates_view,
     evaluation_description_view,
     evaluation_links_view,
@@ -146,10 +147,7 @@ def create_view(request, page_number=1, status=None):
 @require_http_methods(["GET", "POST"])
 @login_required
 def share_view(request, uuid, page_number):
-    try:
-        evaluation = Evaluation.objects.get(id=uuid)
-    except Evaluation.DoesNotExist:
-        raise Http404("No %(verbose_name)s found matching the query" % {"verbose_name": Evaluation._meta.verbose_name})
+    evaluation = check_evaluation_and_user(request, uuid)
 
     view_options = [
         {

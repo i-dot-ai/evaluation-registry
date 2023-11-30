@@ -5,11 +5,12 @@ from django.contrib.postgres.search import (
     SearchRank,
     SearchVector,
 )
+from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator
 from django.db.models import QuerySet
 from django.forms import modelform_factory, modelformset_factory
 from django.http import Http404
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_http_methods
 
@@ -25,6 +26,13 @@ from evaluation_registry.evaluations.models import (
     EvaluationDesignTypeDetail,
     EventDate,
 )
+
+
+def check_evaluation_and_user(request, uuid):
+    evaluation = get_object_or_404(Evaluation, id=uuid)
+    if evaluation.created_by != request.user:
+        raise PermissionDenied("You do not have permission to edit this evaluation")
+    return evaluation
 
 
 @require_http_methods(["GET"])
@@ -120,10 +128,7 @@ def evaluation_list_view(request):
 
 @require_http_methods(["GET"])
 def evaluation_detail_view(request, uuid):
-    try:
-        evaluation = Evaluation.objects.get(id=uuid)
-    except Evaluation.DoesNotExist:
-        raise Http404("No %(verbose_name)s found matching the query" % {"verbose_name": Evaluation._meta.verbose_name})
+    evaluation = get_object_or_404(Evaluation, id=uuid)
 
     dates = evaluation.event_dates.all()
     return render(request, "evaluation_detail.html", {"evaluation": evaluation, "dates": dates})
@@ -214,10 +219,7 @@ def evaluation_type_view(request, evaluation, parent=None, next_page=None):
 @require_http_methods(["GET", "POST"])
 @login_required
 def evaluation_update_type_view(request, uuid, parent=None):
-    try:
-        evaluation = Evaluation.objects.get(id=uuid)
-    except Evaluation.DoesNotExist:
-        raise Http404("No %(verbose_name)s found matching the query" % {"verbose_name": Evaluation._meta.verbose_name})
+    evaluation = check_evaluation_and_user(request, uuid)
 
     return evaluation_type_view(request, evaluation, parent=parent)
 
@@ -265,10 +267,7 @@ def evaluation_description_view(request, evaluation, next_page=None):
 @require_http_methods(["GET", "POST"])
 @login_required
 def evaluation_update_view(request, uuid):
-    try:
-        evaluation = Evaluation.objects.get(id=uuid)
-    except Evaluation.DoesNotExist:
-        raise Http404("No %(verbose_name)s found matching the query" % {"verbose_name": Evaluation._meta.verbose_name})
+    evaluation = check_evaluation_and_user(request, uuid)
 
     return evaluation_description_view(request, evaluation)
 
@@ -318,10 +317,7 @@ def evaluation_dates_view(request, evaluation, next_page=None):
 @require_http_methods(["GET", "POST"])
 @login_required
 def evaluation_update_dates_view(request, uuid):
-    try:
-        evaluation = Evaluation.objects.get(id=uuid)
-    except Evaluation.DoesNotExist:
-        raise Http404("No %(verbose_name)s found matching the query" % {"verbose_name": Evaluation._meta.verbose_name})
+    evaluation = check_evaluation_and_user(request, uuid)
 
     return evaluation_dates_view(request, evaluation)
 
@@ -378,9 +374,6 @@ def evaluation_links_view(request, evaluation, next_page=None):
 
 @require_http_methods(["GET", "POST"])
 def evaluation_update_links_view(request, uuid):
-    try:
-        evaluation = Evaluation.objects.get(id=uuid)
-    except Evaluation.DoesNotExist:
-        raise Http404("No %(verbose_name)s found matching the query" % {"verbose_name": Evaluation._meta.verbose_name})
+    evaluation = check_evaluation_and_user(request, uuid)
 
     return evaluation_links_view(request, evaluation)

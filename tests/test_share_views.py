@@ -1,7 +1,7 @@
 from unittest.mock import patch
 
 import pytest
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseForbidden
 
 from evaluation_registry.evaluations import share_views
 
@@ -46,3 +46,12 @@ def test_share_view_with_impact_type(alice, client, impact_evaluation):
     with patch.object(share_views, "evaluation_type_view", return_value=HttpResponse()) as mock_type_view:
         client.get(f"/evaluation/{impact_evaluation.id}/share/2/")
     mock_type_view.assert_called_once()
+
+
+@pytest.mark.django_db
+def test_share_view_different_user(client, basic_evaluation, create_user):
+    baljit = create_user("baljit@example.com")
+    client.force_login(user=baljit)
+
+    response = client.get(f"/evaluation/{basic_evaluation.id}/share/1/")
+    assert isinstance(response, HttpResponseForbidden)
