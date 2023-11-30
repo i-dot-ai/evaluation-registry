@@ -44,9 +44,8 @@
           {% endif %}
           <textarea class="govuk-textarea govuk-js-character-count" id="brief_description" name="brief_description"
                     rows="5"
-                    aria-describedby="brief_description-info brief_description-hint">{{ form.brief_description.value() and form.brief_description.value() or None }}</textarea>
+                    aria-describedby="brief_description-info brief_description-hint">{{ form.brief_description.value() and form.brief_description.value() or "" }}</textarea>
         </div>
-        {{ form.brief_description.value() }}
         <div id="brief_description-info" class="govuk-hint govuk-character-count__message">
           You can enter up to 300 characters
         </div>
