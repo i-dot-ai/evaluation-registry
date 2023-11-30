@@ -25,7 +25,7 @@ from evaluation_registry.evaluations.models import (
     EvaluationDesignType,
     EvaluationDesignTypeDetail,
     EventDate,
-    User
+    User,
 )
 
 
@@ -57,9 +57,8 @@ def homepage_view(request):
 def authorised_base_evaluation_queryset(show_public: bool, show_user: bool, user: User) -> QuerySet:
     if show_public:
         if show_user:
-            return (
-                Evaluation.objects.exclude(visibility=Evaluation.Visibility.DRAFT)
-                | Evaluation.objects.filter(created_by=user)
+            return Evaluation.objects.exclude(visibility=Evaluation.Visibility.DRAFT) | Evaluation.objects.filter(
+                created_by=user
             )
         return Evaluation.objects.exclude(visibility=Evaluation.Visibility.DRAFT)
     if show_user:
@@ -109,9 +108,7 @@ def evaluation_list_view(request):
 
     if request.user.is_authenticated:
         base_evaluation_queryset = authorised_base_evaluation_queryset(
-            show_public=('public' in evaluations_to_show),
-            show_user=('user' in evaluations_to_show),
-            user=request.user
+            show_public=("public" in evaluations_to_show), show_user=("user" in evaluations_to_show), user=request.user
         )
     else:
         base_evaluation_queryset = Evaluation.objects.filter(visibility=Evaluation.Visibility.PUBLIC)
