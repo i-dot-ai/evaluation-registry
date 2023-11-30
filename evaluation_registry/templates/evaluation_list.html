@@ -29,26 +29,26 @@
                     <div class="govuk-checkboxes__item">
                       <input
                         class="govuk-checkboxes__input"
-                        id="evaluations_to_show"
+                        id="evaluations_to_show-user"
                         name="evaluations_to_show"
                         type="checkbox"
                         value="user"
                         {% if 'user' in evaluations_to_show %}checked{% endif %}
                       >
-                      <label class="govuk-label govuk-checkboxes__label" for="evaluations_to_show">
+                      <label class="govuk-label govuk-checkboxes__label" for="evaluations_to_show-user">
                         Show my evaluations
                       </label>
                     </div>
                     <div class="govuk-checkboxes__item">
                       <input
                         class="govuk-checkboxes__input"
-                        id="evaluations_to_show"
+                        id="evaluations_to_show-public"
                         name="evaluations_to_show"
                         type="checkbox"
                         value="public"
                         {% if 'public' in evaluations_to_show %}checked{% endif %}
                       >
-                      <label class="govuk-label govuk-checkboxes__label" for="evaluations_to_show">
+                      <label class="govuk-label govuk-checkboxes__label" for="evaluations_to_show-public">
                         Show all available evaluations
                       </label>
                     </div>
