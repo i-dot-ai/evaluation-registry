@@ -26,7 +26,7 @@ def create_user(email: str) -> None:
         UserPoolId=settings.COLA_COGNITO_USER_POOL_ID,
         Username=email,
         UserAttributes=user_attributes,
-        MessageAction="SUPPRESS",  # Optional: SUPPRESS sends no welcome message, DEFAULT sends a welcome message
+        MessageAction="SUPPRESS",
     )
 
     cognito_client.admin_set_user_password(
@@ -48,7 +48,10 @@ class Command(BaseCommand):
         for email in options["emails"]:
             progress_bar.set_description(f"creating user: {email}")
             try:
-                cognito_client.admin_get_user(UserPoolId=settings.COLA_COGNITO_USER_POOL_ID, Username=email)
+                cognito_client.admin_get_user(
+                    UserPoolId=settings.COLA_COGNITO_USER_POOL_ID,
+                    Username=email,
+                )
                 self.stdout.write(self.style.SUCCESS("user already exists"))
             except ClientError:
                 create_user(email)
