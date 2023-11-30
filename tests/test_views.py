@@ -2,6 +2,7 @@ from unittest.mock import patch
 
 import pytest
 from django.forms import Form
+from django.http import HttpResponseForbidden
 
 from evaluation_registry.evaluations.models import EvaluationDesignTypeDetail
 from evaluation_registry.evaluations.views import (
@@ -51,3 +52,12 @@ def test_evaluation_update_type_view(mock_render, client, basic_evaluation, impa
     _, _, data = mock_render.call_args[0]
     assert data["evaluation"] == basic_evaluation
     assert all([eval_type.parent == impact for eval_type in data["options"]])
+
+
+@pytest.mark.django_db
+def test_update_view_different_user(client, basic_evaluation, create_user):
+    baljit = create_user("baljit@example.com")
+    client.force_login(user=baljit)
+
+    response = client.get(f"/evaluation/{basic_evaluation.id}/update-type/")
+    assert isinstance(response, HttpResponseForbidden)
