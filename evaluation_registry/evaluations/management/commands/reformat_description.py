@@ -22,7 +22,10 @@ Please return the reformatted text without explanation.
 client = OpenAI(api_key=settings.OPENAI_KEY)
 
 
-def reformat_text(txt: str) -> str:
+def reformat_text(txt: str | None) -> str | None:
+    if not txt:
+        return txt
+
     chat_completion = client.chat.completions.create(
         messages=[
             {"role": "system", "content": CHATGPT_ROLE},
