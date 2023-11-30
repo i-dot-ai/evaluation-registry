@@ -22,8 +22,8 @@ window.addEventListener('load', (event) => {
   })
 });
 
-const isFinalReportPublishedRadios = document.forms["share-evaluation-form"].elements["is_final_report_published"];
-const reasonsUnpublishedCheckboxes = document.forms["share-evaluation-form"].elements["reasons_unpublished"];
+const isFinalReportPublishedRadios = document.forms["share-evaluation-form"]?.elements["is_final_report_published"];
+const reasonsUnpublishedCheckboxes = document.forms["share-evaluation-form"]?.elements["reasons_unpublished"];
 const plan_link = document.getElementById("plan_link-form-group");
 const link_to_published_evaluation = document.getElementById("link_to_published_evaluation-form-group");
 const reasons_unpublished = document.getElementById("reasons_unpublished-form-group");
