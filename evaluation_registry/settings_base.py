@@ -166,7 +166,7 @@ CSP_DEFAULT_SRC = (
     "s3.amazonaws.com",
     "evaluation-registry-files-dev.s3.amazonaws.com",
     "evaluation-registry-files-prod.s3.amazonaws.com",
-    "'sha256-oFNrsKhzOBUVceDuefWEqtXEXMM9LIL4cUnoVkDYPzA='",
+    "'sha256-IfJd5CaJvXieVYkcs/6RUH75vQIASCglGoGoNThv4fg='",
 )
 CSP_OBJECT_SRC = ("'none'",)
 CSP_REQUIRE_TRUSTED_TYPES_FOR = ("'script'",)
