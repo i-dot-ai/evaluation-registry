@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <form method="GET" action="{{url('homepage')}}">
+  <form method="GET" action="{{url('search')}}">
     <div class="govuk-width-container">
       <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
@@ -17,9 +17,49 @@
         <div class="govuk-grid-row">
 
           <div class="govuk-grid-column-one-third">
+            {% if is_authenticated %}
+              <div class="govuk-form-group">
+                <fieldset class="govuk-fieldset">
+                  <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+                    <h2 class="govuk-fieldset__heading">
+                      Evaluations to show
+                    </h2>
+                  </legend>
+                  <div class="govuk-checkboxes govuk-checkboxes--small" data-module="govuk-checkboxes">
+                    <div class="govuk-checkboxes__item">
+                      <input
+                        class="govuk-checkboxes__input"
+                        id="evaluations_to_show-user"
+                        name="evaluations_to_show"
+                        type="checkbox"
+                        value="user"
+                        {% if 'user' in evaluations_to_show %}checked{% endif %}
+                      >
+                      <label class="govuk-label govuk-checkboxes__label" for="evaluations_to_show-user">
+                        Show my evaluations
+                      </label>
+                    </div>
+                    <div class="govuk-checkboxes__item">
+                      <input
+                        class="govuk-checkboxes__input"
+                        id="evaluations_to_show-public"
+                        name="evaluations_to_show"
+                        type="checkbox"
+                        value="public"
+                        {% if 'public' in evaluations_to_show %}checked{% endif %}
+                      >
+                      <label class="govuk-label govuk-checkboxes__label" for="evaluations_to_show-public">
+                        Show all available evaluations
+                      </label>
+                    </div>
+                  </div>
+                </fieldset>
+              </div>
+            {% endif %}
+
             <div class="govuk-form-group">
               <label class="govuk-label" for="search_term">
-                Search keywords
+                <h2 class="govuk-fieldset__legend govuk-fieldset__legend--m">Search keywords</h2>
               </label>
               <input class="govuk-input" id="search_term" name="search_term" type="text" value="{{search_term}}">
             </div>
