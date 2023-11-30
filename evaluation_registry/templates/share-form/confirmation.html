@@ -17,7 +17,10 @@
         You can <a href="{{url('evaluation-detail', evaluation.id)}}" class="govuk-link">view</a> this entry.
       </p>
       <p class="govuk-body">
-        You can <a href="{{url('search')}}" class="govuk-link">view</a> all evaluations.
+        You can <a href="{{url('search')}}?evaluations_to_show=user" class="govuk-link">view</a> your evaluations.
+      </p>
+      <p class="govuk-body">
+        You can <a href="{{url('search')}}?evaluations_to_show=user&evaluations_to_show=public" class="govuk-link">view</a> all evaluations.
       </p>
       <p class="govuk-body">
         <a href="#" class="govuk-link">What did you think of this service?</a> (takes 30 seconds)

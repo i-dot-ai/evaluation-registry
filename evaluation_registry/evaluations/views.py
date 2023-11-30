@@ -25,6 +25,7 @@ from evaluation_registry.evaluations.models import (
     EvaluationDesignType,
     EvaluationDesignTypeDetail,
     EventDate,
+    User
 )
 
 
@@ -53,17 +54,30 @@ def homepage_view(request):
     )
 
 
-def full_text_search(search_term: str) -> QuerySet:
+def authorised_base_evaluation_queryset(show_public: bool, show_user: bool, user: User) -> QuerySet:
+    if show_public:
+        if show_user:
+            return (
+                Evaluation.objects.exclude(visibility=Evaluation.Visibility.DRAFT)
+                | Evaluation.objects.filter(created_by=user)
+            )
+        return Evaluation.objects.exclude(visibility=Evaluation.Visibility.DRAFT)
+    if show_user:
+        return Evaluation.objects.filter(created_by=user)
+    return Evaluation.objects.none()
+
+
+def full_text_search(base_queryset: QuerySet, search_term: str) -> QuerySet:
     """search title and brief-description using PG full-text-search"""
     if not search_term:
-        return Evaluation.objects.all()
+        return base_queryset
 
     search_title = SearchVector("title", weight="A")
     description_search = SearchVector("brief_description", weight="B")
     search_vector = search_title + description_search
     search_query = SearchQuery(search_term)
     evaluation_list = (
-        Evaluation.objects.annotate(
+        base_queryset.annotate(
             search=search_vector,
             rank=SearchRank(search_vector, search_query),
         )
@@ -91,9 +105,19 @@ def evaluation_list_view(request):
     search_term = request.GET.get("search_term")
     selected_departments = request.GET.getlist("departments")
     selected_types = request.GET.getlist("evaluation_types")
+    evaluations_to_show = request.GET.getlist("evaluations_to_show")
+
+    if request.user.is_authenticated:
+        base_evaluation_queryset = authorised_base_evaluation_queryset(
+            show_public=('public' in evaluations_to_show),
+            show_user=('user' in evaluations_to_show),
+            user=request.user
+        )
+    else:
+        base_evaluation_queryset = Evaluation.objects.filter(visibility=Evaluation.Visibility.PUBLIC)
 
     evaluation_list = filter_by_department_and_types(
-        full_text_search(search_term),
+        full_text_search(base_evaluation_queryset, search_term),
         selected_departments,
         selected_types,
     )
@@ -122,6 +146,8 @@ def evaluation_list_view(request):
             "selected_departments": selected_departments,
             "selected_types": selected_types,
             "search_choices": search_choices,
+            "is_authenticated": request.user.is_authenticated,
+            "evaluations_to_show": evaluations_to_show,
         },
     )
 
