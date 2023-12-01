@@ -39,7 +39,9 @@ def reformat_text(txt: str | None) -> str | None:
 
 
 def reformat_evaluation(evaluation: Evaluation):
-    evaluation.title = reformat_text(evaluation.title)
+    new_title = reformat_text(evaluation.title)
+    if new_title and len(new_title) <= 1024:
+        evaluation.title = new_title
     evaluation.brief_description = reformat_text(evaluation.brief_description)
     evaluation.save()
 
@@ -54,7 +56,9 @@ class Command(BaseCommand):
         max_number_to_process = options["max_number_to_process"] or Evaluation.objects.count()
 
         progress_bar = tqdm(desc="Processing", total=max_number_to_process)
-        for evaluation in Evaluation.objects.all().order_by("rsm_evaluation_id")[:max_number_to_process]:
+        for evaluation in Evaluation.objects.filter(rsm_evaluation_id__isnull=False).order_by("rsm_evaluation_id")[
+            :max_number_to_process
+        ]:
             progress_bar.set_description(f"updating rsm-evaluation-id: {evaluation.rsm_evaluation_id}")
             reformat_evaluation(evaluation)
             progress_bar.update(1)
