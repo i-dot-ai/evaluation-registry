@@ -29,3 +29,17 @@ make test
 ## Checking code
 
     make check-python-code
+
+
+## how to run management commands on the server
+
+1. navigate to EC2 services in the AWS console
+2. select an instance, click connect
+3. run the following
+```commandline
+eval $(/opt/elasticbeanstalk/bin/get-config environment | jq -r 'to_entries | .[] | "export \(.key)=\(.value)"' )
+source /var/app/venv/staging-LQM1lest/bin/activate
+cd /var/app/current
+
+```
+4. now run management commands like normal, i.e. `python manage.py showmigrations`
