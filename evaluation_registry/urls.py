@@ -20,6 +20,7 @@ share_urlpatterns = [
     path("evaluation/<uuid:uuid>/update-description/", views.evaluation_update_view, name="evaluation-update"),
     path("evaluation/<uuid:uuid>/update-dates/", views.evaluation_update_dates_view, name="evaluation-update-dates"),
     path("evaluation/<uuid:uuid>/update-links/", views.evaluation_update_links_view, name="evaluation-share"),
+    path("evaluation/<uuid:uuid>/update-policies/", views.evaluation_update_policies_view, name="evaluation-policies"),
     path("evaluation/create", share_views.create_view, name="create"),
     path("evaluation/create/<int:page_number>/", share_views.create_view, name="create"),
     path("evaluation/create/<int:page_number>/<str:status>", share_views.create_view, name="create"),

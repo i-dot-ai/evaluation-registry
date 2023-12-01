@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <div class ="govuk-grid-row">
+    <form action="{{ request.path }}" method="post">
+      {{csrf_input}}
+
+      {% if errors %}
+        <div class="govuk-error-summary" data-module="govuk-error-summary">
+          <div role="alert">
+            <h2 class="govuk-error-summary__title">
+              There is a problem
+            </h2>
+            <div class="govuk-error-summary__body">
+              <ul class="govuk-list govuk-error-summary__list">
+                {% for field, error_list in errors.items() %}
+                  {% for error in error_list %}
+                    <li>
+                      <a href="#{{field}}">{{error.message}}</a>
+                    </li>
+                  {% endfor %}
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+
+      <div class="govuk-form-group {% if errors['policies'] %}govuk-form-group--error{% endif %}"  id="autofilter"  data-filter-element="filter-policy">
+        <fieldset class="govuk-fieldset" aria-describedby="policies-hint">
+          <legend class="govuk-fieldset__legend autofilter-legend govuk-fieldset__legend--l">
+            <h2 class="govuk-fieldset__heading">
+              Selected topics
+            </h2>
+          </legend>
+          <div id="policies-hint" class="govuk-hint">
+            Search for topic options
+          </div>
+          {% if errors['policies'] %}
+            <p id="policies-error" class="govuk-error-message">
+              {% for error in errors['policies'] %}
+                <span class="govuk-visually-hidden">Error:</span> {{ error.message }}
+              {% endfor %}
+            </p>
+          {% endif %}
+          <div class="govuk-checkboxes--small autofilter-option-select__container" data-module="govuk-checkboxes">
+            <div class="js-auto-height-inner">
+              <span id="checkboxes-filter-policy-count" class="autofilter-option-select__count govuk-visually-hidden" aria-live="polite" data-single="option found" data-multiple="options found" data-selected="selected"></span>
+              <div class="checkboxes__list autofilter-checkboxes__list">
+                {% for policy in policies %}
+                  <div class="govuk-checkboxes__item">
+                    <input class="govuk-checkboxes__input" id="policies-{{ loop.index }}" name="policies" {% if is_in(policy.code, selected_policies) %}checked{% endif %} type="checkbox" value="{{ policy.code }}">
+                    <label class="govuk-label govuk-checkboxes__label" for="policies-{{ loop.index }}">
+                      {{policy.display}}
+                    </label>
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+        </fieldset>
+      </div>
+
+      <button
+        data-prevent-double-click="true"
+        class="govuk-button"
+        data-module="govuk-button"
+      >
+        Save and continue
+      </button>
+    </form>
+  </div>
+
+  <script src="{{static('dist/assets/autofilter.js')}}"></script>
+{% endblock %}

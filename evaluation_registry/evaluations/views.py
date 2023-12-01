@@ -25,7 +25,7 @@ from evaluation_registry.evaluations.models import (
     EvaluationDesignType,
     EvaluationDesignTypeDetail,
     EventDate,
-    Taxonomy
+    Taxonomy,
     User,
 )
 
@@ -406,7 +406,7 @@ def evaluation_update_links_view(request, uuid):
 def evaluation_policies_view(request, evaluation, next_page=None):
     EvaluationForm = modelform_factory(Evaluation, fields=["policies"])  # noqa: N806
     EvaluationForm.base_fields["policies"].to_field_name = "code"
-    policies = Taxonomy.objects.all()
+    policies = Taxonomy.objects.order_by("code")
 
     selected_policies = list(map(lambda p: p.code, evaluation.policies.all()))
 
@@ -422,6 +422,7 @@ def evaluation_policies_view(request, evaluation, next_page=None):
 
         else:
             errors = form.errors.as_data()
+            selected_policies = request.POST.getlist("selected_policies")
 
     else:
         form = EvaluationForm(instance=evaluation)
@@ -442,9 +443,6 @@ def evaluation_policies_view(request, evaluation, next_page=None):
 
 @require_http_methods(["GET", "POST"])
 def evaluation_update_policies_view(request, uuid):
-    try:
-        evaluation = Evaluation.objects.get(id=uuid)
-    except Evaluation.DoesNotExist:
-        raise Http404("No %(verbose_name)s found matching the query" % {"verbose_name": Evaluation._meta.verbose_name})
+    evaluation = check_evaluation_and_user(request, uuid)
 
     return evaluation_policies_view(request, evaluation)
