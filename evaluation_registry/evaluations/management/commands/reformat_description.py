@@ -39,7 +39,9 @@ def reformat_text(txt: str | None) -> str | None:
 
 
 def reformat_evaluation(evaluation: Evaluation):
-    evaluation.title = reformat_text(evaluation.title)
+    new_title = reformat_text(evaluation.title)
+    if len(new_title) <= 1024:
+        evaluation.title = new_title
     evaluation.brief_description = reformat_text(evaluation.brief_description)
     evaluation.save()
 
