@@ -167,7 +167,7 @@ def evaluation_type_view(request, evaluation, parent=None, next_page=None):
         options = EvaluationDesignType.root_objects.all()
         parent_object = None
     options = list(options)
-    if any(option.display.lower() == "ther" for option in options):
+    if any(option.display.lower() == "other" for option in options):
         other_option = next(option for option in options if option.display.lower() == "other")
         options.append(options.pop(options.index(other_option)))
     data = {"evaluation": evaluation, "design_types": [], "design_types_codes": [], "text": ""}
