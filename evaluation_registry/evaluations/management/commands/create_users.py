@@ -18,11 +18,10 @@ def user_exists(email: str) -> bool:
         return False
 
 
-def create_user(
-    email: str,
-    given_name: str,
-    family_name: str,
-) -> None:
+def create_user(email: str) -> None:
+    name = email.split("@")[0]
+    given_name, family_name = name.split(".", 1)
+
     user_attributes = [
         {"Name": "given_name", "Value": given_name},
         {"Name": "family_name", "Value": family_name},
@@ -58,9 +57,7 @@ class Command(BaseCommand):
         for email in options["emails"]:
             progress_bar.set_description(f"creating user: {email}")
             if not user_exists(email):
-                name = email.split("@")[0]
-                given_name, family_name = name.split(".", 1)
-                create_user(email, given_name, family_name)
+                create_user(email)
             progress_bar.update(1)
 
         progress_bar.close()
