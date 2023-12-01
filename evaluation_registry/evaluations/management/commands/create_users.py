@@ -22,16 +22,14 @@ def create_user(
     email: str,
     given_name: str,
     family_name: str,
-    is_admin: bool | None = False,
-    phone_number: str | None = None,
 ) -> None:
     user_attributes = [
         {"Name": "given_name", "Value": given_name},
         {"Name": "family_name", "Value": family_name},
         {"Name": "email", "Value": email},
         {"Name": "email_verified", "Value": "true"},
-        {"Name": "custom:isAdmin", "Value": is_admin},
-        {"Name": "custom:phoneNumber", "Value": phone_number},
+        {"Name": "custom:isAdmin", "Value": "false"},
+        {"Name": "custom:features", "Value": "test"},
     ]
 
     cognito_client.admin_create_user(
