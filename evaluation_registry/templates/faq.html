@@ -1,0 +1,347 @@
+{% extends "base.html" %}
+{% import "macros.html" as macros %}
+
+{% block content %}
+  <div class="govuk-width-container">
+    <main class="govuk-main-wrapper">
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+          <h1 class="govuk-heading-l">Evaluation Registry FAQ's</h1>
+          <ul class="govuk-list">
+            <li class="govuk-list--bullet"><a class="govuk-link" href="#what-is-evaluation-registry">What is the
+              Evaluation
+              Registry?</a></li>
+            <li class="govuk-list--bullet"><a class="govuk-link" href="#why-do-we-need-an-evaluation-registry">Why do we
+              need an
+              Evaluation Registry?</a></li>
+            <li class="govuk-list--bullet"><a class="govuk-link" href="#why-do-we-need-to-register-planned-evaluations">Why
+              do
+              we need to register planned evaluations?</a></li>
+            <li class="govuk-list--bullet"><a class="govuk-link"
+                                              href="#which-evaluations-need-to-be-entered-on-the-registry">Which
+              evaluations need to be entered on the Evaluation Registry?</a></li>
+            <li class="govuk-list--bullet"><a class="govuk-link" href="#historical-evaluations-in-the-registry">Do I
+              need to
+              upload historical evaluations to the Registry?</a></li>
+            <li class="govuk-list--bullet"><a class="govuk-link" href="#secrets-on-evaluations">I'm working on a
+              policy/project/programme/evaluation classified as "SECRET". Do I still need to upload it to the
+              Registry?</a></li>
+            <li class="govuk-list--bullet"><a class="govuk-link" href="#should-you-publish-on-govuk-as-well">Do I need
+              to
+              publish my evaluation report on GOV.UK as well as the Registry?</a></li>
+            <li class="govuk-list--bullet"><a class="govuk-link" href="#who-can-access-the-repository">Can I access the
+              Evaluation Registry? / Who can access the Evaluation Registry?</a></li>
+            <li class="govuk-list--bullet"><a class="govuk-link" href="#what-is-the-approval-process-for-evaluations">What's
+              the
+              approval process for uploading an evaluation to the Registry?</a></li>
+            <li class="govuk-list--bullet"><a class="govuk-link"
+                                              href="#what-happens-if-departments-ignore-mandatory-requirements">What
+              happens if
+              departments don't comply with mandatory requirements?</a></li>
+            <li class="govuk-list--bullet"><a class="govuk-link" href="#how-to-transfer-evaluation-ownership">I am
+              moving on
+              from my team. How can I transfer ownership of my Registry entries?</a></li>
+            <li class="govuk-list--bullet"><a class="govuk-link" href="#what-to-do-about-inaccurate-evaluations">I have
+              found an
+              entry on the Registry which is inaccurate, or is a duplicate of another entry. What should I do?</a></li>
+            <li class="govuk-list--bullet"><a class="govuk-link"
+                                              href="#who-to-contact-with-feedback-about-the-registry">I have
+              questions or feedback about the Evaluation Registry - who can I talk to?</a></li>
+          </ul>
+          <div id="what-is-evaluation-registry">
+            <h2 class="govuk-heading-m">What is the Evaluation Registry?</h2>
+            <p>The Evaluation Registry is the new home for all Government evaluations. It is a website where all
+              planned, live
+              and published evaluations conducted or commissioned by Government Departments are registered. Evaluations
+              on the
+              Registry can be searched and browsed by users looking to learn from previous evaluations of Government
+              policies,
+              projects and programmes.
+            </p>
+            <p>
+              In 2024, the Registry will become mandatory for ministerial Government Departments to use, and will also
+              be made
+              accessible to the public to search and browse, enabling greater accessibility, accountability and
+              transparency for
+              citizens.
+            </p>
+          </div>
+          <hr class="govuk-section-break--m govuk-section-break--visible">
+          <div id="why-do-we-need-an-evaluation-registry">
+            <h2 class="govuk-heading-m">Why do we need an Evaluation Registry?</h2>
+            <p>In its founding plans for the ETF, the Government identified the need to provide a single location for
+              evaluations to be found - whether that's planned evaluations, evaluations currently underway, or those
+              that are
+              complete with findings to report.
+            </p>
+            <p>
+              The Government was not alone in prioritising this. When the National Audit Office (NAO) investigated <a
+              class="govuk-link"
+              href="https://www.nao.org.uk/wp-content/uploads/2021/12/Evaluating-government-spending.pdf"
+              target="_blank" rel="noopener noreferrer">evaluation in Government</a>, they identified transparency and
+              publication of evaluation findings as areas needing improvement and called for the 'open by default'
+              approach to
+              evaluations to be reinforced. The <a class="govuk-link"
+                                                   href="https://committees.parliament.uk/publications/22451/documents/165470/default/"
+                                                   target="_blank" rel="noopener noreferrer">Public Accounts Committee
+              also
+              called for</a> a system that would enable the tracking of evaluations, in a recommendation that the <a
+              class="govuk-link" href="https://committees.parliament.uk/publications/28482/documents/171644/default/"
+              target="_blank" rel="noopener noreferrer">Government accepted</a> and said it would meet via the
+              development of
+              the Evaluation Registry.
+            </p>
+            <p>
+              All government evaluations should be published and made available to the public by default, as per the <a
+              class="govuk-link"
+              href="https://www.gov.uk/government/publications/government-social-research-publication-protocols"
+              target="_blank"
+              rel="noopener noreferrer">Government Social Research publication protocol</a>, which states that "outputs
+              from the
+              evaluation of policy/delivery initiatives/pilots and trials" should be "made publicly available in
+              accordance with
+              the government's commitment to openness as underpinned by Freedom of Information (FoI) legislation."
+            </p>
+            <p>
+              However, not enough evaluations or planned evaluations are currently being published, and those that are
+              published
+              can be difficult to find and compare. The Registry makes it easier than ever before to search and browse
+              published
+              evaluations, whether you're a project manager looking for evidence to support a new business case or an
+              evaluation
+              specialist looking to compare research designs.
+            </p>
+          </div>
+          <hr class="govuk-section-break--m govuk-section-break--visible">
+          <div id="why-do-we-need-to-register-planned-evaluations">
+            <h2 class="govuk-heading-m">Why do we need to register planned evaluations?</h2>
+            <p>At the moment, Government evaluation plans are rarely published on GOV.UK. However, the GSR Publication
+              Protocol
+              states that "Departments should make high level information publicly available on all research and
+              analysis
+              commissioned externally, and internal research where there is an intention to publish. Announcements
+              should be
+              made as early as is practicable". Please refer to the <a class="govuk-link"
+                                                                       href="https://www.gov.uk/government/publications/government-social-research-publication-protocols"
+                                                                       target="_blank" rel="noopener noreferrer">GSR
+                Publication
+                Protocol</a> for more information.
+            </p>
+            <p>
+              To register a planned evaluation on the Registry, all you need to do is complete the minimum required
+              fields on
+              the site which outline the proposed evaluation type, methods, and planned publication date. This
+              demonstrates a
+              public commitment to evaluating the intervention in question. There is no requirement to upload an
+              evaluation plan
+              or framework in a document format. Entries for planned evaluations should be updated to include the
+              findings and
+              report/s from the evaluation once available.
+            </p>
+          </div>
+          <hr class="govuk-section-break--m govuk-section-break--visible">
+          <div id="which-evaluations-need-to-be-entered-on-the-registry">
+            <h2 class="govuk-heading-m">Which evaluations need to be entered on the Evaluation Registry?</h2>
+            <p>All planned and live evaluations and evaluation reports signed off from 1st April 2024 onwards should be
+              uploaded
+              to the Evaluation Registry. Evaluation reports should be published and entered on the Registry within 12
+              weeks of
+              sign-off by the relevant internal Departmental governance processes.
+            </p>
+            <p>
+              "Evaluation" refers to impact, process, and value for money evaluation studies conducted in line with the
+              Magenta
+              Book. The <a class="govuk-link" href="https://www.gov.uk/government/publications/the-magenta-book"
+                           target="_blank"
+                           rel="noopener noreferrer">Magenta Book</a> defines evaluation as "as a systematic assessment
+              of the
+              design, implementation and
+              outcomes of an intervention."</p>
+            <p>In the context of the Registry, this includes:</p>
+            <ul class="govuk-list">
+              <li class="govuk-list--bullet">
+                Impact evaluations
+              </li>
+              <li class="govuk-list--bullet">
+                Process evaluations
+              </li>
+              <li class="govuk-list--bullet">
+                Value for Money evaluations
+              </li>
+              <li class="govuk-list--bullet">
+                Evidence syntheses
+              </li>
+            </ul>
+            <p>This does not include:</p>
+            <ul class="govuk-list">
+              <li class="govuk-list--bullet">
+                Impact assessments
+              </li>
+              <li class="govuk-list--bullet">
+                Feasibility studies
+              </li>
+              <li class="govuk-list--bullet">
+                Post implementation reviews
+              </li>
+              <li class="govuk-list--bullet">
+                Benefits monitoring and realisation reports
+              </li>
+              <li class="govuk-list--bullet">
+                Outputs from user research, where this is not part of an evaluation.
+              </li>
+            </ul>
+            <p>Where a planned or live evaluation has been uploaded, the same evaluation entry should then be amended to
+              include the results of the evaluation or edited if the scope, method or plans for the evaluation change.
+              Evaluation findings should be published no more than 12 weeks following the agreement of final outputs, as
+              per the <a class="govuk-link"
+                         href="https://www.gov.uk/government/publications/government-social-research-publication-protocols"
+                         target="_blank"
+                         rel="noopener noreferrer">Government Social Research (GSR) Publication Protocol</a>, which
+              states that "Outputs from the
+              evaluation of policy/delivery initiatives/pilots and trials" should be "made publicly available in
+              accordance with the government's commitment to openness as underpinned by Freedom of Information (FoI)
+              legislation."
+            </p>
+            <p>
+              This applies to planned evaluations, live evaluations, and evaluation reports produced by all Central
+              Government Departments, including where activities are delivered by external bodies. This does not include
+              evaluation plans or reports exclusively undertaken by Devolved Administrations, Arms Length Bodies or
+              Public Bodies.</p>
+          </div>
+          <hr class="govuk-section-break--m govuk-section-break--visible">
+          <div id="historical-evaluations-in-the-registry">
+            <h2 class="govuk-heading-m">Do I need to upload historical evaluations to the Registry?</h2>
+            <p>If the evaluation was completed before April 2024, it is not a requirement to upload this to the
+              Registry. All planned and live evaluations and reports signed off from April 2024 must be registered.
+            </p>
+            <p>
+              However, the more evaluations we have on the Registry, the more useful it will be as a source of evidence
+              for people planning evaluations, or new projects and policies - so if you would like to upload historical
+              evaluations, we encourage you to do so.
+            </p>
+          </div>
+          <hr class="govuk-section-break--m govuk-section-break--visible">
+          <div id="secrets-on-evaluations">
+            <h2 class="govuk-heading-m">I'm working on a
+              policy/project/programme/evaluation classified as "SECRET". Do I still need to upload it to the
+              Registry?</h2>
+            <p>Evaluation plans or reports relating to Government policies, projects, or programmes which are classified
+              above "OFFICIAL" classification, i.e. classified "SECRET" or "TOP SECRET", should not be uploaded to the
+              Registry.
+            </p>
+            <p>
+              Evaluation falls under the <a class="govuk-link"
+                                            href="https://www.gov.uk/government/publications/government-social-research-publication-protocols"
+                                            target="_blank"
+                                            rel="noopener noreferrer">Government Social Research publication
+              protocol</a>, which states that research
+              should be published and made available to the public by default. Departments are not expected to publish
+              research (including evaluation reports) on the rare occasions when publication would threaten national
+              security, destabilise the economy, or would otherwise not be in the public interest.</p>
+            <p>Central Government Departments include all Ministerial Departments, HM Revenue and Customs, the UK
+              Statistics Authority (including the Office for National Statistics, the Government Analysis Function, and
+              the Office for Statistical Regulation), the Northern Ireland Office, the Office of the Advocate General
+              for Scotland, the Office of the Leader of the House of Commons, the Office of the Leader of the House of
+              Lords, the Office of the Secretary of State for Scotland, the Office of the Secretary of State for Wales,
+              UK Export Finance, and the Attorney General's Office.</p>
+            <p>In such cases where evaluation plans or reports cannot be shared as a matter of security, this should be
+              made clear in writing to the Evaluation Task Force. </p>
+          </div>
+          <hr class="govuk-section-break--m govuk-section-break--visible">
+          <div id="should-you-publish-on-govuk-as-well">
+            <h2 class="govuk-heading-m">Do I need to
+              publish my evaluation report on GOV.UK as well as the Registry?</h2>
+            <p>Evaluation reports must be published separately on GOV.UK (or an alternative approved Government website)
+              before they can be entered on the Registry. Linking an evaluation report to an existing Registry entry
+              just requires you to copy and paste the GOV.UK link to the published evaluation report. All government
+              evaluations should be published and made available to the public by default, as per the <a
+                class="govuk-link"
+                href="https://www.gov.uk/government/publications/government-social-research-publication-protocols"
+                target="_blank"
+                rel="noopener noreferrer">Government Social
+                Research publication protocol.</a></p>
+          </div>
+          <hr class="govuk-section-break--m govuk-section-break--visible">
+          <div id="who-can-access-the-repository">
+            <h2 class="govuk-heading-m">Can I access the
+              Evaluation Registry? / Who can access the Evaluation Registry?</h2>
+            <p>Any civil servant in the UK with a GOV.UK email address can create an account for the Registry in order
+              to log in, browse, and register evaluations. Please note that some but not all employees in Arms Length
+              Bodies are classified as civil servants. If you are having difficulty accessing the Registry, please get
+              in touch with the team: <a class="govuk-link" href="mailto:evaluation.registry@cabinetoffice.gov.uk">evaluation.registry@cabinetoffice.gov.uk</a>.
+            </p>
+            <p>
+              If you are not a civil servant, you will not be able to access the Registry until the public-facing launch
+              in Spring 2024 (please note this applies to NHS trusts, Local Authorities, and What Works Centres).
+              Following the public-facing launch, any member of the public will be able to view and browse the
+              evaluations on the Registry which are set to "public" visibility. Members of the public will not be able
+              to register evaluation on the site.
+            </p>
+          </div>
+          <hr class="govuk-section-break--m govuk-section-break--visible">
+          <div id="what-is-the-approval-process-for-evaluations">
+            <h2 class="govuk-heading-m">What's the
+              approval process for uploading an evaluation to the Registry?</h2>
+            <p>Before registering evaluations on the platform, individual users are responsible for ensuring that the
+              planned evaluation or report has been approved through the relevant internal governance processes prior to
+              registration.
+            </p>
+            <p>
+              If you are not clear on the required sign-off process in your Department, please refer to your
+              Departmental evaluation team to check your Department's internal governance sign-off process for
+              evaluation, before registering an evaluation on the Registry site.
+            </p>
+          </div>
+          <hr class="govuk-section-break--m govuk-section-break--visible">
+          <div id="what-happens-if-departments-ignore-mandatory-requirements">
+            <h2 class="govuk-heading-m">What happens if
+              departments don't comply with mandatory requirements?</h2>
+            <p>The ETF will be monitoring uptake and usage of the Evaluation Registry on an ongoing basis. In cases
+              where Departments which have been mandated to use the Registry fail to enter required evaluation plans and
+              reports on the tool, the ETF will follow up in the first instance with Departmental central evaluation
+              teams or leads.
+            </p>
+            <p>
+              In the case of continued failure to comply, the issue will be escalated to the Office for Statistical
+              Regulation under the existing terms of the <a class="govuk-link"
+                                                            href="https://code.statisticsauthority.gov.uk/"
+                                                            target="_blank"
+                                                            rel="noopener noreferrer">Code of
+              Practice for Statistics</a> and <a class="govuk-link"
+                                                 href="https://www.gov.uk/government/publications/government-social-research-publication-protocols"
+                                                 target="_blank"
+                                                 rel="noopener noreferrer">GSR
+              Publication Protocol</a> in
+              addition to HM Treasury spending teams, which the ETF works closely with to ensure Departments are
+              complying with all evaluation requirements for Government Departments.</p>
+          </div>
+          <hr class="govuk-section-break--m govuk-section-break--visible">
+          <div id="how-to-transfer-evaluation-ownership">
+            <h2 class="govuk-heading-m">I am moving on
+              from my team. How can I transfer ownership of my Registry entries?</h2>
+            <p>Please email <a class="govuk-link" href="mailto:evaluation.registry@cabinetoffice.gov.uk">evaluation.registry@cabinetoffice.gov.uk</a>.
+              We can assign or reassign existing entries to new users to make changes or updates if needed.</p>
+          </div>
+          <hr class="govuk-section-break--m govuk-section-break--visible">
+          <div id="what-to-do-about-inaccurate-evaluations">
+            <h2 class="govuk-heading-m">I have found an
+              entry on the Registry which is inaccurate, or is a duplicate of another entry. What should I do?</h2>
+            <p>Please email <a class="govuk-link" href="mailto:evaluation.registry@cabinetoffice.gov.uk">evaluation.registry@cabinetoffice.gov.uk</a>.
+              We can assign or reassign existing entries to new
+              users to make changes or updates if needed, and we can also ensure duplicate entries are removed or merged
+              with original entries.</p>
+          </div>
+          <hr class="govuk-section-break--m govuk-section-break--visible">
+          <div id="who-to-contact-with-feedback-about-the-registry">
+            <h2 class="govuk-heading-m">I have
+              questions or feedback about the Evaluation Registry - who can I talk to?</h2>
+            <p>If we haven't answered your question here, get in touch with the team:
+              <a class="govuk-link" href="mailto:evaluation.registry@cabinetoffice.gov.uk">evaluation.registry@cabinetoffice.gov.uk</a>. We want to make the Registry as useful and accessibly as
+              possible, so we welcome your feedback.
+            </p>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+{% endblock %}
