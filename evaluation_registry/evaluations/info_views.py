@@ -15,3 +15,8 @@ def privacy_notice_view(request):
 @require_http_methods(["GET"])
 def accessibility_statement_view(request):
     return render(request, "accessibility-statement.html", {})
+
+
+@require_http_methods(["GET"])
+def faq_view(request):
+    return render(request, "faq.html", {})

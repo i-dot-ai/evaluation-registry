@@ -7,6 +7,7 @@ from evaluation_registry.evaluations import info_views, share_views, views
 info_urlpatterns = [
     path("privacy-notice/", info_views.privacy_notice_view, name="privacy-notice"),
     path("accessibility-statement/", info_views.accessibility_statement_view, name="accessibility-statement"),
+    path("faq/", info_views.faq_view, name="faq"),
 ]
 
 share_urlpatterns = [
