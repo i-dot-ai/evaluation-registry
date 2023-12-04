@@ -476,3 +476,42 @@ def evaluation_update_policies_view(request, uuid):
     evaluation = check_evaluation_and_user(request, uuid)
 
     return evaluation_policies_view(request, evaluation)
+
+
+def evaluation_cost_view(request, evaluation, next_page=None):
+    EvaluationForm = modelform_factory(Evaluation, fields=["cost"])  # noqa: N806
+
+    if request.method == "POST":
+        form = EvaluationForm(request.POST, instance=evaluation)
+
+        if form.is_valid():
+            form.save()
+
+            if next_page:
+                return redirect("share", uuid=evaluation.id, page_number=next_page)
+            return redirect("evaluation-detail", uuid=evaluation.id)
+
+        else:
+            errors = form.errors.as_data()
+
+    else:
+        form = EvaluationForm(instance=evaluation)
+        errors = {}
+
+    return render(
+        request,
+        "share-form/evaluation-policies.html",
+        {
+            "evaluation": evaluation,
+            "form": form,
+            "errors": errors,
+        },
+    )
+
+
+@require_http_methods(["GET", "POST"])
+@login_required
+def evaluation_update_cost_view(request, uuid):
+    evaluation = check_evaluation_and_user(request, uuid)
+
+    return evaluation_cost_view(request, evaluation)
