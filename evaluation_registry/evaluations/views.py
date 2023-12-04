@@ -299,6 +299,8 @@ def evaluation_update_view(request, uuid):
 def evaluation_dates_view(request, evaluation, next_page=None):
     form_fields = ["evaluation", "month", "year", "other_description", "category"]
     existing_date_count = EventDate.objects.filter(evaluation=evaluation).count()
+    other_errors = {}
+
     DateFormset = modelformset_factory(  # noqa: N806
         EventDate,
         form=EventDateForm,
@@ -306,8 +308,20 @@ def evaluation_dates_view(request, evaluation, next_page=None):
         extra=1 if existing_date_count else 3,
     )
 
+    initial_formset_data = (
+        [
+            {"evaluation": evaluation, "category": EventDate.Category.EVALUATION_START},
+            {"evaluation": evaluation, "category": EventDate.Category.EVALUATION_END},
+            {"evaluation": evaluation, "category": EventDate.Category.PUBLICATION_FINAL_RESULTS},
+        ]
+        if not existing_date_count
+        else None
+    )
+
     if request.method == "POST":
-        formset = DateFormset(request.POST, queryset=EventDate.objects.filter(evaluation=evaluation))
+        formset = DateFormset(
+            request.POST, queryset=EventDate.objects.filter(evaluation=evaluation), initial=initial_formset_data
+        )
 
         for form in formset:
             form.initial["evaluation"] = evaluation  # required so the blank form is ignored if unchanged
@@ -315,15 +329,23 @@ def evaluation_dates_view(request, evaluation, next_page=None):
         if formset.is_valid():
             formset.save()
 
-            if request.POST.get("addanother"):
-                return redirect("evaluation-update-dates", uuid=evaluation.id)
+            new_date_requested = request.POST.get("addanother") == "date"
+            formset_changed = any(form.has_changed() for form in formset)
 
-            if next_page:
-                return redirect("share", uuid=evaluation.id, page_number=next_page)
-            return redirect("evaluation-detail", uuid=evaluation.id)
+            if new_date_requested:
+                if formset_changed:
+                    if next_page:
+                        return redirect("share", uuid=evaluation.id, page_number=(next_page - 1))
+                    return redirect("evaluation-update-dates", uuid=evaluation.id)
+                other_errors = ["Please add information for one date before selecting 'Save and add another'"]
+
+            else:
+                if next_page:
+                    return redirect("share", uuid=evaluation.id, page_number=next_page)
+                return redirect("evaluation-detail", uuid=evaluation.id)
 
     else:
-        formset = DateFormset(queryset=EventDate.objects.filter(evaluation=evaluation))
+        formset = DateFormset(queryset=EventDate.objects.filter(evaluation=evaluation), initial=initial_formset_data)
 
     return render(
         request,
@@ -331,7 +353,7 @@ def evaluation_dates_view(request, evaluation, next_page=None):
         {
             "evaluation": evaluation,
             "formset": formset,
-            "errors": formset.errors,
+            "errors": {"formset": formset.errors, "other": other_errors},
             "categories": EventDate.Category,
             "existing_date_count": existing_date_count,
         },
