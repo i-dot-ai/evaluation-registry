@@ -17,6 +17,7 @@ from evaluation_registry.evaluations.views import (
     evaluation_dates_view,
     evaluation_description_view,
     evaluation_links_view,
+    evaluation_policies_view,
     evaluation_type_view,
 )
 
@@ -211,7 +212,11 @@ def share_view(request, uuid, page_number):
             "kwargs": {},
             "condition": True,
         },
-        # TODO: Add whitehall policy taxonomy
+        {
+            "view": evaluation_policies_view,
+            "kwargs": {},
+            "condition": True,
+        },
         {
             "view": evaluation_dates_view,
             "kwargs": {},

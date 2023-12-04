@@ -78,7 +78,8 @@ class EvaluationDesignType(AbstractChoice):
 
 
 class Taxonomy(AbstractChoice):
-    pass
+    def __str__(self):
+        return f"{self.parent} > {self.display}" if self.parent else self.display
 
 
 class Evaluation(TimeStampedModel):
@@ -122,6 +123,9 @@ class Evaluation(TimeStampedModel):
     grant_number = models.CharField(max_length=256, blank=True, null=True)
     has_major_project_number = models.BooleanField(default=False)
     major_project_number = models.CharField(max_length=256, blank=True, null=True)
+    policies = models.ManyToManyField(  # type: ignore
+        Taxonomy, help_text="policy areas covered by this evaluation", blank=True
+    )
 
     visibility = models.CharField(max_length=512, choices=Visibility.choices, default=Visibility.DRAFT)
     is_final_report_published = models.BooleanField(null=True, blank=True)
