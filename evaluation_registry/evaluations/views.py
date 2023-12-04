@@ -422,6 +422,7 @@ def evaluation_links_view(request, evaluation, next_page=None):
 
 
 @require_http_methods(["GET", "POST"])
+@login_required
 def evaluation_update_links_view(request, uuid):
     evaluation = check_evaluation_and_user(request, uuid)
 
@@ -467,6 +468,7 @@ def evaluation_policies_view(request, evaluation, next_page=None):
 
 
 @require_http_methods(["GET", "POST"])
+@login_required
 def evaluation_update_policies_view(request, uuid):
     evaluation = check_evaluation_and_user(request, uuid)
 
