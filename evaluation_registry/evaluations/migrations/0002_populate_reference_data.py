@@ -28,10 +28,9 @@ def update_taxonomy_parents(apps, schema_editor):
         if parent != "None":
             parent_instance = Taxonomy.objects.get(code=parent)
 
-            for taxonomy_object in Taxonomy.objects.filter(code=code):
-                taxonomy_object.parent = parent_instance
-                taxonomy_object.display = f"{parent_instance.display} > {taxonomy_object.display}"
-                taxonomy_object.save()
+            Taxonomy.objects.filter(code=code).update(
+                parent=parent_instance,
+            )
 
 
 with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "departments.csv")) as f:

@@ -46,3 +46,9 @@ def test_evaluation_duplicate_constraint(cabinet_office_led_evaluation, cabinet_
         )
 
     assert 'duplicate key value violates unique constraint "unique-evaluation-department"' in error.value.args[0]
+
+
+@pytest.mark.django_db
+def test_taxonomy(parent_policy, child_policy):
+    assert parent_policy.__str__() == parent_policy.display
+    assert child_policy.__str__() == f"{parent_policy.display} > {child_policy.display}"

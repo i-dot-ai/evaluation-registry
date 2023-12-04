@@ -78,7 +78,8 @@ class EvaluationDesignType(AbstractChoice):
 
 
 class Taxonomy(AbstractChoice):
-    pass
+    def __str__(self):
+        return f"{self.parent} > {self.display}" if self.parent else self.display
 
 
 class Evaluation(TimeStampedModel):

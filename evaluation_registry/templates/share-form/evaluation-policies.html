@@ -51,7 +51,7 @@
                   <div class="govuk-checkboxes__item">
                     <input class="govuk-checkboxes__input" id="policies-{{ loop.index }}" name="policies" {% if is_in(policy.code, selected_policies) %}checked{% endif %} type="checkbox" value="{{ policy.code }}">
                     <label class="govuk-label govuk-checkboxes__label" for="policies-{{ loop.index }}">
-                      {{policy.display}}
+                      {{policy}}
                     </label>
                   </div>
                 {% endfor %}
