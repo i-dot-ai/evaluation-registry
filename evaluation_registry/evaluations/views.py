@@ -205,8 +205,8 @@ def evaluation_type_view(request, evaluation, parent=None, next_page=None):
     if request.method == "POST":
         form = EvaluationDesignTypeDetailForm(request.POST, initial=data)
 
-        if not parent and not form['design_types'].value():
-            form.add_error('design_types', 'Please select at least one evaluation type')
+        if not parent and not form["design_types"].value():
+            form.add_error("design_types", "Please select at least one evaluation type")
 
         if form.is_valid():
             if form.has_changed():
