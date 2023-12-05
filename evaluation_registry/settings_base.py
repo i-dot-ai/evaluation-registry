@@ -36,8 +36,8 @@ SECRET_KEY = env.str("DJANGO_SECRET_KEY")
 ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",
-    "evaluation-registry-dev.eba-izdb4qxe.eu-west-2.elasticbeanstalk.com",
-    "evaluation-registry-prod.eba-izdb4qxe.eu-west-2.elasticbeanstalk.com",
+    "evaluationregistry-dev.eba-iummijp7.eu-west-2.elasticbeanstalk.com",
+    "evaluationregistry-prod.eba-iummijp7.eu-west-2.elasticbeanstalk.com",
     "evaluation-registry.cabinetoffice.gov.uk",
     "dev.evaluation-registry.service.gov.uk",
     "evaluation-registry.service.gov.uk",
