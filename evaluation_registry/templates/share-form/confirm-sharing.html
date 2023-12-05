@@ -29,56 +29,25 @@
         </div>
       {% endif %}
 
-    {% if evaluation.status == complete %}
       <h2 class="govuk-heading-l">
-        Confirm sharing the evaluation
+        {% if evaluation.status == complete %}
+          Confirm sharing the evaluation
+        {% else %}
+          Share your planned or ongoing evaluation
+        {% endif %}
       </h2>
 
       <input type="hidden" id="visibility" name="visibility" value="public" />
-    {% else %}
-      <h2 class="govuk-heading-l">
-        Share your planned or ongoing evaluation
-      </h2>
-
-      <div class="govuk-form-group">
-        <fieldset class="govuk-fieldset">
-          <legend class="govuk-fieldset__legend">
-            How would you like your ongoing or planned evaluation to be shared?
-          </legend>
-          {% if errors['visibility'] %}
-            <p id="visibility-error" class="govuk-error-message">
-              {% for error in errors['visibility'] %}
-                <span class="govuk-visually-hidden">Error:</span> {{ error.message }}
-              {% endfor %}
-            </p>
-          {% endif %}
-          <div class="govuk-radios" data-module="govuk-radios">
-            <div class="govuk-radios__item">
-              <input class="govuk-radios__input" id="visibility" name="visibility" type="radio" value="civil_service">
-              <label class="govuk-label govuk-radios__label" for="visibility">
-                In a draft format which will be shared with other departments and relevant public bodies
-              </label>
-            </div>
-            <div class="govuk-radios__item">
-              <input class="govuk-radios__input" id="visibility-2" name="visibility" type="radio" value="public">
-              <label class="govuk-label govuk-radios__label" for="visibility-2">
-                I would like the evaluation to be made public
-              </label>
-            </div>
-          </div>
-        </fieldset>
-      </div>
-    {% endif %}
 
     <h3>Confirmation</h3>
     <div class="govuk-form-group {% if errors['permission'] %}govuk-form-group--error{% endif %}">
       {% if errors['permission'] %}
-            <p id="permission-error" class="govuk-error-message">
-              {% for error in errors['permission'] %}
-                <span class="govuk-visually-hidden">Error:</span> {{ error.message }}
-              {% endfor %}
-            </p>
-          {% endif %}
+        <p id="permission-error" class="govuk-error-message">
+          {% for error in errors['permission'] %}
+            <span class="govuk-visually-hidden">Error:</span> {{ error.message }}
+          {% endfor %}
+        </p>
+      {% endif %}
       <div class="govuk-checkboxes" data-module="govuk-checkboxes">
         <div class="govuk-checkboxes__item">
           <input class="govuk-checkboxes__input" id="permission" name="permission" type="checkbox" value="true">
@@ -89,7 +58,7 @@
       </div>
     </div>
     <div class="govuk-inset-text">
-      Please be aware that all information added to the Evaluation Registry may be subject to a Freedom of Information Act request.
+      Please be aware that all information added to the the Evaluation Registry will be public as of April 2024.
     </div>
 
     <button

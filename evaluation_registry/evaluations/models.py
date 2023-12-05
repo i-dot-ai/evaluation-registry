@@ -85,7 +85,6 @@ class Taxonomy(AbstractChoice):
 class Evaluation(TimeStampedModel):
     class Visibility(models.TextChoices):
         DRAFT = "draft", "Draft"
-        CIVIL_SERVICE = "civil_service", "Civil Service"
         PUBLIC = "public", "Public"
 
     class Status(models.TextChoices):

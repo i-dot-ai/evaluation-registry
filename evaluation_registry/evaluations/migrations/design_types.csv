@@ -16,7 +16,6 @@
 "qualitative_process", "Qualitative observational studies", "process", "false"
 "consultative_process", "Consultative/deliberative methods", "process", "false"
 "other_process", "Other", "process", "true"
-"minimisation", "Cost minimisation", "economic", "false"
 "effectiveness", "Cost-effectiveness analysis", "economic", "false"
 "benefit", "Cost-benefit analysis", "economic", "false"
 "utility", "Cost-utility analysis", "economic", "false"
