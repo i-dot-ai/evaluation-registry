@@ -2,11 +2,12 @@
 
 {% block content %}
   <div class="govuk-grid-row">
-  <a href="{{url('homepage')}}?{{request.GET.urlencode()}}" class="govuk-back-link">Back</a>
-    <h1 class="govuk-heading-l">{% if evaluation.title %}{{evaluation.title}}{% else %}No title provided{% endif %}</h1>
-    <p class="govuk-body">  
+    <a href="{{ url('homepage') }}?{{ request.GET.urlencode() }}" class="govuk-back-link">Back</a>
+    <h1 class="govuk-heading-l">
+      {% if evaluation.title %}{{ evaluation.title }}{% else %}No title provided{% endif %}</h1>
+    <p class="govuk-body">
       {% if evaluation.brief_description %}
-        {{evaluation.brief_description}}
+        {{ evaluation.brief_description }}
       {% else %}
         No description provided
       {% endif %}
@@ -20,7 +21,7 @@
         </dt>
         <dd class="govuk-summary-list__value">
           {% if evaluation.lead_department %}
-              {{evaluation.lead_department}}<br>
+            {{ evaluation.lead_department }}<br>
           {% else %}
             No lead department listed
           {% endif %}
@@ -33,21 +34,21 @@
         <dd class="govuk-summary-list__value">
           {% if evaluation.other_departments|length > 0 %}
             {% for department in evaluation.other_departments %}
-              {{department}}<br>
+              {{ department }}<br>
             {% endfor %}
           {% else %}
             No other departments listed
           {% endif %}
         </dd>
       </div>
-      
+
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">
           Evaluation types
         </dt>
         <dd class="govuk-summary-list__value">
           {% for evaluation_type in evaluation.types_text_list %}
-            {{evaluation_type}}<br>
+            {{ evaluation_type }}<br>
           {% endfor %}
         </dd>
       </div>
@@ -56,15 +57,15 @@
           <dt class="govuk-summary-list__key">
             Evaluation type (Other)
           </dt>
-            <dd class="govuk-summary-list__value">
-              {% for other_description in evaluation.other_design_types.all() %}
-                {% if other_description.text %}  
-                  {{other_description.text}}<br>
-                {% else %}
-                  No description listed
-                {% endif %}
-              {% endfor %}
-            </dd>
+          <dd class="govuk-summary-list__value">
+            {% for other_description in evaluation.other_design_types.all() %}
+              {% if other_description.text %}
+                {{ other_description.text }}<br>
+              {% else %}
+                No description listed
+              {% endif %}
+            {% endfor %}
+          </dd>
         </div>
       {% endif %}
       <div class="govuk-summary-list__row">
@@ -73,7 +74,7 @@
         </dt>
         <dd class="govuk-summary-list__value">
           {% if evaluation.grant_number %}
-              {{evaluation.grant_number}}<br>
+            {{ evaluation.grant_number }}<br>
           {% else %}
             No grant number provided
           {% endif %}
@@ -85,9 +86,21 @@
         </dt>
         <dd class="govuk-summary-list__value">
           {% if evaluation.major_project_number %}
-              {{evaluation.major_project_number}}<br>
+            {{ evaluation.major_project_number }}<br>
           {% else %}
             No Government Major Project number provided
+          {% endif %}
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          Policies
+        </dt>
+        <dd class="govuk-summary-list__value">
+          {% if evaluation.policies %}
+            {{ evaluation.get_policies_text_list() | join(', ') }}<br>
+          {% else %}
+            No policies provided
           {% endif %}
         </dd>
       </div>
@@ -102,17 +115,17 @@
       <dl class="govuk-summary-list">
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Event Name</dt>
-          <dd class="govuk-summary-list__value">{{date.get_category_display()}}</dd>
+          <dd class="govuk-summary-list__value">{{ date.get_category_display() }}</dd>
         </div>
         {% if date.category == "other" and date.other_description %}
           <div class="govuk-summary-list__row">
             <dt class="govuk-summary-list__key">Event Name (Other)</dt>
-            <dd class="govuk-summary-list__value">{{date.other_description}}</dd>
+            <dd class="govuk-summary-list__value">{{ date.other_description }}</dd>
           </div>
         {% endif %}
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Event Date</dt>
-          <dd class="govuk-summary-list__value">{% if date %}{{date}}{% else %}No date provided{% endif %}</dd>
+          <dd class="govuk-summary-list__value">{% if date %}{{ date }}{% else %}No date provided{% endif %}</dd>
         </div>
       </dl>
       <!-- TODO: change spacing in css class -->
@@ -122,28 +135,65 @@
     <h2 class="govuk-heading-m" id="sharing">Evaluation Sharing</h2>
 
     <div class="govuk-summary-list">
-      <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">Link to a new evaluation plan or an existing plan</dt>
-        <dd class="govuk-summary-list__value">
-          {% if evaluation.plan_link %}
-              <a href="{{evaluation.link_to_published_evaluation}}" class="govuk-link">{{evaluation.plan_link}}</a>
-          {% else %}
-            No link provided
-          {% endif %}
-        </dd>
-      </div>
-      <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">
-            Link to a published evaluation
-        </dt>
-        <dd class="govuk-summary-list__value">
-            {% if evaluation.link_to_published_evaluation %}
-          <a href="{{evaluation.link_to_published_evaluation}}" class="govuk-link">{{ evaluation.link_to_published_evaluation }}</a>
+      {% if evaluation.is_final_report_published %}
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Final report has been published</dt>
+          <dd class="govuk-summary-list__value">
+            Yes
+          </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Link to a new evaluation plan or an existing plan</dt>
+          <dd class="govuk-summary-list__value">
+            {% if evaluation.plan_link %}
+              <a href="{{ evaluation.link_to_published_evaluation }}" class="govuk-link">{{ evaluation.plan_link }}</a>
             {% else %}
-                No link provided
+              No link provided
             {% endif %}
-        </dd>
-      </div>
+          </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">
+            Link to a published evaluation
+          </dt>
+          <dd class="govuk-summary-list__value">
+            {% if evaluation.link_to_published_evaluation %}
+              <a href="{{ evaluation.link_to_published_evaluation }}"
+                 class="govuk-link">{{ evaluation.link_to_published_evaluation }}</a>
+            {% else %}
+              No link provided
+            {% endif %}
+          </dd>
+        </div>
+      {% elif evaluation.is_final_report_published is false %}
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Final report has been published</dt>
+          <dd class="govuk-summary-list__value">
+            No
+          </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Reasons the report is unpublished</dt>
+          <dd class="govuk-summary-list__value">
+            {{ evaluation.get_reasons_unpublished_text() | join(', ') }}
+          </dd>
+        </div>
+        {% if 'other' in evaluation.reasons_unpublished %}
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">Reasons the report is unpublished (further details)</dt>
+            <dd class="govuk-summary-list__value">
+              {{ evaluation.reasons_unpublished_details and evaluation.reasons_unpublished_details or 'Not provided' }}
+            </dd>
+          </div>
+        {% endif %}
+      {% else %}
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Final report has been published</dt>
+          <dd class="govuk-summary-list__value">
+            Not provided
+          </dd>
+        </div>
+      {% endif %}
     </div>
   </div>
 {% endblock %}
