@@ -484,6 +484,9 @@ def evaluation_cost_view(request, evaluation, next_page=None):
     if request.method == "POST":
         form = EvaluationForm(request.POST, instance=evaluation)
 
+        if not (request.POST.get("cost") or request.POST.get("cost-unknown")):
+            form.add_error("cost", "Please provide a value or select 'Total cost not known'")
+
         if form.is_valid():
             form.save()
 
@@ -500,7 +503,7 @@ def evaluation_cost_view(request, evaluation, next_page=None):
 
     return render(
         request,
-        "share-form/evaluation-policies.html",
+        "share-form/evaluation-cost.html",
         {
             "evaluation": evaluation,
             "form": form,
