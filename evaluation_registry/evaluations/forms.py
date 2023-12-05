@@ -59,7 +59,7 @@ class EvaluationCreateForm(NamedErrorsModelForm):
 class EvaluationDesignTypeDetailForm(Form):
     evaluation = ModelChoiceField(queryset=Evaluation.objects.all(), label="Evaluation")
     design_types = ModelMultipleChoiceField(
-        queryset=EvaluationDesignType.objects.all(), label="Evaluation type", to_field_name="code"
+        queryset=EvaluationDesignType.objects.all(), label="Evaluation type", to_field_name="code", required=False
     )
     text = CharField(max_length=1024, required=False)
 

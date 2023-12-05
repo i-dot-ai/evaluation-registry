@@ -3,7 +3,7 @@ import uuid
 from typing import Optional
 
 from django.contrib.postgres.fields import ArrayField
-from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models.query import QuerySet
@@ -171,12 +171,6 @@ class Evaluation(TimeStampedModel):
 
     def __str__(self):
         return str(self.title)
-
-    def clean(self):
-        if self.has_grant_number and self.grant_number is None:
-            raise ValidationError({"has_grant_number": "Please enter a value for the Grant Number"})
-        if self.has_major_project_number and self.major_project_number is None:
-            raise ValidationError({"has_major_project_number": "Please enter a value for the Major Project Number"})
 
 
 class EvaluationDepartmentAssociation(models.Model):
