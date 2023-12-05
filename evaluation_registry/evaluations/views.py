@@ -58,10 +58,10 @@ def homepage_view(request):
 def authorised_base_evaluation_queryset(show_public: bool, show_user: bool, user: User) -> QuerySet:
     if show_public:
         if show_user:
-            return Evaluation.objects.exclude(visibility=Evaluation.Visibility.DRAFT) | Evaluation.objects.filter(
+            return Evaluation.objects.filter(visibility=Evaluation.Visibility.PUBLIC) | Evaluation.objects.filter(
                 created_by=user
             )
-        return Evaluation.objects.exclude(visibility=Evaluation.Visibility.DRAFT)
+        return Evaluation.objects.filter(visibility=Evaluation.Visibility.PUBLIC)
     if show_user:
         return Evaluation.objects.filter(created_by=user)
     return Evaluation.objects.none()
