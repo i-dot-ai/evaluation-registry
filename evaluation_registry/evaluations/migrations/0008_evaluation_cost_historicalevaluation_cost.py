@@ -5,7 +5,7 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("evaluations", "0006_evaluation_policies"),
+        ("evaluations", "0007_alter_evaluation_visibility_and_more"),
     ]
 
     operations = [
