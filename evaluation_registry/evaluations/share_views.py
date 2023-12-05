@@ -96,7 +96,7 @@ def evaluation_create_view(request, status):
 @login_required
 def share_user_confirmation_view(request, evaluation, next_page):
     if request.method == "POST":
-        form = EvaluationVisibilityForm(request.POST)
+        form = EvaluationVisibilityForm(request.POST, instance=evaluation)
 
         if form.is_valid():
             form.save()
@@ -107,7 +107,7 @@ def share_user_confirmation_view(request, evaluation, next_page):
             errors = form.errors.as_data()
 
     else:
-        form = EvaluationVisibilityForm()
+        form = EvaluationVisibilityForm(instance=evaluation)
         errors = {}
 
     return render(
