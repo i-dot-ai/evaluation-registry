@@ -168,6 +168,9 @@ class Evaluation(TimeStampedModel):
             return []
         return [choice[1] for choice in Evaluation.UnpublishedReason.choices if choice[0] in self.reasons_unpublished]
 
+    def get_policies_text_list(self):
+        return [t.display for t in self.policies.all()]
+
     def __str__(self):
         return str(self.title)
 
