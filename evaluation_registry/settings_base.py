@@ -36,8 +36,8 @@ SECRET_KEY = env.str("DJANGO_SECRET_KEY")
 ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",
-    "evaluation-registry-dev.eba-izdb4qxe.eu-west-2.elasticbeanstalk.com",
-    "evaluation-registry-prod.eba-izdb4qxe.eu-west-2.elasticbeanstalk.com",
+    "evaluationregistry-dev.eba-iummijp7.eu-west-2.elasticbeanstalk.com",
+    "evaluationregistry-prod.eba-iummijp7.eu-west-2.elasticbeanstalk.com",
     "evaluation-registry.cabinetoffice.gov.uk",
     "dev.evaluation-registry.service.gov.uk",
     "evaluation-registry.service.gov.uk",
@@ -164,8 +164,8 @@ PERMISSIONS_POLICY: dict[str, list] = {
 CSP_DEFAULT_SRC = (
     "'self'",
     "s3.amazonaws.com",
-    "evaluation-registry-files-dev.s3.amazonaws.com",
-    "evaluation-registry-files-prod.s3.amazonaws.com",
+    "evaluationregistry-files-dev.s3.amazonaws.com",
+    "evaluationregistry-files-prod.s3.amazonaws.com",
     "'sha256-IfJd5CaJvXieVYkcs/6RUH75vQIASCglGoGoNThv4fg='",
     "'sha256-oFNrsKhzOBUVceDuefWEqtXEXMM9LIL4cUnoVkDYPzA='",
 )
@@ -175,13 +175,13 @@ CSP_REQUIRE_TRUSTED_TYPES_FOR = ("'script'",)
 CSP_FONT_SRC = (
     "'self'",
     "s3.amazonaws.com",
-    "evaluation-registry-files-dev.s3.amazonaws.com",
-    "evaluation-registry-files-prod.s3.amazonaws.com",
+    "evaluationregistry-files-dev.s3.amazonaws.com",
+    "evaluationregistry-files-prod.s3.amazonaws.com",
 )
 CSP_STYLE_SRC = (
     "'self'",
-    "evaluation-registry-files-dev.s3.amazonaws.com",
-    "evaluation-registry-files-prod.s3.amazonaws.com",
+    "evaluationregistry-files-dev.s3.amazonaws.com",
+    "evaluationregistry-files-prod.s3.amazonaws.com",
 )
 CSP_FRAME_ANCESTORS = ("'none'",)
 
