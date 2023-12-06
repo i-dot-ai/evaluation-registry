@@ -6,7 +6,7 @@ from django.contrib.postgres.search import (
     SearchVector,
 )
 from django.core.exceptions import PermissionDenied
-from django.core.paginator import Paginator
+from django.core.paginator import InvalidPage, Paginator
 from django.db.models import QuerySet
 from django.forms import modelform_factory, modelformset_factory
 from django.http import Http404
@@ -130,7 +130,10 @@ def evaluation_list_view(request):
     paginator = Paginator(evaluation_list, 25, allow_empty_first_page=True)
     page_number = request.GET.get("page") or 1
     page_obj = paginator.get_page(page_number)
-    pages_list = paginator.get_elided_page_range(page_number, on_each_side=1, on_ends=1)
+    try:
+        pages_list = paginator.get_elided_page_range(page_number, on_each_side=1, on_ends=1)
+    except InvalidPage:
+        pages_list = []
     return render(
         request,
         "evaluation_list.html",
