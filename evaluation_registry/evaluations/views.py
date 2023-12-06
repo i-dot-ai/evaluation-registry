@@ -484,8 +484,14 @@ def evaluation_cost_view(request, evaluation, next_page=None):
     if request.method == "POST":
         form = EvaluationForm(request.POST, instance=evaluation)
 
-        if not (request.POST.get("cost") or request.POST.get("cost-unknown")):
+        cost = request.POST.get("cost")
+        cost_is_unknown = request.POST.get("cost-unknown")
+
+        if not (cost or cost_is_unknown):
             form.add_error("cost", "Please provide a value or select 'Total cost not known'")
+
+        if cost and cost_is_unknown:
+            form.add_error("cost", "Please only provide a value or select 'Total cost not known', not both")
 
         if form.is_valid():
             form.save()
