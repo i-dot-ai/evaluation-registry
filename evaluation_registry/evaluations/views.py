@@ -479,3 +479,51 @@ def evaluation_update_policies_view(request, uuid):
     evaluation = check_evaluation_and_user(request, uuid)
 
     return evaluation_policies_view(request, evaluation)
+
+
+def evaluation_cost_view(request, evaluation, next_page=None):
+    EvaluationForm = modelform_factory(Evaluation, fields=["cost"])  # noqa: N806
+
+    if request.method == "POST":
+        form = EvaluationForm(request.POST, instance=evaluation)
+
+        cost = request.POST.get("cost")
+        cost_is_unknown = request.POST.get("cost-unknown")
+
+        if not (cost or cost_is_unknown):
+            form.add_error("cost", "Please provide a value or select 'Total cost not known'")
+
+        if cost and cost_is_unknown:
+            form.add_error("cost", "Please only provide a value or select 'Total cost not known', not both")
+
+        if form.is_valid():
+            form.save()
+
+            if next_page:
+                return redirect("share", uuid=evaluation.id, page_number=next_page)
+            return redirect("evaluation-detail", uuid=evaluation.id)
+
+        else:
+            errors = form.errors.as_data()
+
+    else:
+        form = EvaluationForm(instance=evaluation)
+        errors = {}
+
+    return render(
+        request,
+        "share-form/evaluation-cost.html",
+        {
+            "evaluation": evaluation,
+            "form": form,
+            "errors": errors,
+        },
+    )
+
+
+@require_http_methods(["GET", "POST"])
+@login_required
+def evaluation_update_cost_view(request, uuid):
+    evaluation = check_evaluation_and_user(request, uuid)
+
+    return evaluation_cost_view(request, evaluation)

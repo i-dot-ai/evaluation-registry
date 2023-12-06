@@ -14,6 +14,7 @@ from evaluation_registry.evaluations.models import (
 )
 from evaluation_registry.evaluations.views import (
     check_evaluation_and_user,
+    evaluation_cost_view,
     evaluation_dates_view,
     evaluation_description_view,
     evaluation_links_view,
@@ -227,7 +228,11 @@ def share_view(request, uuid, page_number):
             "kwargs": {},
             "condition": evaluation.status == Evaluation.Status.COMPLETE,
         },
-        # TODO: Add cost
+        {
+            "view": evaluation_cost_view,
+            "kwargs": {},
+            "condition": evaluation.is_final_report_published is True,
+        },
         {
             "view": share_user_confirmation_view,
             "kwargs": {},
