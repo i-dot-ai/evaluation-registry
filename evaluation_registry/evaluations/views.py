@@ -435,7 +435,7 @@ def evaluation_update_links_view(request, uuid):
 def evaluation_policies_view(request, evaluation, next_page=None):
     EvaluationForm = modelform_factory(Evaluation, fields=["policies"])  # noqa: N806
     EvaluationForm.base_fields["policies"].to_field_name = "code"
-    policies = Taxonomy.objects.order_by("code")
+    policies = Taxonomy.objects.select_related("parent").order_by("code")
 
     selected_policies = list(map(lambda p: p.code, evaluation.policies.all()))
 
