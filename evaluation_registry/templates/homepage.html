@@ -17,7 +17,9 @@
               </div>
             </div>
         {% endif %}
-    <p>The evaluation registry is where a planned, ongoing or complete evaluation report can be shared, with either the Evaluation Task Force, the Civil Service or the public.</p>
+    <p>The evaluation registry is where a planned, ongoing or complete evaluation report can be shared. HM Treasury guidance on what to consider when designing an evaluation is in <p class="govuk-body">
+      <a href="https://www.gov.uk/government/publications/the-magenta-book" class="govuk-link" rel="noreferrer noopener" target="_blank">the Magenta Book (opens in new tab)</a>.
+    </p>
     </div>
   </section>
   <div class="govuk-width-container">
@@ -44,6 +46,10 @@
           <a class="govuk-button govuk-button--start" href="{{ url('search') }}?evaluations_to_show=user&evaluations_to_show=public">Search evaluations</a>
       </div>
     </div>
+    <div class="govuk-inset-text">
+      From April 2024 all evaluations in the Evaluation Registry will be visible to the public.
+    </div>
+    <p></p>
     </main>
   </div>
 {% endblock %}
