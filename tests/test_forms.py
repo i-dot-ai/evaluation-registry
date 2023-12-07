@@ -3,6 +3,7 @@ import pytest
 from evaluation_registry.evaluations.forms import (
     EvaluationCreateForm,
     EvaluationDesignTypeDetailForm,
+    EvaluationShareForm,
     EventDateForm,
     NullableModelMultipleChoiceField,
 )
@@ -44,3 +45,26 @@ def test_event_date_form(basic_evaluation):
 
     assert form.errors["other_description"] == ["Please provide additional description for the 'Other' choice"]
     assert form.errors["month"] == ["Please enter a month number from 1-12"]
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize(
+    "plan_link, evaluation_link, expected_number_of_errors",
+    [
+        ("test.com", "test.com", 0),
+        ("test.com", "", 0),
+        ("", "test.com", 0),
+        ("", "", 2),
+    ],
+)
+def test_evaluation_share_form(basic_evaluation, plan_link, evaluation_link, expected_number_of_errors):
+    form = EvaluationShareForm(
+        data={
+            "evaluation": basic_evaluation,
+            "is_final_report_published": "1",
+            "plan_link": plan_link,
+            "link_to_published_evaluation": evaluation_link,
+        }
+    )
+
+    assert len(form.errors) == expected_number_of_errors

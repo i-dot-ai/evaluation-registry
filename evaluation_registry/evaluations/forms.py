@@ -102,10 +102,13 @@ class EvaluationShareForm(Form):
         if is_final_report_published:
             link_to_published_evaluation = self.cleaned_data.get("link_to_published_evaluation")
             plan_link = self.cleaned_data.get("plan_link")
-            if not plan_link:
-                self.add_error("plan_link", "Please provide a link to a strategy, plan or framework")
-            if not link_to_published_evaluation:
-                self.add_error("link_to_published_evaluation", "Please provide a link to a published evaluation")
+            if not (plan_link or link_to_published_evaluation):
+                self.add_error("plan_link", "Please provide at least one link to an evaluation document")
+                self.add_error(
+                    "link_to_published_evaluation",
+                    "Please provide at least one link to an evaluation document",
+                )
+
         else:
             reasons_unpublished = self.cleaned_data.get("reasons_unpublished")
             if not reasons_unpublished:
