@@ -7,6 +7,13 @@
     <!-- <a href="{{ url('homepage') }}?{{ request.GET.urlencode() }}" class="govuk-back-link">Back</a> -->
     <h1 class="govuk-heading-l">
       {% if evaluation.title %}{{ evaluation.title }}{% else %}No title provided{% endif %}</h1>
+    {% if can_edit %}
+      <p class="govuk-body">
+        <a class="govuk-link" href="{{url('evaluation-title-departments', evaluation.id)}}">
+          Update this title
+        </a>
+      </p>
+    {% endif %}
     <p class="govuk-body">
       {% if evaluation.brief_description %}
         {{ evaluation.brief_description }}
@@ -35,6 +42,10 @@
             No lead department listed
           {% endif %}
         </dd>
+        {{ macros.change_evaluation_detail(
+          'lead department',
+          'evaluation-title-departments',
+        ) }}
       </div>
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">
@@ -49,6 +60,10 @@
             No other departments listed
           {% endif %}
         </dd>
+        {{ macros.change_evaluation_detail(
+          'other departments',
+          'evaluation-title-departments',
+        ) }}
       </div>
 
       <div class="govuk-summary-list__row">

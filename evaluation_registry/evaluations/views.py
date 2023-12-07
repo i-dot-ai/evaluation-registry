@@ -15,6 +15,7 @@ from django.urls import reverse
 from django.views.decorators.http import require_http_methods
 
 from evaluation_registry.evaluations.forms import (
+    EvaluationCreateForm,
     EvaluationDesignTypeDetailForm,
     EvaluationShareForm,
     EventDateForm,
@@ -22,6 +23,7 @@ from evaluation_registry.evaluations.forms import (
 from evaluation_registry.evaluations.models import (
     Department,
     Evaluation,
+    EvaluationDepartmentAssociation,
     EvaluationDesignType,
     EvaluationDesignTypeDetail,
     EventDate,
@@ -532,3 +534,75 @@ def evaluation_update_cost_view(request, uuid):
     evaluation = check_evaluation_and_user(request, uuid)
 
     return evaluation_cost_view(request, evaluation)
+
+
+@require_http_methods(["GET", "POST"])
+@login_required
+def evaluation_update_title_department_view(request, uuid):
+    evaluation = check_evaluation_and_user(request, uuid)
+    errors = {}
+    departments = Department.objects.all()
+
+    if request.method == "POST":
+        form = EvaluationCreateForm(request.POST, instance=evaluation)
+        form_complete = request.POST.get("form_complete")
+        selected_departments = request.POST.getlist("departments")
+        selected_lead = request.POST.get("lead_department")
+        department_to_remove = request.POST.get("remove_department")
+
+        if form_complete:
+            if form.is_valid():
+                form.save()
+
+                if form.cleaned_data["lead_department"] != evaluation.lead_department:
+                    lead_department_link = EvaluationDepartmentAssociation.objects.get(
+                        evaluation=evaluation, is_lead=True
+                    )
+                    lead_department_link.department = form.cleaned_data["lead_department"]
+                    lead_department_link.save()
+
+                to_add = set(form.cleaned_data["departments"]).difference(evaluation.other_departments) or []
+
+                for department in to_add:
+                    EvaluationDepartmentAssociation.objects.create(
+                        evaluation=evaluation,
+                        department=department,
+                    )
+
+                to_remove = set(evaluation.other_departments).difference(form.cleaned_data["departments"]) or []
+                for department in to_remove:
+                    EvaluationDepartmentAssociation.objects.filter(
+                        evaluation=evaluation, department=department
+                    ).delete()
+
+                return redirect("evaluation-detail", uuid=evaluation.id)
+            errors = form.errors.as_data()
+
+        if department_to_remove in selected_departments:
+            selected_departments.remove(department_to_remove)
+
+        data = {
+            "title": request.POST.get("title"),
+            "lead_department": selected_lead,
+            "departments": Department.objects.filter(code__in=selected_departments),
+        }
+
+    else:
+        form = EvaluationCreateForm(instance=evaluation)
+        data = {
+            "title": evaluation.title,
+            "lead_department": evaluation.lead_department.code,
+            "departments": evaluation.other_departments or [],
+        }
+
+    return render(
+        request,
+        "share-form/evaluation-create.html",
+        {
+            "form": form,
+            "status": evaluation.status,
+            "departments": departments,
+            "data": data,
+            "errors": errors,
+        },
+    )

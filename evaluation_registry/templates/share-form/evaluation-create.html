@@ -3,7 +3,7 @@
 
 {% block content %}
 <div class="govuk-grid-row">
-  <form action="{{url('create', 3, status)}}" method="post">
+  <form action="{{ request.path }}" method="post">
     {{csrf_input}}
     <input type="hidden" id="status" name="status" value="{{status}}" />
 
@@ -76,7 +76,7 @@
     <button
       class="govuk-button govuk-button--secondary"
       data-module="govuk-button"
-      formaction="{{url('create', 3, status)}}"
+      formaction="{{ request.path }}"
       name="addanother"
       value="departments"
     >
