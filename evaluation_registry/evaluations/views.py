@@ -158,8 +158,12 @@ def evaluation_list_view(request):
 def evaluation_detail_view(request, uuid):
     evaluation = get_object_or_404(Evaluation, id=uuid)
 
+    user_can_edit = evaluation.created_by == request.user
+
     dates = evaluation.event_dates.all()
-    return render(request, "evaluation_detail.html", {"evaluation": evaluation, "dates": dates})
+    return render(
+        request, "evaluation_detail.html", {"evaluation": evaluation, "dates": dates, "can_edit": user_can_edit}
+    )
 
 
 def update_evaluation_design_objects(existing_objects, existing_design_types, form):

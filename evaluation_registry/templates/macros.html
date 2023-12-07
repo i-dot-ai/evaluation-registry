@@ -91,3 +91,13 @@
     </fieldset>
   </div>
 {%- endmacro %}
+
+{% macro change_evaluation_detail(description, path) -%}
+{% if can_edit %}
+  <dd class="govuk-summary-list__actions">
+    <a class="govuk-link" href="{{url(path, evaluation.id)}}">
+      Change<span class="govuk-visually-hidden"> {{description}}</span>
+    </a>
+  </dd>
+{% endif %}
+{%- endmacro %}
