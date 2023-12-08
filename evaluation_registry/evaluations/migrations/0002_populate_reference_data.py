@@ -25,7 +25,7 @@ def update_taxonomy_parents(apps, schema_editor):
     Taxonomy = apps.get_model("evaluations", "Taxonomy")
 
     for code, _, parent in TAXONOMIES:
-        if parent:
+        if parent != "None":
             parent_instance = Taxonomy.objects.get(code=parent)
 
             Taxonomy.objects.filter(code=code).update(

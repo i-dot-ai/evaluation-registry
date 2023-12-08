@@ -9,6 +9,7 @@ from evaluation_registry.evaluations.models import (
     EvaluationDesignType,
     EvaluationDesignTypeDetail,
     PdfEvaluationFile,
+    Taxonomy,
     User,
 )
 
@@ -113,3 +114,21 @@ def impact_evaluation(basic_evaluation, evaluation_impact_type_link):
 
     yield basic_evaluation
 
+
+@pytest.fixture
+def parent_policy():
+    parent_policy = Taxonomy.objects.create(
+        code="parent",
+        display="Parent",
+    )
+    yield parent_policy
+
+
+@pytest.fixture
+def child_policy(parent_policy):
+    child_policy = Taxonomy.objects.create(
+        code="child",
+        display="Child",
+        parent=parent_policy,
+    )
+    yield child_policy

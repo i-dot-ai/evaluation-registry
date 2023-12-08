@@ -47,6 +47,15 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 
+def before_send(event, hint):
+    message_to_ignore = ("Invalid HTTP_HOST header",)  # Scrapers and bots
+
+    event_message = event.get("message")
+    if message_to_ignore in event_message:
+        return None
+    return event
+
+
 if not DEBUG:
     SENTRY_DSN = env.str("SENTRY_DSN", default="")
     SENTRY_ENVIRONMENT = env.str("SENTRY_ENVIRONMENT", default="")
@@ -60,6 +69,7 @@ if not DEBUG:
         send_default_pii=False,
         traces_sample_rate=1.0,
         profiles_sample_rate=0.0,
+        before_send=before_send,
     )
 
 

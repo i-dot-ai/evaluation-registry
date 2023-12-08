@@ -70,3 +70,9 @@ def test_build_evaluation(pdf_evaluation_file_with_text):
     assert list(pdf_evaluation_file_with_text.evaluation.evaluation_design_types.values_list("code", flat=True)) == [
         "qualitative_process"
     ]
+
+
+@pytest.mark.django_db
+def test_taxonomy(parent_policy, child_policy):
+    assert parent_policy.__str__() == parent_policy.display
+    assert child_policy.__str__() == f"{parent_policy.display} > {child_policy.display}"

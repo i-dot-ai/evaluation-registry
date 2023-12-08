@@ -3,7 +3,7 @@
 
 {% block content %}
 <div class="govuk-grid-row">
-  <form method="post" name="share-evaluation-form">
+  <form method="post" name="share-evaluation-form" action="{{ request.path }}">
     {{csrf_input}}
     <input type="hidden" id="status" name="status" value="{{status}}" />
 
@@ -35,7 +35,7 @@
 
     {% call macros.govuk_input(
       'is_final_report_published',
-      'Have you published your final evaluation report?',
+      'Have you published an evaluation report?',
       None ) %}
       <div class="govuk-radios" data-module="govuk-radios">
       <div class="govuk-radios__item">

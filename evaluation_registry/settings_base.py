@@ -36,8 +36,8 @@ SECRET_KEY = env.str("DJANGO_SECRET_KEY")
 ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",
-    "evaluation-registry-dev.eba-izdb4qxe.eu-west-2.elasticbeanstalk.com",
-    "evaluation-registry-prod.eba-izdb4qxe.eu-west-2.elasticbeanstalk.com",
+    "evaluationregistry-dev.eba-iummijp7.eu-west-2.elasticbeanstalk.com",
+    "evaluationregistry-prod.eba-iummijp7.eu-west-2.elasticbeanstalk.com",
     "evaluation-registry.cabinetoffice.gov.uk",
     "dev.evaluation-registry.service.gov.uk",
     "evaluation-registry.service.gov.uk",
@@ -137,7 +137,7 @@ ACCOUNT_USERNAME_REQUIRED = False
 SITE_ID = 1
 ACCOUNT_EMAIL_VERIFICATION = "none"
 LOGIN_REDIRECT_URL = "homepage"
-LOGIN_URL = "login"
+LOGIN_URL = "search"
 
 
 STATIC_URL = "/static/"
@@ -164,8 +164,9 @@ PERMISSIONS_POLICY: dict[str, list] = {
 CSP_DEFAULT_SRC = (
     "'self'",
     "s3.amazonaws.com",
-    "evaluation-registry-files-dev.s3.amazonaws.com",
-    "evaluation-registry-files-prod.s3.amazonaws.com",
+    "evaluationregistry-files-dev.s3.amazonaws.com",
+    "evaluationregistry-files-prod.s3.amazonaws.com",
+    "'sha256-IfJd5CaJvXieVYkcs/6RUH75vQIASCglGoGoNThv4fg='",
     "'sha256-oFNrsKhzOBUVceDuefWEqtXEXMM9LIL4cUnoVkDYPzA='",
 )
 CSP_OBJECT_SRC = ("'none'",)
@@ -174,17 +175,14 @@ CSP_REQUIRE_TRUSTED_TYPES_FOR = ("'script'",)
 CSP_FONT_SRC = (
     "'self'",
     "s3.amazonaws.com",
-    "evaluation-registry-files-dev.s3.amazonaws.com",
-    "evaluation-registry-files-prod.s3.amazonaws.com",
+    "evaluationregistry-files-dev.s3.amazonaws.com",
+    "evaluationregistry-files-prod.s3.amazonaws.com",
 )
 CSP_STYLE_SRC = (
     "'self'",
-    "evaluation-registry-files-dev.s3.amazonaws.com",
-    "evaluation-registry-files-prod.s3.amazonaws.com",
+    "evaluationregistry-files-dev.s3.amazonaws.com",
+    "evaluationregistry-files-prod.s3.amazonaws.com",
 )
 CSP_FRAME_ANCESTORS = ("'none'",)
-
-
-CSRF_COOKIE_HTTPONLY = True
 
 DATA_UPLOAD_MAX_MEMORY_SIZE = 100 * 1024 * 1024  # 100 megabytes in bytes

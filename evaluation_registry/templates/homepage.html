@@ -17,7 +17,7 @@
               </div>
             </div>
         {% endif %}
-    <p>The evaluation registry is where a planned, ongoing or complete evaluation report can be shared, with either the evaluation task force, the Civil Service or the public.</p>
+    <p>The evaluation registry is where a planned, ongoing or complete evaluation report can be shared, with either the Evaluation Task Force, the Civil Service or the public.</p>
     </div>
   </section>
   <div class="govuk-width-container">
@@ -31,17 +31,17 @@
       <div class="govuk-grid-column-one-third">
         <h3 class="govuk-heading-m">I want to:</h3>
         <p>I have an evaluation plan or evaluation report to share</p>
-          <a class="govuk-button govuk-button--start" href="#">Share evaluation</a>
+          <a class="govuk-button govuk-button--start" href="{{ url('create') }}">Share evaluation</a>
       </div>
       <div class="govuk-grid-column-one-third">
         <h3 class="govuk-heading-m">I want to:</h3>
         <p>I've previously created a record for an evaluation and now want to update</p>
-          <a class="govuk-button govuk-button--start" href="{{ url('list-evaluations') }}">Find my evaluation</a>
+          <a class="govuk-button govuk-button--start" href="{{ url('search') }}?evaluations_to_show=user">Find my evaluation</a>
       </div>
       <div class="govuk-grid-column-one-third">
         <h3 class="govuk-heading-m">I want to:</h3>
         <p>See all the evaluations in the Evaluation Registry</p>
-          <a class="govuk-button govuk-button--start" href="{{ url('list-evaluations') }}">Search evaluations</a>
+          <a class="govuk-button govuk-button--start" href="{{ url('search') }}?evaluations_to_show=user&evaluations_to_show=public">Search evaluations</a>
       </div>
     </div>
     </main>

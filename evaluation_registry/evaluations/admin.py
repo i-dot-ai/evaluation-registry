@@ -97,7 +97,7 @@ reformat_text.short_description = "Reformat selected evaluations"  # type: ignor
 
 
 class EvaluationAdmin(SimpleHistoryAdmin):
-    list_display = ["rsm_evaluation_id", "title", "lead_department", "visibility"]
+    list_display = ["title", "rsm_evaluation_id", "lead_department", "visibility"]
     list_filter = ["visibility", "evaluation_design_types__display"]
     search_fields = ("title", "brief_description")
     inlines = [ReportInline, EventDateInline, EvaluationDepartmentAssociationInline, EvaluationDesignTypeDetailInline]
@@ -132,6 +132,10 @@ class EvaluationDesignTypeAdmin(admin.ModelAdmin):
 class TaxonomyAdmin(admin.ModelAdmin):
     list_display = ["code", "display", "parent"]
     list_filter = ["parent"]
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.select_related("parent")
 
 
 admin.site.register(Evaluation, EvaluationAdmin)

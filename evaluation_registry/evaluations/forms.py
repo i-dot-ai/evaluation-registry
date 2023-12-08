@@ -59,7 +59,7 @@ class EvaluationCreateForm(NamedErrorsModelForm):
 class EvaluationDesignTypeDetailForm(Form):
     evaluation = ModelChoiceField(queryset=Evaluation.objects.all(), label="Evaluation")
     design_types = ModelMultipleChoiceField(
-        queryset=EvaluationDesignType.objects.all(), label="Evaluation type", to_field_name="code"
+        queryset=EvaluationDesignType.objects.all(), label="Evaluation type", to_field_name="code", required=False
     )
     text = CharField(max_length=1024, required=False)
 
@@ -102,10 +102,13 @@ class EvaluationShareForm(Form):
         if is_final_report_published:
             link_to_published_evaluation = self.cleaned_data.get("link_to_published_evaluation")
             plan_link = self.cleaned_data.get("plan_link")
-            if not plan_link:
-                self.add_error("plan_link", "Please provide a link to a strategy, plan or framework")
-            if not link_to_published_evaluation:
-                self.add_error("link_to_published_evaluation", "Please provide a link to a published evaluation")
+            if not (plan_link or link_to_published_evaluation):
+                self.add_error("plan_link", "Please provide at least one link to an evaluation document")
+                self.add_error(
+                    "link_to_published_evaluation",
+                    "Please provide at least one link to an evaluation document",
+                )
+
         else:
             reasons_unpublished = self.cleaned_data.get("reasons_unpublished")
             if not reasons_unpublished:
@@ -134,3 +137,17 @@ class EventDateForm(NamedErrorsModelForm):
     class Meta:
         model = EventDate
         fields = ["evaluation", "category", "other_description", "month", "year"]
+
+
+class EvaluationVisibilityForm(NamedErrorsModelForm):
+    permission = BooleanField()
+
+    def __init__(self, *args, **kwargs):
+        super(EvaluationVisibilityForm, self).__init__(*args, **kwargs)
+        self.fields["permission"].error_messages[
+            "required"
+        ] = "Please confirm that you have permission to share this data"
+
+    class Meta:
+        model = Evaluation
+        fields = ["visibility"]

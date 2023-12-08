@@ -12,7 +12,7 @@
 
     <h2 class="govuk-heading-l">Dates</h1>
 
-    {% if errors %}
+    {% if errors["formset"] or errors["other"] %}
       <div class="govuk-error-summary" data-module="govuk-error-summary">
         <div role="alert">
           <h3 class="govuk-error-summary__title">
@@ -20,7 +20,7 @@
           </h3>
           <div class="govuk-error-summary__body">
             <ul class="govuk-list govuk-error-summary__list">
-              {% for form_errors in errors %}
+              {% for form_errors in errors["formset"] %}
                 {% set outer_loop = loop %}
                 {% for field, error_list in form_errors.items() %}
                   {% for error in error_list %}
@@ -29,6 +29,11 @@
                     </li>
                   {% endfor %}
                 {% endfor %}
+              {% endfor %}
+              {% for other_error in errors["other"] %}
+                    <li>
+                      <a href="#">{{other_error}}</a>
+                    </li>
               {% endfor %}
             </ul>
           </div>
@@ -76,7 +81,7 @@
         '1',
         formset[1],
         evaluation.id,
-        'When the evaluation is planned to finish',
+        'When the evaluation is planned to be published',
         errors[1],
         categories,
         categories.EVALUATION_END
@@ -87,10 +92,10 @@
         '2',
         formset[2],
         evaluation.id,
-        'When the evaluation is planned to finish',
+        'When the evaluation is planned to be published',
         errors[2],
         categories,
-        categories.EVALUATION_START,
+        categories.PUBLICATION_FINAL_RESULTS,
       ) }}
 
     {% endif %}

@@ -84,13 +84,13 @@ class EvaluationDesignType(AbstractChoice):
 
 
 class Taxonomy(AbstractChoice):
-    pass
+    def __str__(self):
+        return f"{self.parent} > {self.display}" if self.parent else self.display
 
 
 class Evaluation(TimeStampedModel):
     class Visibility(models.TextChoices):
         DRAFT = "draft", "Draft"
-        CIVIL_SERVICE = "civil_service", "Civil Service"
         PUBLIC = "public", "Public"
 
     class Status(models.TextChoices):
@@ -128,6 +128,9 @@ class Evaluation(TimeStampedModel):
     grant_number = models.CharField(max_length=256, blank=True, null=True)
     has_major_project_number = models.BooleanField(default=False)
     major_project_number = models.CharField(max_length=256, blank=True, null=True)
+    policies = models.ManyToManyField(  # type: ignore
+        Taxonomy, help_text="policy areas covered by this evaluation", blank=True
+    )
 
     visibility = models.CharField(max_length=512, choices=Visibility.choices, default=Visibility.DRAFT)
     is_final_report_published = models.BooleanField(null=True, blank=True)
@@ -137,6 +140,7 @@ class Evaluation(TimeStampedModel):
         models.CharField(max_length=256, choices=UnpublishedReason.choices), blank=True, null=True
     )
     reasons_unpublished_details = models.TextField(blank=True, null=True, max_length=4096)
+    cost = models.CharField(blank=True, null=True, max_length=50)
 
     history = HistoricalRecords()
 
@@ -171,14 +175,11 @@ class Evaluation(TimeStampedModel):
             return []
         return [choice[1] for choice in Evaluation.UnpublishedReason.choices if choice[0] in self.reasons_unpublished]
 
+    def get_policies_text_list(self):
+        return [t.display for t in self.policies.all()]
+
     def __str__(self):
         return str(self.title)
-
-    def clean(self):
-        if self.has_grant_number and self.grant_number is None:
-            raise ValidationError({"has_grant_number": "Please enter a value for the Grant Number"})
-        if self.has_major_project_number and self.major_project_number is None:
-            raise ValidationError({"has_major_project_number": "Please enter a value for the Major Project Number"})
 
 
 class EvaluationDepartmentAssociation(models.Model):
