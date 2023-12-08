@@ -1,9 +1,9 @@
 annotated-types==0.6.0
 anyio==3.7.1
 asgiref==3.7.2
-automatilib==1.1.1
-boto3==1.33.9
-botocore==1.33.9
+automatilib==1.2.0
+boto3==1.33.10
+botocore==1.33.10
 certifi==2023.11.17
 cffi==1.16.0
 charset-normalizer==3.3.2

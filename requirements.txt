@@ -1,4 +1,4 @@
-automatilib>=1.1.1
+automatilib>=1.2.0
 django
 django-cors-headers
 whitenoise

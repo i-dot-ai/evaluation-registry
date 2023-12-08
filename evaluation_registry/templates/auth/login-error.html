@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1 class="govuk-heading-l">An error has occurred</h1>
+  <ul class="govuk-list">
+    <li class="govuk-list--bullet">{{ errors }}</li>
+  </ul>
+  <p>Please try again using <a class="govuk-link" href="{{ url('login') }}">this link</a>.</p>
+  <p>If this issue persists please contact our support email at <a href="mailto:{{ contact_email }}"
+                                                                   class="govuk-link">{{ contact_email }}</a></p>
+{% endblock %}
