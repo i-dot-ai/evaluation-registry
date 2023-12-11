@@ -20,4 +20,7 @@ pytest-django
 pytest-env
 pytest-cov
 
+# debugging
+django-debug-toolbar
+
 -r ./requirements.lock
