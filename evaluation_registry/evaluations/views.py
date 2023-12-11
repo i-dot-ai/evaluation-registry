@@ -15,7 +15,7 @@ from django.urls import reverse
 from django.views.decorators.http import require_http_methods
 
 from evaluation_registry.evaluations.forms import (
-    EvaluationCreateForm,
+    EvaluationBasicDetailsForm,
     EvaluationDesignTypeDetailForm,
     EvaluationShareForm,
     EventDateForm,
@@ -544,7 +544,7 @@ def evaluation_update_title_department_view(request, uuid):
     departments = Department.objects.all()
 
     if request.method == "POST":
-        form = EvaluationCreateForm(request.POST, instance=evaluation)
+        form = EvaluationBasicDetailsForm(request.POST, instance=evaluation)
         form_complete = request.POST.get("form_complete")
         selected_departments = request.POST.getlist("departments")
         selected_lead = request.POST.get("lead_department")
@@ -588,7 +588,7 @@ def evaluation_update_title_department_view(request, uuid):
         }
 
     else:
-        form = EvaluationCreateForm(instance=evaluation)
+        form = EvaluationBasicDetailsForm(instance=evaluation)
         data = {
             "title": evaluation.title,
             "lead_department": evaluation.lead_department.code,

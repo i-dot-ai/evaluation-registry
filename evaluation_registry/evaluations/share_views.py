@@ -4,7 +4,7 @@ from django.shortcuts import redirect, render
 from django.views.decorators.http import require_http_methods
 
 from evaluation_registry.evaluations.forms import (
-    EvaluationCreateForm,
+    EvaluationBasicDetailsForm,
     EvaluationVisibilityForm,
 )
 from evaluation_registry.evaluations.models import (
@@ -47,7 +47,7 @@ def evaluation_create_view(request, status):
     errors = {}
     departments = Department.objects.all()
     if request.method == "POST":
-        form = EvaluationCreateForm(request.POST)
+        form = EvaluationBasicDetailsForm(request.POST)
 
         form_complete = request.POST.get("form_complete")
         selected_departments = request.POST.getlist("departments")
@@ -83,7 +83,7 @@ def evaluation_create_view(request, status):
 
     else:
         # create a blank form
-        form = EvaluationCreateForm()
+        form = EvaluationBasicDetailsForm()
         data = {"title": "", "lead_department": "", "departments": []}
 
     return render(
