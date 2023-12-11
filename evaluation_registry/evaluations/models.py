@@ -52,7 +52,16 @@ class RootDesignTypeManager(models.Manager):
         return super().get_queryset().filter(parent__isnull=True)
 
 
+class AbstractChoiceManager(models.Manager):
+    """this solves the n+1 problem for a recursive model"""
+
+    def get_queryset(self):
+        return super().get_queryset().select_related("parent")
+
+
 class AbstractChoice(TimeStampedModel):
+    objects = AbstractChoiceManager()
+
     code = models.SlugField(
         max_length=128,
         unique=True,
@@ -73,7 +82,6 @@ class EvaluationDesignType(AbstractChoice):
         default=False, help_text="Use for 'other' types to prompt further information"
     )
 
-    objects = models.Manager()
     root_objects = RootDesignTypeManager()
 
 
