@@ -43,3 +43,9 @@ def test_rsm_upload(admin_client):
 
     assert response.status_code == 200
     assert Evaluation.objects.count() - initial_count == 3
+
+
+@pytest.mark.django_db
+def test_evaluation_admin_performance(impact_evaluation, admin_client, django_assert_max_num_queries):
+    with django_assert_max_num_queries(20):
+        admin_client.get(f"/admin/evaluations/evaluation/{impact_evaluation.pk}/change/")
