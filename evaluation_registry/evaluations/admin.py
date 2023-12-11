@@ -9,15 +9,19 @@ from django.contrib.postgres.search import (
 )
 from simple_history.admin import SimpleHistoryAdmin
 
-from . import models
 from .management.commands import load_rsm_csv
 from .management.commands.reformat_description import reformat_evaluation
 from .models import (
+    Department,
     Evaluation,
     EvaluationDepartmentAssociation,
+    EvaluationDesignType,
     EvaluationDesignTypeDetail,
     EventDate,
     Report,
+    RSMFile,
+    Taxonomy,
+    User,
 )
 
 admin_site = admin.AdminSite()
@@ -66,6 +70,11 @@ class EvaluationDesignTypeDetailInline(admin.TabularInline):
     extra = 1
 
 
+class PolicyInline(admin.TabularInline):
+    model = Taxonomy
+    extra = 1
+
+
 def reformat_text(modeladmin, request, queryset):
     for evaluation in queryset:
         reformat_evaluation(evaluation)
@@ -78,7 +87,13 @@ class EvaluationAdmin(SimpleHistoryAdmin):
     list_display = ["title", "rsm_evaluation_id", "lead_department", "visibility"]
     list_filter = ["visibility", "evaluation_design_types__display"]
     search_fields = ("title", "brief_description")
-    inlines = [ReportInline, EventDateInline, EvaluationDepartmentAssociationInline, EvaluationDesignTypeDetailInline]
+    inlines = [
+        ReportInline,
+        EventDateInline,
+        EvaluationDepartmentAssociationInline,
+        EvaluationDesignTypeDetailInline,
+        PolicyInline,
+    ]
     actions = [reformat_text]
 
     def get_search_results(self, request, queryset, search_term):
@@ -116,9 +131,9 @@ class TaxonomyAdmin(admin.ModelAdmin):
         return qs.select_related("parent")
 
 
-admin.site.register(models.Evaluation, EvaluationAdmin)
-admin.site.register(models.Department, DepartmentAdmin)
-admin.site.register(models.EvaluationDesignType, EvaluationDesignTypeAdmin)
-admin.site.register(models.RSMFile, RSMFileAdmin)
-admin.site.register(models.Taxonomy, TaxonomyAdmin)
-admin.site.register(models.User)
+admin.site.register(Evaluation, EvaluationAdmin)
+admin.site.register(Department, DepartmentAdmin)
+admin.site.register(EvaluationDesignType, EvaluationDesignTypeAdmin)
+admin.site.register(RSMFile, RSMFileAdmin)
+admin.site.register(Taxonomy, TaxonomyAdmin)
+admin.site.register(User)
