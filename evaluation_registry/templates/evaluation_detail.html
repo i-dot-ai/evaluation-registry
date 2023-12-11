@@ -3,8 +3,6 @@
 
 {% block content %}
   <div class="govuk-grid-row">
-    <!-- TODO: update back link routing -->
-    <!-- <a href="{{ url('homepage') }}?{{ request.GET.urlencode() }}" class="govuk-back-link">Back</a> -->
     <h1 class="govuk-heading-l">
       {% if evaluation.title %}{{ evaluation.title }}{% else %}No title provided{% endif %}</h1>
     {% if can_edit %}
