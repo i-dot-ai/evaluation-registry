@@ -82,7 +82,6 @@ class EvaluationDesignType(AbstractChoice):
         default=False, help_text="Use for 'other' types to prompt further information"
     )
 
-    objects = models.Manager()
     root_objects = RootDesignTypeManager()
 
 
