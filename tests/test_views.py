@@ -50,13 +50,13 @@ def test_evaluation_update_type_view(
     mock_render, client, basic_evaluation, impact, alice, django_assert_max_num_queries
 ):
     client.force_login(user=alice)
-    with django_assert_max_num_queries(7):
+    with django_assert_max_num_queries(5):
         client.get(f"/evaluation/{basic_evaluation.id}/update-type/")
     _, _, data = mock_render.call_args[0]
     assert data["evaluation"] == basic_evaluation
     assert all([eval_type.parent is None for eval_type in data["options"]])
 
-    with django_assert_max_num_queries(9):
+    with django_assert_max_num_queries(7):
         client.get(f"/evaluation/{basic_evaluation.id}/update-type/impact")
     _, _, data = mock_render.call_args[0]
     assert data["evaluation"] == basic_evaluation
@@ -124,5 +124,5 @@ def test_evaluation_detail_view_performance(
 
     basic_evaluation.save()
 
-    with django_assert_max_num_queries(14):
+    with django_assert_max_num_queries(12):
         client.get(f"/evaluation/{basic_evaluation.id}/")
