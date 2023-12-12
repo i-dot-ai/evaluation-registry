@@ -41,23 +41,26 @@ def test_update_evaluation_design_objects_text_only(other, basic_evaluation, eva
 
 @pytest.mark.django_db
 @patch("evaluation_registry.evaluations.views.render", side_effect=render)
-def test_evaluation_update_type_view(mock_render, client, basic_evaluation, impact, alice):
+def test_evaluation_update_type_view(mock_render, client, basic_evaluation, impact, alice, django_assert_max_num_queries):
     client.force_login(user=alice)
-    client.get(f"/evaluation/{basic_evaluation.id}/update-type/")
+    with django_assert_max_num_queries(8):
+        client.get(f"/evaluation/{basic_evaluation.id}/update-type/")
     _, _, data = mock_render.call_args[0]
     assert data["evaluation"] == basic_evaluation
     assert all([eval_type.parent is None for eval_type in data["options"]])
 
-    client.get(f"/evaluation/{basic_evaluation.id}/update-type/impact")
+    with django_assert_max_num_queries(10):
+        client.get(f"/evaluation/{basic_evaluation.id}/update-type/impact")
     _, _, data = mock_render.call_args[0]
     assert data["evaluation"] == basic_evaluation
     assert all([eval_type.parent == impact for eval_type in data["options"]])
 
 
 @pytest.mark.django_db
-def test_update_view_different_user(client, basic_evaluation, create_user):
+def test_update_view_different_user(client, basic_evaluation, create_user, django_assert_max_num_queries):
     baljit = create_user("baljit@example.com")
     client.force_login(user=baljit)
 
-    response = client.get(f"/evaluation/{basic_evaluation.id}/update-type/")
+    with django_assert_max_num_queries(7):
+        response = client.get(f"/evaluation/{basic_evaluation.id}/update-type/")
     assert isinstance(response, HttpResponseForbidden)
