@@ -43,13 +43,13 @@ def test_update_evaluation_design_objects_text_only(other, basic_evaluation, eva
 @patch("evaluation_registry.evaluations.views.render", side_effect=render)
 def test_evaluation_update_type_view(mock_render, client, basic_evaluation, impact, alice, django_assert_max_num_queries):
     client.force_login(user=alice)
-    with django_assert_max_num_queries(8):
+    with django_assert_max_num_queries(7):
         client.get(f"/evaluation/{basic_evaluation.id}/update-type/")
     _, _, data = mock_render.call_args[0]
     assert data["evaluation"] == basic_evaluation
     assert all([eval_type.parent is None for eval_type in data["options"]])
 
-    with django_assert_max_num_queries(10):
+    with django_assert_max_num_queries(9):
         client.get(f"/evaluation/{basic_evaluation.id}/update-type/impact")
     _, _, data = mock_render.call_args[0]
     assert data["evaluation"] == basic_evaluation

@@ -90,7 +90,14 @@ class Taxonomy(AbstractChoice):
         return f"{self.parent} > {self.display}" if self.parent else self.display
 
 
+
+class EvaluationManager(models.Manager):
+    def get_queryset(self) -> QuerySet:
+        return super().get_queryset().select_related("created_by")
+
 class Evaluation(TimeStampedModel):
+    objects = EvaluationManager()
+
     class Visibility(models.TextChoices):
         DRAFT = "draft", "Draft"
         PUBLIC = "public", "Public"
