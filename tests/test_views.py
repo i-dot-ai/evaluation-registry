@@ -124,5 +124,5 @@ def test_evaluation_detail_view_performance(
 
     basic_evaluation.save()
 
-    with django_assert_max_num_queries(12):
+    with django_assert_max_num_queries(9):
         client.get(f"/evaluation/{basic_evaluation.id}/")

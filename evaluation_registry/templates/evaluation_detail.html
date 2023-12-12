@@ -20,11 +20,13 @@
           Lead department
         </dt>
         <dd class="govuk-summary-list__value">
-          {% if evaluation.lead_department %}
-            {{ evaluation.lead_department }}<br>
-          {% else %}
-            No lead department listed
-          {% endif %}
+          {% with lead_department=evaluation.lead_department %}
+            {% if lead_department %}
+              {{ lead_department }}<br>
+            {% else %}
+              No lead department listed
+            {% endif %}
+          {% endwith %}
         </dd>
       </div>
       <div class="govuk-summary-list__row">
@@ -32,13 +34,15 @@
           Other departments
         </dt>
         <dd class="govuk-summary-list__value">
-          {% if evaluation.other_departments|length > 0 %}
-            {% for department in evaluation.other_departments %}
-              {{ department }}<br>
-            {% endfor %}
-          {% else %}
-            No other departments listed
-          {% endif %}
+          {% with other_departments=evaluation.other_departments %}
+            {% if other_departments|length > 0 %}
+              {% for department in other_departments %}
+                {{ department }}<br>
+              {% endfor %}
+            {% else %}
+              No other departments listed
+            {% endif %}
+          {% endwith %}
         </dd>
       </div>
 
@@ -52,13 +56,14 @@
           {% endfor %}
         </dd>
       </div>
-      {% if evaluation.other_design_types.all()|length > 0 %}
+      {% with other_design_types=evaluation.other_design_types.all() %}
+      {% if other_design_types|length > 0 %}
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">
             Evaluation type (Other)
           </dt>
           <dd class="govuk-summary-list__value">
-            {% for other_description in evaluation.other_design_types.all() %}
+            {% for other_description in other_design_types %}
               {% if other_description.text %}
                 {{ other_description.text }}<br>
               {% else %}
@@ -68,6 +73,7 @@
           </dd>
         </div>
       {% endif %}
+      {% endwith %}
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">
           Grant information
@@ -97,11 +103,13 @@
           Policies
         </dt>
         <dd class="govuk-summary-list__value">
-          {% if evaluation.policies %}
-            {{ evaluation.get_policies_text_list() | join(', ') }}<br>
-          {% else %}
-            No policies provided
-          {% endif %}
+          {% with policies_text_list=evaluation.get_policies_text_list() %}
+            {% if policies_text_list %}
+              {{ policies_text_list | join(', ') }}<br>
+            {% else %}
+              No policies provided
+            {% endif %}
+          {% endwith %}
         </dd>
       </div>
     </dl>
