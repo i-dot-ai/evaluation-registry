@@ -49,3 +49,9 @@ def test_rsm_upload(admin_client):
 def test_evaluation_admin_performance(impact_evaluation, admin_client, django_assert_max_num_queries):
     with django_assert_max_num_queries(20):
         admin_client.get(f"/admin/evaluations/evaluation/{impact_evaluation.pk}/change/")
+
+
+@pytest.mark.django_db
+def test_taxonomy_admin_performance(child_policy, admin_client, django_assert_max_num_queries):
+    with django_assert_max_num_queries(5):
+        admin_client.get(f"/admin/taxonomies/evaluation/{child_policy.pk}/change/")
