@@ -64,3 +64,12 @@ def test_update_view_different_user(client, basic_evaluation, create_user, djang
     with django_assert_max_num_queries(7):
         response = client.get(f"/evaluation/{basic_evaluation.id}/update-type/")
     assert isinstance(response, HttpResponseForbidden)
+
+
+@pytest.mark.django_db
+def test_evaluation_update_policies_view(client, basic_evaluation, alice, django_assert_max_num_queries):
+    """right now this query is only testing the perfomance of the get route"""
+    client.force_login(user=alice)
+    with django_assert_max_num_queries(8):
+        client.get(f"/evaluation/{basic_evaluation.id}/update-policies/")
+
