@@ -90,13 +90,17 @@ class Taxonomy(AbstractChoice):
         return f"{self.parent} > {self.display}" if self.parent else self.display
 
 
-
 class EvaluationManager(models.Manager):
     def get_queryset(self) -> QuerySet:
-        qs = super().get_queryset().select_related(
-            "created_by",
+        qs = (
+            super()
+            .get_queryset()
+            .select_related(
+                "created_by",
+            )
         )
         return qs
+
 
 class Evaluation(TimeStampedModel):
     objects = EvaluationManager()

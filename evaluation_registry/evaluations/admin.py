@@ -112,7 +112,6 @@ class TaxonomyAdmin(admin.ModelAdmin):
     list_filter = ["parent"]
 
 
-
 admin.site.register(models.Evaluation, EvaluationAdmin)
 admin.site.register(models.Department, DepartmentAdmin)
 admin.site.register(models.EvaluationDesignType, EvaluationDesignTypeAdmin)
