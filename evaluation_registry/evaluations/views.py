@@ -101,6 +101,7 @@ def filter_by_department_and_types(evaluations: QuerySet, departments: list[str]
 
 
 @require_http_methods(["GET"])
+@login_required
 def evaluation_list_view(request):
     search_term = request.GET.get("search_term")
     selected_departments = request.GET.getlist("departments")
