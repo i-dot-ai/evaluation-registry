@@ -4,9 +4,6 @@ from django.urls import include, path
 
 from evaluation_registry.evaluations import info_views, share_views, views
 
-
-from django.views.generic import RedirectView # remove after public view reinstated
-
 info_urlpatterns = [
     path("privacy-notice/", info_views.privacy_notice_view, name="privacy-notice"),
     path("accessibility-statement/", info_views.accessibility_statement_view, name="accessibility-statement"),
@@ -33,8 +30,6 @@ share_urlpatterns = [
 ]
 
 other_urlpatterns = [
-    #path("", views.homepage_view, name="homepage"), # Commenting out until public
-    path("", RedirectView.as_view(url='/login/', permanent=False), name="homepage"),
     path("", views.homepage_view, name="homepage"),
     path("health/", include("health_check.urls")),
     path("login/", views.login_to_cola_view, name="login"),
