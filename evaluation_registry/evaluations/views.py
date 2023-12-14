@@ -561,7 +561,7 @@ def evaluation_update_title_department_view(request, uuid):
                     lead_department_link.department = form.cleaned_data["lead_department"]
                     lead_department_link.save()
 
-                to_add = set(form.cleaned_data["departments"]).difference(evaluation.other_departments) or []
+                to_add = set(form.cleaned_data["departments"]).difference(evaluation.other_departments) or set()
 
                 for department in to_add:
                     EvaluationDepartmentAssociation.objects.create(
@@ -569,11 +569,13 @@ def evaluation_update_title_department_view(request, uuid):
                         department=department,
                     )
 
-                to_remove = set(evaluation.other_departments).difference(form.cleaned_data["departments"]) or []
-                for department in to_remove:
-                    EvaluationDepartmentAssociation.objects.filter(
-                        evaluation=evaluation, department=department
-                    ).delete()
+                # remove unwanted departments
+                EvaluationDepartmentAssociation.objects.filter(
+                    evaluation=evaluation,
+                    department__in=evaluation.other_departments,
+                ).exclude(
+                    department__in=form.cleaned_data["departments"],
+                ).delete()
 
                 return redirect("evaluation-detail", uuid=evaluation.id)
             errors = form.errors.as_data()
