@@ -43,4 +43,6 @@ other_urlpatterns = [
     path("accounts/", include("allauth.urls")),
 ]
 
-urlpatterns = info_urlpatterns + share_urlpatterns + other_urlpatterns + cola_url_patterns
+development_urlpatterns = [path("__debug__/", include("debug_toolbar.urls"))]
+
+urlpatterns = info_urlpatterns + share_urlpatterns + other_urlpatterns + cola_url_patterns + development_urlpatterns
