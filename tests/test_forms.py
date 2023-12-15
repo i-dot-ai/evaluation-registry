@@ -1,7 +1,7 @@
 import pytest
 
 from evaluation_registry.evaluations.forms import (
-    EvaluationCreateForm,
+    EvaluationBasicDetailsForm,
     EvaluationDesignTypeDetailForm,
     EvaluationShareForm,
     EventDateForm,
@@ -18,8 +18,8 @@ def test_nullable_model_multiple_choice_field(cabinet_office):
 
 
 @pytest.mark.django_db
-def test_evaluation_create_form(cabinet_office):
-    form = EvaluationCreateForm(
+def test_evaluation_basic_details_form(cabinet_office):
+    form = EvaluationBasicDetailsForm(
         data={
             "title": "",
             "departments": [cabinet_office.code],
@@ -29,6 +29,20 @@ def test_evaluation_create_form(cabinet_office):
 
     assert form.errors["title"] == ["Title is required"]
     assert form.errors["departments"] == [f"This department has been listed more than once: {cabinet_office.display}"]
+
+
+@pytest.mark.django_db
+def test_evaluation_basic_details_update_form_update(cabinet_office_led_evaluation, home_office):
+    form = EvaluationBasicDetailsForm(
+        instance=cabinet_office_led_evaluation,
+        data={
+            "title": "test",
+            "lead_department": home_office.code,
+        },
+    )
+
+    assert not form.errors
+    assert form.cleaned_data["lead_department"] == home_office
 
 
 @pytest.mark.django_db
