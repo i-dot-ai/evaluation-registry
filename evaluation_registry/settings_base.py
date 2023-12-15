@@ -139,7 +139,7 @@ ACCOUNT_USERNAME_REQUIRED = False
 SITE_ID = 1
 ACCOUNT_EMAIL_VERIFICATION = "none"
 LOGIN_REDIRECT_URL = "homepage"
-LOGIN_URL = "search"
+LOGIN_URL = "login"
 
 
 STATIC_URL = "/static/"

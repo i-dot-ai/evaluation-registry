@@ -61,3 +61,16 @@ def test_update_view_different_user(client, basic_evaluation, create_user):
 
     response = client.get(f"/evaluation/{basic_evaluation.id}/update-type/")
     assert isinstance(response, HttpResponseForbidden)
+
+
+@pytest.mark.django_db
+def test_update_title_department_different_user(alice, client, cabinet_office_led_evaluation, create_user):
+    cain = create_user("cain@example.com")
+    client.force_login(user=cain)
+
+    response = client.get(f"/evaluation/{cabinet_office_led_evaluation.id}/update-title-departments/")
+    assert isinstance(response, HttpResponseForbidden)
+
+    client.force_login(user=alice)
+    response = client.get(f"/evaluation/{cabinet_office_led_evaluation.id}/update-title-departments/")
+    assert response.status_code == 200
