@@ -1,10 +1,17 @@
 {% extends "base.html" %}
+{% import 'macros.html' as macros with context %}
 
 {% block content %}
   <div class="govuk-grid-row">
-    <a href="{{ url('homepage') }}?{{ request.GET.urlencode() }}" class="govuk-back-link">Back</a>
     <h1 class="govuk-heading-l">
       {% if evaluation.title %}{{ evaluation.title }}{% else %}No title provided{% endif %}</h1>
+    {% if can_edit %}
+      <p class="govuk-body">
+        <a class="govuk-link" href="{{url('evaluation-title-departments', evaluation.id)}}">
+          Update this title
+        </a>
+      </p>
+    {% endif %}
     <p class="govuk-body">
       {% if evaluation.brief_description %}
         {{ evaluation.brief_description }}
@@ -12,6 +19,13 @@
         No description provided
       {% endif %}
     </p>
+    {% if can_edit %}
+    <p class="govuk-body">
+      <a class="govuk-link" href="{{url('evaluation-update', evaluation.id)}}">
+        Update this description
+      </a>
+    </p>
+  {% endif %}
 
     <h2 class="govuk-heading-m" id="description">Description</h2>
     <dl class="govuk-summary-list">
@@ -28,6 +42,10 @@
             {% endif %}
           {% endwith %}
         </dd>
+        {{ macros.change_evaluation_detail(
+          'lead department',
+          'evaluation-title-departments',
+        ) }}
       </div>
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">
@@ -44,6 +62,10 @@
             {% endif %}
           {% endwith %}
         </dd>
+        {{ macros.change_evaluation_detail(
+          'other departments',
+          'evaluation-title-departments',
+        ) }}
       </div>
 
       <div class="govuk-summary-list__row">
@@ -55,6 +77,10 @@
             {{ evaluation_type }}<br>
           {% endfor %}
         </dd>
+        {{ macros.change_evaluation_detail(
+          'evaluation types',
+          'evaluation-update-type',
+        ) }}
       </div>
       {% with other_design_types=evaluation.other_design_types.all() %}
       {% if other_design_types|length > 0 %}
@@ -71,6 +97,10 @@
               {% endif %}
             {% endfor %}
           </dd>
+          {{ macros.change_evaluation_detail(
+            'evaluation types',
+            'evaluation-update-type',
+          ) }}
         </div>
       {% endif %}
       {% endwith %}
@@ -85,6 +115,10 @@
             No grant number provided
           {% endif %}
         </dd>
+        {{ macros.change_evaluation_detail(
+          'grant information',
+          'evaluation-update',
+        ) }}
       </div>
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">
@@ -97,6 +131,10 @@
             No Government Major Project number provided
           {% endif %}
         </dd>
+        {{ macros.change_evaluation_detail(
+          'major project number',
+          'evaluation-update',
+        ) }}
       </div>
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">
@@ -111,12 +149,23 @@
             {% endif %}
           {% endwith %}
         </dd>
+        {{ macros.change_evaluation_detail(
+          'policies',
+          'evaluation-policies',
+        ) }}
       </div>
     </dl>
 
     <h2 class="govuk-heading-m" id="event-dates">Event Dates</h2>
     {% if dates|length == 0 %}
       <p class="govuk-body">No dates found for this evaluation.</p>
+      {% if can_edit %}
+        <p class="govuk-body">
+          <a class="govuk-link" href="{{url('evaluation-update-dates', evaluation.id)}}">
+            Add dates for this evaluation
+          </a>
+        </p>
+      {% endif %}
     {% endif %}
 
     {% for date in dates %}
@@ -124,16 +173,28 @@
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Event Name</dt>
           <dd class="govuk-summary-list__value">{{ date.get_category_display() }}</dd>
+          {{ macros.change_evaluation_detail(
+            'dates',
+            'evaluation-update-dates',
+          ) }}
         </div>
         {% if date.category == "other" and date.other_description %}
           <div class="govuk-summary-list__row">
             <dt class="govuk-summary-list__key">Event Name (Other)</dt>
             <dd class="govuk-summary-list__value">{{ date.other_description }}</dd>
+            {{ macros.change_evaluation_detail(
+              'dates',
+              'evaluation-update-dates',
+            ) }}
           </div>
         {% endif %}
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Event Date</dt>
           <dd class="govuk-summary-list__value">{% if date %}{{ date }}{% else %}No date provided{% endif %}</dd>
+          {{ macros.change_evaluation_detail(
+            'dates',
+            'evaluation-update-dates',
+          ) }}
         </div>
       </dl>
       <!-- TODO: change spacing in css class -->
@@ -149,6 +210,10 @@
           <dd class="govuk-summary-list__value">
             Yes
           </dd>
+          {{ macros.change_evaluation_detail(
+            'final report information',
+            'evaluation-share',
+          ) }}
         </div>
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Link to a new evaluation plan or an existing plan</dt>
@@ -159,6 +224,10 @@
               No link provided
             {% endif %}
           </dd>
+          {{ macros.change_evaluation_detail(
+            'plan information',
+            'evaluation-share',
+          ) }}
         </div>
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">
@@ -172,6 +241,10 @@
               No link provided
             {% endif %}
           </dd>
+          {{ macros.change_evaluation_detail(
+            'evaluation link information',
+            'evaluation-share',
+          ) }}
         </div>
       {% elif evaluation.is_final_report_published is false %}
         <div class="govuk-summary-list__row">
@@ -179,12 +252,20 @@
           <dd class="govuk-summary-list__value">
             No
           </dd>
+          {{ macros.change_evaluation_detail(
+            'final report information',
+            'evaluation-share',
+          ) }}
         </div>
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Reasons the report is unpublished</dt>
           <dd class="govuk-summary-list__value">
             {{ evaluation.get_reasons_unpublished_text() | join(', ') }}
           </dd>
+          {{ macros.change_evaluation_detail(
+            'final report information',
+            'evaluation-share',
+          ) }}
         </div>
         {% if 'other' in evaluation.reasons_unpublished %}
           <div class="govuk-summary-list__row">
@@ -192,6 +273,10 @@
             <dd class="govuk-summary-list__value">
               {{ evaluation.reasons_unpublished_details and evaluation.reasons_unpublished_details or 'Not provided' }}
             </dd>
+            {{ macros.change_evaluation_detail(
+              'final report information',
+              'evaluation-share',
+            ) }}
           </div>
         {% endif %}
       {% else %}
@@ -200,6 +285,10 @@
           <dd class="govuk-summary-list__value">
             Not provided
           </dd>
+          {{ macros.change_evaluation_detail(
+            'final report information',
+            'evaluation-share',
+          ) }}
         </div>
       {% endif %}
     </div>

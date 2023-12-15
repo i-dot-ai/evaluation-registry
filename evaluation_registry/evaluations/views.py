@@ -15,6 +15,7 @@ from django.urls import reverse
 from django.views.decorators.http import require_http_methods
 
 from evaluation_registry.evaluations.forms import (
+    EvaluationBasicDetailsForm,
     EvaluationDesignTypeDetailForm,
     EvaluationShareForm,
     EventDateForm,
@@ -22,6 +23,7 @@ from evaluation_registry.evaluations.forms import (
 from evaluation_registry.evaluations.models import (
     Department,
     Evaluation,
+    EvaluationDepartmentAssociation,
     EvaluationDesignType,
     EvaluationDesignTypeDetail,
     EventDate,
@@ -101,6 +103,7 @@ def filter_by_department_and_types(evaluations: QuerySet, departments: list[str]
 
 
 @require_http_methods(["GET"])
+@login_required
 def evaluation_list_view(request):
     search_term = request.GET.get("search_term")
     selected_departments = request.GET.getlist("departments")
@@ -157,8 +160,12 @@ def evaluation_list_view(request):
 def evaluation_detail_view(request, uuid):
     evaluation = get_object_or_404(Evaluation, id=uuid)
 
+    user_can_edit = evaluation.created_by == request.user
+
     dates = evaluation.event_dates.all()
-    return render(request, "evaluation_detail.html", {"evaluation": evaluation, "dates": dates})
+    return render(
+        request, "evaluation_detail.html", {"evaluation": evaluation, "dates": dates, "can_edit": user_can_edit}
+    )
 
 
 def update_evaluation_design_objects(existing_objects, existing_design_types, form):
@@ -526,3 +533,77 @@ def evaluation_update_cost_view(request, uuid):
     evaluation = check_evaluation_and_user(request, uuid)
 
     return evaluation_cost_view(request, evaluation)
+
+
+@require_http_methods(["GET", "POST"])
+@login_required
+def evaluation_update_title_department_view(request, uuid):
+    evaluation = check_evaluation_and_user(request, uuid)
+    errors = {}
+    departments = Department.objects.all()
+
+    if request.method == "POST":
+        form = EvaluationBasicDetailsForm(request.POST, instance=evaluation)
+        form_complete = request.POST.get("form_complete")
+        selected_departments = request.POST.getlist("departments")
+        selected_lead = request.POST.get("lead_department")
+        department_to_remove = request.POST.get("remove_department")
+
+        if form_complete:
+            if form.is_valid():
+                form.save()
+
+                if form.cleaned_data["lead_department"] != evaluation.lead_department:
+                    lead_department_link = EvaluationDepartmentAssociation.objects.get(
+                        evaluation=evaluation, is_lead=True
+                    )
+                    lead_department_link.department = form.cleaned_data["lead_department"]
+                    lead_department_link.save()
+
+                to_add = set(form.cleaned_data["departments"]).difference(evaluation.other_departments) or set()
+
+                for department in to_add:
+                    EvaluationDepartmentAssociation.objects.create(
+                        evaluation=evaluation,
+                        department=department,
+                    )
+
+                # remove unwanted departments
+                EvaluationDepartmentAssociation.objects.filter(
+                    evaluation=evaluation,
+                    department__in=evaluation.other_departments,
+                ).exclude(
+                    department__in=form.cleaned_data["departments"],
+                ).delete()
+
+                return redirect("evaluation-detail", uuid=evaluation.id)
+            errors = form.errors.as_data()
+
+        if department_to_remove in selected_departments:
+            selected_departments.remove(department_to_remove)
+
+        data = {
+            "title": request.POST.get("title"),
+            "lead_department": selected_lead,
+            "departments": Department.objects.filter(code__in=selected_departments),
+        }
+
+    else:
+        form = EvaluationBasicDetailsForm(instance=evaluation)
+        data = {
+            "title": evaluation.title,
+            "lead_department": evaluation.lead_department.code,
+            "departments": evaluation.other_departments or [],
+        }
+
+    return render(
+        request,
+        "share-form/evaluation-create.html",
+        {
+            "form": form,
+            "status": evaluation.status,
+            "departments": departments,
+            "data": data,
+            "errors": errors,
+        },
+    )

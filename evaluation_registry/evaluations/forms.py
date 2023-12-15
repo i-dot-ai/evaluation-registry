@@ -34,7 +34,7 @@ class NamedErrorsModelForm(ModelForm):
             field.error_messages["required"] = f"{field.label} is required"
 
 
-class EvaluationCreateForm(NamedErrorsModelForm):
+class EvaluationBasicDetailsForm(NamedErrorsModelForm):
     lead_department = ModelChoiceField(queryset=Department.objects.all(), to_field_name="code", label="Lead Department")
     departments = NullableModelMultipleChoiceField(
         queryset=Department.objects.all(), to_field_name="code", required=False
