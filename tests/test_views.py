@@ -127,6 +127,8 @@ def test_evaluation_detail_view_performance(
     with django_assert_max_num_queries(9):
         client.get(f"/evaluation/{basic_evaluation.id}/")
 
+
+@pytest.mark.django_db
 def test_update_title_department_different_user(alice, client, cabinet_office_led_evaluation, create_user):
     cain = create_user("cain@example.com")
     client.force_login(user=cain)
