@@ -14,8 +14,8 @@
         <fieldset class="govuk-fieldset" aria-describedby="design_types-hint {% if errors %}design_types-error{% endif %}">
           <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
             <h2 class="govuk-fieldset__heading">
-              Type of {% if parent | lower %}
-                {{parent.display}}
+              Type of {% if parent %}
+                {{parent.display | lower }}
               {% else %}
                 evaluation
               {% endif %}
