@@ -15,7 +15,7 @@
           <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
             <h2 class="govuk-fieldset__heading">
               Type of {% if parent %}
-                {{parent.display}}
+                {{parent.display | lower }}
               {% else %}
                 evaluation
               {% endif %}
