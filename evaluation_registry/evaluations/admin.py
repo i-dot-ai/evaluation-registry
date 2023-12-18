@@ -111,10 +111,6 @@ class TaxonomyAdmin(admin.ModelAdmin):
     list_display = ["code", "display", "parent"]
     list_filter = ["parent"]
 
-    def get_queryset(self, request):
-        qs = super().get_queryset(request)
-        return qs.select_related("parent")
-
 
 admin.site.register(models.Evaluation, EvaluationAdmin)
 admin.site.register(models.Department, DepartmentAdmin)

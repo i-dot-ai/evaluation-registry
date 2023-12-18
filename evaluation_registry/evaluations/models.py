@@ -56,7 +56,7 @@ class AbstractChoiceManager(models.Manager):
     """this solves the n+1 problem for a recursive model"""
 
     def get_queryset(self):
-        return super().get_queryset().select_related("parent")
+        return super().get_queryset().select_related("parent").order_by("code")
 
 
 class AbstractChoice(TimeStampedModel):
@@ -90,7 +90,21 @@ class Taxonomy(AbstractChoice):
         return f"{self.parent} > {self.display}" if self.parent else self.display
 
 
+class EvaluationManager(models.Manager):
+    def get_queryset(self) -> QuerySet:
+        qs = (
+            super()
+            .get_queryset()
+            .select_related(
+                "created_by",
+            )
+        )
+        return qs
+
+
 class Evaluation(TimeStampedModel):
+    objects = EvaluationManager()
+
     class Visibility(models.TextChoices):
         DRAFT = "draft", "Draft"
         PUBLIC = "public", "Public"
