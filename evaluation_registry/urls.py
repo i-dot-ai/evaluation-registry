@@ -37,7 +37,7 @@ share_urlpatterns = [
 other_urlpatterns = [
     path("", views.homepage_view, name="homepage"),
     path("health/", include("health_check.urls")),
-    path("login/", views.login_to_cola_view, name="login"),
+    path("signin/", views.login_to_cola_view, name="login"),
     path("search/", views.evaluation_list_view, name="search"),
     path("admin/", admin.site.urls),
     path("accounts/", include("allauth.urls")),
