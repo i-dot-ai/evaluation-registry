@@ -5,6 +5,7 @@ import subprocess
 from pathlib import Path
 
 import environ
+from django.conf import settings
 
 env = environ.Env()
 
@@ -68,7 +69,6 @@ INSTALLED_APPS = [
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
-    "debug_toolbar",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -79,6 +79,10 @@ INSTALLED_APPS = [
     "simple_history",
     "storages",
 ]
+
+if settings.DEBUG:
+    INSTALLED_APPS += ["debug_toolbar"]
+
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -93,9 +97,12 @@ MIDDLEWARE = [
     "django_permissions_policy.PermissionsPolicyMiddleware",
     "django_permissions_policy.PermissionsPolicyMiddleware",
     "allauth.account.middleware.AccountMiddleware",
-    "debug_toolbar.middleware.DebugToolbarMiddleware",
     "simple_history.middleware.HistoryRequestMiddleware",
 ]
+
+if settings.DEBUG:
+    MIDDLEWARE += ["debug_toolbar.middleware.DebugToolbarMiddleware"]
+
 
 TEMPLATES = [
     {

@@ -23,5 +23,3 @@ django-health-check
 django-simple-history
 openai
 
-# debugging
-django-debug-toolbar
