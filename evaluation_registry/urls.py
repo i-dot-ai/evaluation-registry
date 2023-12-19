@@ -1,4 +1,5 @@
 from automatilib.cola.urls import url_patterns as cola_url_patterns
+from django.conf import settings
 from django.contrib import admin
 from django.urls import include, path
 
@@ -45,4 +46,7 @@ other_urlpatterns = [
 
 development_urlpatterns = [path("__debug__/", include("debug_toolbar.urls"))]
 
-urlpatterns = info_urlpatterns + share_urlpatterns + other_urlpatterns + cola_url_patterns + development_urlpatterns
+urlpatterns = info_urlpatterns + share_urlpatterns + other_urlpatterns + cola_url_patterns
+
+if settings.DEBUG:
+    urlpatterns += development_urlpatterns

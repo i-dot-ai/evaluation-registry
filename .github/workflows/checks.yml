@@ -94,4 +94,4 @@ jobs:
 
     - name: Run tests
       run: |
-        POSTGRES_HOST=localhost python -m pytest . --cov=evaluation_registry  --cov-fail-under 50
+        POSTGRES_HOST=localhost python -m pytest . --cov=evaluation_registry  --cov-fail-under 70
