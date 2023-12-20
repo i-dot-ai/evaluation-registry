@@ -20,6 +20,7 @@ from evaluation_registry.evaluations.views import (
     evaluation_links_view,
     evaluation_policies_view,
     evaluation_type_view,
+    share_user_confirmation_view,
 )
 
 
@@ -90,36 +91,6 @@ def evaluation_create_view(request, status):
         request,
         "share-form/evaluation-create.html",
         {"form": form, "status": status, "departments": departments, "data": data, "errors": errors},
-    )
-
-
-@require_http_methods(["GET", "POST"])
-@login_required
-def share_user_confirmation_view(request, evaluation, next_page):
-    if request.method == "POST":
-        form = EvaluationVisibilityForm(request.POST, instance=evaluation)
-
-        if form.is_valid():
-            form.save()
-
-            return redirect("share", uuid=evaluation.id, page_number=next_page)
-
-        else:
-            errors = form.errors.as_data()
-
-    else:
-        form = EvaluationVisibilityForm(instance=evaluation)
-        errors = {}
-
-    return render(
-        request,
-        "share-form/confirm-sharing.html",
-        {
-            "evaluation": evaluation,
-            "form": form,
-            "errors": errors,
-            "complete": Evaluation.Status.COMPLETE,
-        },
     )
 
 
