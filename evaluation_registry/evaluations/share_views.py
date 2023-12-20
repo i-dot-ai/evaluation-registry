@@ -3,10 +3,7 @@ from django.http import Http404
 from django.shortcuts import redirect, render
 from django.views.decorators.http import require_http_methods
 
-from evaluation_registry.evaluations.forms import (
-    EvaluationBasicDetailsForm,
-    EvaluationVisibilityForm,
-)
+from evaluation_registry.evaluations.forms import EvaluationBasicDetailsForm
 from evaluation_registry.evaluations.models import (
     Department,
     Evaluation,
