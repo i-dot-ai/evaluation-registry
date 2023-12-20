@@ -108,7 +108,6 @@ class EvaluationShareForm(Form):
                     "link_to_published_evaluation",
                     "Please provide at least one link to an evaluation document",
                 )
-
         else:
             reasons_unpublished = self.cleaned_data.get("reasons_unpublished")
             if not reasons_unpublished:
@@ -140,14 +139,21 @@ class EventDateForm(NamedErrorsModelForm):
 
 
 class EvaluationVisibilityForm(NamedErrorsModelForm):
-    permission = BooleanField()
+    is_sharing_permission_obtained = BooleanField()
 
     def __init__(self, *args, **kwargs):
         super(EvaluationVisibilityForm, self).__init__(*args, **kwargs)
-        self.fields["permission"].error_messages[
+        self.fields["is_sharing_permission_obtained"].error_messages[
             "required"
         ] = "Please confirm that you have permission to share this data"
 
+    def clean(self):
+        super().clean()
+        is_sharing_permission_obtained = self.data.get("is_sharing_permission_obtained")
+
+        self.cleaned_data["is_sharing_permission_obtained"] = is_sharing_permission_obtained == "1"
+        is_sharing_permission_obtained = self.cleaned_data["is_sharing_permission_obtained"]
+
     class Meta:
         model = Evaluation
-        fields = ["visibility"]
+        fields = ["is_sharing_permission_obtained"]
