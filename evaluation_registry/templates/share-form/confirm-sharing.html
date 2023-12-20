@@ -1,17 +1,19 @@
 {% extends "base.html" %}
+{% import 'macros.html' as macros with context %}
 {% block head_title %}
   Confirm sharing
 {% endblock %}
 
 {% block content %}
-<div class="govuk-grid-row">
-  <form 
-  action="{{ request.path }}"
-  method="post"
-  >
-    {{csrf_input}}
+  <div class="govuk-grid-row">
+    <form
+      action="{{ request.path }}"
+      method="post"
+      id="confirm-sharing-permission-form"
+    >
+      {{ csrf_input }}
 
-    {% if errors %}
+      {% if errors %}
         <div class="govuk-error-summary" data-module="govuk-error-summary">
           <div role="alert">
             <h2 class="govuk-error-summary__title">
@@ -22,7 +24,7 @@
                 {% for field, error_list in errors.items() %}
                   {% for error in error_list %}
                     <li>
-                      <a href="#{{field}}">{{error.message}}</a>
+                      <a href="#{{ field }}">{{ error.message }}</a>
                     </li>
                   {% endfor %}
                 {% endfor %}
@@ -40,37 +42,63 @@
         {% endif %}
       </h1>
 
-      <input type="hidden" id="visibility" name="visibility" value="public" />
+      <input type="hidden" id="visibility" name="visibility" value="public"/>
 
-    <h2>Confirmation</h2>
-    <div class="govuk-form-group {% if errors['permission'] %}govuk-form-group--error{% endif %}">
-      {% if errors['permission'] %}
-        <p id="permission-error" class="govuk-error-message">
-          {% for error in errors['permission'] %}
-            <span class="govuk-visually-hidden">Error:</span> {{ error.message }}
-          {% endfor %}
-        </p>
-      {% endif %}
-      <div class="govuk-checkboxes" data-module="govuk-checkboxes">
-        <div class="govuk-checkboxes__item">
-          <input class="govuk-checkboxes__input" id="permission" name="permission" type="checkbox" value="true">
-          <label class="govuk-label govuk-checkboxes__label" for="permission">
-            I confirm I have permission to share this information
-          </label>
+      <div class="govuk-form-group {% if errors['permission'] %}govuk-form-group--error{% endif %}">
+        {% if errors['permission'] %}
+          <p id="permission-error" class="govuk-error-message">
+            {% for error in errors['permission'] %}
+              <span class="govuk-visually-hidden">Error:</span> {{ error.message }}
+            {% endfor %}
+          </p>
+        {% endif %}
+        {% call macros.govuk_input(
+      'is_sharing_permission_obtained',
+      'Confirmation',
+      None ) %}
+          <div class="govuk-radios" data-module="govuk-radios">
+            <div class="govuk-radios__item">
+              <input {% if form["is_sharing_permission_obtained"].value() == True %}checked{% endif %}
+                     class="govuk-radios__input" id="yes" name="is_sharing_permission_obtained" type="radio" value=1>
+              <label class="govuk-label govuk-radios__label" for="yes">
+                I confirm I have permission to share this information
+              </label>
+            </div>
+            <div class="govuk-radios__item">
+              <input data-aria-controls="conditional-warning"
+                     {% if not form["is_sharing_permission_obtained"].value() == True %}checked{% endif %}
+                     class="govuk-radios__input" id="no" name="is_sharing_permission_obtained" type="radio" value=0>
+              <label class="govuk-label govuk-radios__label" for="no">
+                I do not have permission to share this information
+              </label>
+            </div>
+            <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="conditional-warning">
+              <div class="govuk-warning-text">
+                <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+                <strong class="govuk-warning-text__text">
+                  <span class="govuk-visually-hidden">Warning</span>
+                  Planned, ongoing or completed evaluations can only be shared on the Evaluation Registry with the
+                  permission
+                  of
+                  the organisation involved in the evaluation.
+                </strong>
+              </div>
+            </div>
+          </div>
+        {% endcall %}
+
+        <div class="govuk-inset-text">
+          Please be aware that all information added to the Evaluation Registry will be public as of April 2024.
         </div>
-      </div>
-    </div>
-    <div class="govuk-inset-text">
-      Please be aware that all information added to the the Evaluation Registry will be public as of April 2024.
-    </div>
 
-    <button
-      data-prevent-double-click="true"
-      class="govuk-button"
-      data-module="govuk-button"
-    >
-      Save
-    </button>
-  </form>
-</div>
+        <button
+          data-prevent-double-click="true"
+          class="govuk-button"
+          data-module="govuk-button"
+        >
+          Save
+        </button>
+      </div>
+    </form>
+  </div>
 {% endblock %}
