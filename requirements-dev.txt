@@ -1,26 +1,16 @@
-# linting
 flake8
 flake8-isort
 flake8-print
 flake8-blind-except
 pep8-naming
 black
-
-#typing
 mypy
 django-types
 types-pytz
-
-# security
 bandit
-
-# testing
 pytest
 pytest-django
 pytest-env
 pytest-cov
-
-# debugging
 django-debug-toolbar
 
--r ./requirements.lock

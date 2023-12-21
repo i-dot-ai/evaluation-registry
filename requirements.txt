@@ -1,5 +1,5 @@
 automatilib>=1.2.1
-django
+django<5.0.0
 django-cors-headers
 whitenoise
 watchdog[watchmedo]
