@@ -1,5 +1,5 @@
 global:
-  application_name: evaluation-registry
+  application_name: evaluationregistry
   branch: null
   default_ec2_keyname: null
   default_platform: Python 3.11

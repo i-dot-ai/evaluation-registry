@@ -2,5 +2,7 @@ $govuk-images-path: "images/";
 $govuk-fonts-path: "fonts/";
 
 @import "node_modules/govuk-frontend/govuk/all";
+@import "accessible-autocomplete";
+
 @import "./autofilter.scss";
 @import "./facet_tags.scss";

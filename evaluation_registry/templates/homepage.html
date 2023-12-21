@@ -1,1 +1,55 @@
-<h1>Home Page</h1>
+{% extends "base.html" %}
+
+{% block title %}
+  <title>Home - Evaluation Registry - GOV.UK</title>
+{% endblock %}
+
+{% block content %}
+  <section class="wrapper">
+    <div>
+      <h1 class="govuk-heading-xl">Evaluation Registry</h1>
+        {% if space_name == "dev" %}
+            <div class="govuk-error-summary" data-module="govuk-error-summary">
+              <div role="alert">
+                <h2 class="govuk-error-summary__title">
+                  This is a development environment
+                </h2>
+              </div>
+            </div>
+        {% endif %}
+    <p>The evaluation registry is where a planned, ongoing or complete evaluation report can be shared. HM Treasury guidance on what to consider when designing an evaluation is in 
+      <a href="https://www.gov.uk/government/publications/the-magenta-book" class="govuk-link" rel="noreferrer noopener" target="_blank">the Magenta Book (opens in new tab)</a>.
+    </p>
+    </div>
+  </section>
+  <div class="govuk-width-container">
+    <main class="govuk-main-wrapper">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        <h2 class="govuk-heading-l">I want to:</h2>
+      </div>
+    </div>
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-one-third">
+        <h3 class="govuk-heading-m">I want to:</h3>
+        <p>I have an evaluation plan or evaluation report to share</p>
+          <a class="govuk-button govuk-button--start" href="{{ url('create') }}">Share evaluation</a>
+      </div>
+      <div class="govuk-grid-column-one-third">
+        <h3 class="govuk-heading-m">I want to:</h3>
+        <p>I've previously created a record for an evaluation and now want to update</p>
+          <a class="govuk-button govuk-button--start" href="{{ url('search') }}?evaluations_to_show=user">Find my evaluation</a>
+      </div>
+      <div class="govuk-grid-column-one-third">
+        <h3 class="govuk-heading-m">I want to:</h3>
+        <p>See all the evaluations in the Evaluation Registry</p>
+          <a class="govuk-button govuk-button--start" href="{{ url('search') }}?evaluations_to_show=user&evaluations_to_show=public">Search evaluations</a>
+      </div>
+    </div>
+    <div class="govuk-inset-text">
+      From April 2024 all evaluations in the Evaluation Registry will be visible to the public.
+    </div>
+    <p></p>
+    </main>
+  </div>
+{% endblock %}

@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <form action="{{ request.path }}" method="post">
+      {{ csrf_input }}
+
+      {% if errors %}
+        <div class="govuk-error-summary" data-module="govuk-error-summary">
+          <div role="alert">
+            <h2 class="govuk-error-summary__title">
+              There is a problem
+            </h2>
+            <div class="govuk-error-summary__body">
+              <ul class="govuk-list govuk-error-summary__list">
+                {% for field, error_list in errors.items() %}
+                  {% for error in error_list %}
+                    <li>
+                      <a href="#{{ field }}">{{ error.message }}</a>
+                    </li>
+                  {% endfor %}
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+
+      <div class="govuk-character-count {% if errors['brief_description'] %}govuk-form-group--error{% endif %}"
+           data-module="govuk-character-count" data-maxlength="300">
+        <div class="govuk-form-group">
+          <label class="govuk-label govuk-label--m" for="brief_description">
+            Brief description of intervention
+          </label>
+          <div id="brief_description-hint" class="govuk-hint">
+            When using acronyms for the first time, please include the full wording
+          </div>
+          {% if errors['brief_description'] %}
+            <p id="brief_description-error" class="govuk-error-message">
+              {% for error in errors['brief_description'] %}
+                <span class="govuk-visually-hidden">Error:</span> {{ error.message }}
+              {% endfor %}
+            </p>
+          {% endif %}
+          <textarea class="govuk-textarea govuk-js-character-count" id="brief_description" name="brief_description"
+                    rows="5"
+                    aria-describedby="brief_description-info brief_description-hint">{{ form.brief_description.value() and form.brief_description.value() or "" }}</textarea>
+        </div>
+        <div id="brief_description-info" class="govuk-hint govuk-character-count__message">
+          You can enter up to 300 characters
+        </div>
+      </div>
+
+      <div class="govuk-form-group {% if errors['has_grant_number'] %}govuk-form-group--error{% endif %}">
+        <fieldset class="govuk-fieldset">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+            Is your intervention providing funding through a grant?
+          </legend>
+          {% if errors['has_grant_number'] %}
+            <p id="has_grant_number-error" class="govuk-error-message">
+              {% for error in errors['has_grant_number'] %}
+                <span class="govuk-visually-hidden">Error:</span> {{ error.message }}
+              {% endfor %}
+            </p>
+          {% endif %}
+          <div class="govuk-radios" data-module="govuk-radios">
+            <div class="govuk-radios__item">
+              <input class="govuk-radios__input" id="has_grant_number" name="has_grant_number" type="radio" value="True"
+                     data-aria-controls="conditional-grant-number"
+                     {% if form.has_grant_number.value() == true %}checked{% endif %}>
+              <label class="govuk-label govuk-radios__label" for="has_grant_number">
+                Yes
+              </label>
+            </div>
+            <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="conditional-grant-number">
+              <div class="govuk-form-group">
+                <label class="govuk-label" for="grant_number">
+                  Add a relevant grant number
+                </label>
+                <input class="govuk-input govuk-!-width-one-third" id="grant_number" name="grant_number"
+                       value="{{ form.grant_number.value() or '' }}">
+              </div>
+            </div>
+            <div class="govuk-radios__item">
+              <input class="govuk-radios__input" id="has_grant_number_n" name="has_grant_number" type="radio"
+                     value="False" {% if form.has_grant_number.value() == false %}checked{% endif %}>
+              <label class="govuk-label govuk-radios__label" for="has_grant_number_n">
+                No
+              </label>
+            </div>
+          </div>
+        </fieldset>
+      </div>
+
+      <div class="govuk-form-group {% if errors['has_major_project_number'] %}govuk-form-group--error{% endif %}">
+        <fieldset class="govuk-fieldset">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+            Is your evaluation a Government Major Project?
+          </legend>
+          {% if errors['has_major_project_number'] %}
+            <p id="has_major_project_number-error" class="govuk-error-message">
+              {% for error in errors['has_major_project_number'] %}
+                <span class="govuk-visually-hidden">Error:</span> {{ error.message }}
+              {% endfor %}
+            </p>
+          {% endif %}
+          <div class="govuk-radios" data-module="govuk-radios">
+            <div class="govuk-radios__item">
+              <input class="govuk-radios__input" id="has_major_project_number" name="has_major_project_number"
+                     type="radio" value="True" data-aria-controls="conditional-major_project_number"
+                     {% if form.has_major_project_number.value() == true %}checked{% endif %}>
+              <label class="govuk-label govuk-radios__label" for="has_major_project_number">
+                Yes
+              </label>
+            </div>
+            <div class="govuk-radios__conditional govuk-radios__conditional--hidden"
+                 id="conditional-major_project_number">
+              <div class="govuk-form-group">
+                <label class="govuk-label" for="major_project_number">
+                  Add the Government Major Project information number
+                </label>
+                <input class="govuk-input govuk-!-width-one-third" id="major_project_number" name="major_project_number"
+                       value="{{ form.major_project_number.value() or '' }}">
+              </div>
+            </div>
+            <div class="govuk-radios__item">
+              <input class="govuk-radios__input" id="has_major_project_number_n" name="has_major_project_number"
+                     type="radio" value="False"
+                     {% if form.has_major_project_number.value() == false %}checked{% endif %}>
+              <label class="govuk-label govuk-radios__label" for="has_major_project_number_n">
+                No
+              </label>
+            </div>
+          </div>
+        </fieldset>
+      </div>
+
+      <button
+        data-prevent-double-click="true"
+        class="govuk-button"
+        data-module="govuk-button"
+      >
+        Save and continue
+      </button>
+    </form>
+  </div>
+{% endblock %}

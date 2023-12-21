@@ -1,5 +1,9 @@
+rsm_csv_files/*
+tests/rsm_csv_files/*
+*.zip
 .idea/
 *.pyc
+*/.DS_Store
 /staticfiles/
 db.sqlite3
 

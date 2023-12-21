@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="govuk-grid-row">
+  <h2 class="govuk-heading-l">
+    Before you start
+  </h2>
+  <p class="govuk-body">You can share an evaluation that is:</p>
+  <ul class="govuk-list govuk-list--bullet">
+    <li>A planned evaluation</li>
+    <li>A ongoing evaluation</li>
+    <li>A complete evaluation report</li>
+  </ul>
+  <div class="govuk-inset-text">
+    Please be aware that all information added to the the Evaluation Registry will be public as of April 2024.
+  </div>
+  <p class="govuk-body">Before you start you'll need:</p>
+  <ul class="govuk-list govuk-list--bullet">
+    <li>The title of the evaluation</li>
+    <li>All organisations involved in the evaluation</li>
+    <li>Type of evaluations</li>
+    <li>A link where the evaluation is published</li>
+  </ul>
+
+  <a href="{{url('create', 2)}}" role="button" class="govuk-button govuk-button--start" data-module="govuk-button">
+    Continue
+  </a>
+</div>
+{% endblock %}

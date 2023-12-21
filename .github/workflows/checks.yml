@@ -8,6 +8,7 @@ on:
     branches:
       - 'main'
       - 'feature/**'
+      - 'chore/**'
       - 'bugfix/**'
       - 'hotfix/**'
       - 'develop'
@@ -59,7 +60,8 @@ jobs:
 
       - name: Run Checks
         run: |
-          DJANGO_SETTINGS_MODULE=evaluation_registry.settings_base DJANGO_SECRET_KEY=temp POSTGRES_HOST=tmp poetry run python manage.py check
+          export $(cat envs/web | xargs)
+          POSTGRES_HOST=tmp python manage.py check
 
   run_tests:
     name: Run tests
@@ -95,4 +97,4 @@ jobs:
 
     - name: Run tests
       run: |
-        POSTGRES_HOST=localhost poetry run pytest . --cov=evaluation_registry  --cov-fail-under 65
+        POSTGRES_HOST=localhost python -m pytest . --cov=evaluation_registry  --cov-fail-under 70

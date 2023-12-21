@@ -5,8 +5,12 @@ import subprocess
 from pathlib import Path
 
 import environ
+from django.conf import settings
 
-LOCALHOST = socket.gethostbyname(socket.gethostname())
+env = environ.Env()
+
+if env.str("ENVIRONMENT", None) != "LOCAL":
+    LOCALHOST = socket.gethostbyname(socket.gethostname())
 
 
 def get_environ_vars() -> dict:
@@ -20,7 +24,6 @@ def get_environ_vars() -> dict:
     return ast.literal_eval(completed_process.stdout)
 
 
-env = environ.Env()
 if "POSTGRES_HOST" not in os.environ:
     for key, value in get_environ_vars().items():
         env(key, default=value)
@@ -32,12 +35,19 @@ SECRET_KEY = env.str("DJANGO_SECRET_KEY")
 
 # Add AWS URLS to ALLOWED_HOSTS once known
 ALLOWED_HOSTS = [
-    LOCALHOST,
     "localhost",
     "127.0.0.1",
-    "evaluations-registry-dev.eba-au2xspyy.eu-west-2.elasticbeanstalk.com",
-    "evaluations-registry-prod.eba-au2xspyy.eu-west-2.elasticbeanstalk.com",
+    "evaluationregistry-dev.eba-iummijp7.eu-west-2.elasticbeanstalk.com",
+    "evaluationregistry-prod.eba-iummijp7.eu-west-2.elasticbeanstalk.com",
+    "evaluation-registry.cabinetoffice.gov.uk",
+    "dev.evaluation-registry.service.gov.uk",
+    "evaluation-registry.service.gov.uk",
+    "evaluation-registry.cabinetoffice.gov.uk",
+    "dev.evaluation-registry.cabinetoffice.gov.uk",
 ]
+
+if env.str("ENVIRONMENT", None) != "LOCAL":
+    ALLOWED_HOSTS = ALLOWED_HOSTS + [LOCALHOST]
 
 # CSRF settings
 CSRF_COOKIE_HTTPONLY = True
@@ -54,6 +64,8 @@ WSGI_APPLICATION = "evaluation_registry.wsgi.application"
 INSTALLED_APPS = [
     "health_check",
     "evaluation_registry.evaluations",
+    "automatilib.core.apps.IdotAIConfig",
+    "automatilib.cola.apps.ColaAuthConfig",
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
@@ -64,7 +76,13 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.sites",
     "django.contrib.staticfiles",
+    "simple_history",
+    "storages",
 ]
+
+if settings.DEBUG:
+    INSTALLED_APPS += ["debug_toolbar"]
+
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -79,7 +97,12 @@ MIDDLEWARE = [
     "django_permissions_policy.PermissionsPolicyMiddleware",
     "django_permissions_policy.PermissionsPolicyMiddleware",
     "allauth.account.middleware.AccountMiddleware",
+    "simple_history.middleware.HistoryRequestMiddleware",
 ]
+
+if settings.DEBUG:
+    MIDDLEWARE += ["debug_toolbar.middleware.DebugToolbarMiddleware"]
+
 
 TEMPLATES = [
     {
@@ -123,6 +146,7 @@ ACCOUNT_USERNAME_REQUIRED = False
 SITE_ID = 1
 ACCOUNT_EMAIL_VERIFICATION = "none"
 LOGIN_REDIRECT_URL = "homepage"
+LOGIN_URL = "login"
 
 
 STATIC_URL = "/static/"
@@ -146,15 +170,28 @@ PERMISSIONS_POLICY: dict[str, list] = {
 }
 
 
-CSP_DEFAULT_SRC = ("'self'", "'sha256-oFNrsKhzOBUVceDuefWEqtXEXMM9LIL4cUnoVkDYPzA='")
-# SHA of the location of the stylesheet (main.css)
+CSP_DEFAULT_SRC = (
+    "'self'",
+    "s3.amazonaws.com",
+    "evaluationregistry-files-dev.s3.amazonaws.com",
+    "evaluationregistry-files-prod.s3.amazonaws.com",
+    "'sha256-IfJd5CaJvXieVYkcs/6RUH75vQIASCglGoGoNThv4fg='",
+    "'sha256-oFNrsKhzOBUVceDuefWEqtXEXMM9LIL4cUnoVkDYPzA='",
+)
+CSP_OBJECT_SRC = ("'none'",)
+CSP_REQUIRE_TRUSTED_TYPES_FOR = ("'script'",)
+# Hash for styles for font in base template
+CSP_FONT_SRC = (
+    "'self'",
+    "s3.amazonaws.com",
+    "evaluationregistry-files-dev.s3.amazonaws.com",
+    "evaluationregistry-files-prod.s3.amazonaws.com",
+)
+CSP_STYLE_SRC = (
+    "'self'",
+    "evaluationregistry-files-dev.s3.amazonaws.com",
+    "evaluationregistry-files-prod.s3.amazonaws.com",
+)
+CSP_FRAME_ANCESTORS = ("'none'",)
 
-CSP_STYLE_SRC = "'self'"
-
-
-OTP_TOTP_ISSUER = ""  # TODO: Add issuer name
-OTP_TOTP_AUTOCONF = True
-OTP_TOTP_KEY_LENGTH = 16
-OTP_TOTP_THROTTLE_FACTOR = 1.0
-
-CSRF_COOKIE_HTTPONLY = True
+DATA_UPLOAD_MAX_MEMORY_SIZE = 100 * 1024 * 1024  # 100 megabytes in bytes

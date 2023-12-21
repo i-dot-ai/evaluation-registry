@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <form method="GET" action="{{url('index')}}">
+  <form method="GET" action="{{url('search')}}">
     <div class="govuk-width-container">
       <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
@@ -17,9 +17,49 @@
         <div class="govuk-grid-row">
 
           <div class="govuk-grid-column-one-third">
+            {% if is_authenticated %}
+              <div class="govuk-form-group">
+                <fieldset class="govuk-fieldset">
+                  <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+                    <h2 class="govuk-fieldset__heading">
+                      Evaluations to show
+                    </h2>
+                  </legend>
+                  <div class="govuk-checkboxes govuk-checkboxes--small" data-module="govuk-checkboxes">
+                    <div class="govuk-checkboxes__item">
+                      <input
+                        class="govuk-checkboxes__input"
+                        id="evaluations_to_show-user"
+                        name="evaluations_to_show"
+                        type="checkbox"
+                        value="user"
+                        {% if 'user' in evaluations_to_show %}checked{% endif %}
+                      >
+                      <label class="govuk-label govuk-checkboxes__label" for="evaluations_to_show-user">
+                        Show my evaluations
+                      </label>
+                    </div>
+                    <div class="govuk-checkboxes__item">
+                      <input
+                        class="govuk-checkboxes__input"
+                        id="evaluations_to_show-public"
+                        name="evaluations_to_show"
+                        type="checkbox"
+                        value="public"
+                        {% if 'public' in evaluations_to_show %}checked{% endif %}
+                      >
+                      <label class="govuk-label govuk-checkboxes__label" for="evaluations_to_show-public">
+                        Show all public evaluations
+                      </label>
+                    </div>
+                  </div>
+                </fieldset>
+              </div>
+            {% endif %}
+
             <div class="govuk-form-group">
               <label class="govuk-label" for="search_term">
-                Search keywords
+                <h2 class="govuk-fieldset__legend govuk-fieldset__legend--m">Search keywords</h2>
               </label>
               <input class="govuk-input" id="search_term" name="search_term" type="text" value="{{search_term}}">
             </div>
@@ -34,7 +74,7 @@
                   </h2>
                 </div>
                 <div id="accordion-filter-content-1" class="govuk-accordion__section-content" aria-labelledby="accordion-filter-heading-1">
-                  <div class="govuk-form-group"  id="autofilter"  data-filter-element="&lt;label for=&quot;input-2c66f477&quot; class=&quot;govuk-label govuk-visually-hidden&quot;&gt;Filter Person&lt;/label&gt;&lt;input name=&quot;option-select-filter&quot; id=&quot;input-2c66f477&quot; class=&quot;autofilter-option-select__filter-input govuk-input&quot; type=&quot;text&quot; aria-describedby=&quot;checkboxes-0097daf4-count&quot; aria-controls=&quot;checkboxes-0097daf4&quot;&gt;">
+                  <div class="govuk-form-group"  id="autofilter"  data-filter-element="filter-department">
   
                     <fieldset class="govuk-fieldset" aria-describedby="departments-hint">
                       <legend class="govuk-fieldset__legend autofilter-legend">
@@ -42,7 +82,7 @@
                       </legend>
                       <div class="govuk-checkboxes--small autofilter-option-select__container" data-module="govuk-checkboxes">
                         <div class="js-auto-height-inner">
-                          <span id="checkboxes-0097daf4-count" class="autofilter-option-select__count govuk-visually-hidden" aria-live="polite" data-single="option found" data-multiple="options found" data-selected="selected"></span>
+                          <span id="checkboxes-filter-department-count" class="autofilter-option-select__count govuk-visually-hidden" aria-live="polite" data-single="option found" data-multiple="options found" data-selected="selected"></span>
                           <div class="checkboxes__list autofilter-checkboxes__list">
                             {% for department in departments %}
                               <div class="govuk-checkboxes__item">
@@ -77,9 +117,9 @@
                       <div class="govuk-checkboxes--small" data-module="govuk-checkboxes">
                         {% for evaluation_type in evaluation_types %}
                           <div class="govuk-checkboxes__item">
-                            <input class="govuk-checkboxes__input" id="evaluation_types-{{ loop.index }}" name="evaluation_types" type="checkbox" value="{{ evaluation_type[0] }}" {% if is_in(evaluation_type[0], selected_types) %}checked{% endif %}>
+                            <input class="govuk-checkboxes__input" id="evaluation_types-{{ loop.index }}" name="evaluation_types" type="checkbox" value="{{ evaluation_type.code }}" {% if is_in(evaluation_type.code, selected_types) %}checked{% endif %}>
                             <label class="govuk-label govuk-checkboxes__label" for="evaluation_types-{{ loop.index }}">
-                              {{evaluation_type[1]}}
+                              {{evaluation_type.display}}
                             </label>
                           </div>
                         {% endfor %}
@@ -171,7 +211,11 @@
                           Organisation(s)
                         </dt>
                         <dd class="govuk-summary-list__value">
-                          {{evaluation.departments.all()|join(', ')}}
+                          {% if evaluation.departments.count() > 0 %}
+                            {{evaluation.departments.all()|join(', ')}}
+                          {% else %}
+                            No departments listed
+                          {% endif %}
                         </dd>
                       </div>
                       <div class="govuk-summary-list__row">
@@ -179,7 +223,7 @@
                           Evaluation type(s)
                         </dt>
                         <dd class="govuk-summary-list__value">
-                          {{evaluation.get_evaluation_types_text()|join(', ')}}
+                          {{evaluation.types_text_list|join(', ')}}
                         </dd>
                       </div>
                     </dl>

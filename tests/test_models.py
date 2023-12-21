@@ -49,14 +49,6 @@ def test_evaluation_duplicate_constraint(cabinet_office_led_evaluation, cabinet_
 
 
 @pytest.mark.django_db
-def test_evaluation_array_field_text():
-    choices = [Evaluation.EvaluationType.IMPACT, Evaluation.EvaluationType.ECONOMIC]
-    evaluation_with_types = Evaluation.objects.create(evaluation_types=choices)
-
-    assert Evaluation.objects.get(id=evaluation_with_types.id).get_evaluation_types_text() == [
-        Evaluation.EvaluationType.IMPACT.label,
-        Evaluation.EvaluationType.ECONOMIC.label,
-    ]
-
-    evaluation_without_types = Evaluation.objects.create()
-    assert Evaluation.objects.get(id=evaluation_without_types.id).get_evaluation_types_text() == []
+def test_taxonomy(parent_policy, child_policy):
+    assert parent_policy.__str__() == parent_policy.display
+    assert child_policy.__str__() == f"{parent_policy.display} > {child_policy.display}"

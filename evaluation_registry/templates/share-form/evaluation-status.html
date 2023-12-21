@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="govuk-grid-row">
+  <form action="{{url('create', 2)}}" method="post">
+    {{csrf_input}}
+
+    <div class="govuk-form-group {% if error %}govuk-form-group--error{% endif %}">
+      <fieldset class="govuk-fieldset">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+          <h2 class="govuk-fieldset__heading">
+            What would you like to share?
+          </h2>
+        </legend>
+        {% if error %}
+          <p id="whereDoYouLive-error" class="govuk-error-message">
+            <span class="govuk-visually-hidden">Error:</span> This field is required
+          </p>
+        {% endif %}
+        <div class="govuk-radios" data-module="govuk-radios">
+          {% for option in options %}
+            <div class="govuk-radios__item">
+              <input class="govuk-radios__input" id="status-{{ loop.index }}" name="status" type="radio" value="{{ option[0] }}">
+              <label class="govuk-label govuk-radios__label" for="status-{{ loop.index }}">
+                {{ option[1] }}
+              </label>
+            </div>
+          {% endfor %}
+        </div>
+      </fieldset>
+    </div>
+    <button data-prevent-double-click="true" class="govuk-button" data-module="govuk-button">
+      Continue
+    </button>
+  </form>
+</div>
+{% endblock %}

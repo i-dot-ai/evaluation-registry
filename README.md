@@ -17,7 +17,7 @@ export $(cat envs/web | xargs) POSTGRES_HOST=localhost && python manage.py runse
 
 ```commandline
 docker compose up -d db
-POSTGRES_HOST=localhost pytest tests . --cov=evaluation_registry  --cov-fail-under 65
+POSTGRES_HOST=localhost pytest tests . --cov=evaluation_registry  --cov-fail-under 70
 ```
 
 or

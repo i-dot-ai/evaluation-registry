@@ -9,6 +9,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    permissions:
+      id-token: write
+      contents: read
+
     steps:
     - name: Checkout source code
       uses: actions/checkout@v2
@@ -36,7 +40,7 @@ jobs:
         aws_access_key: ${{ env.AWS_ACCESS_KEY_ID }}
         aws_secret_key: ${{ env.AWS_SECRET_ACCESS_KEY }}
         application_name: evaluation-registry
-        environment_name: evaluation-registry-dev
+        environment_name: evaluation-registry-prod
         version_label:  ${{ github.event.release.tag_name }}
         version_description: ${{ github.event.release.name }}
         region: eu-west-2

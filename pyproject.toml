@@ -39,6 +39,11 @@ sentry-sdk = "^1.34.0"
 boto = "^2.49.0"
 django-storages = "^1.14.2"
 django-health-check = "^3.17.0"
+automatilib = ">=1.2.1"
+boto3 = "^1.34.5"
+botocore = "^1.34.5"
+django-simple-history = "^3.4.0"
+openai = "^1.6.0"
 
 
 [tool.poetry.group.dev.dependencies]
@@ -56,6 +61,7 @@ pytest = "^7.4.3"
 pytest-django = "^4.7.0"
 pytest-env = "^1.1.1"
 pytest-cov = "^4.1.0"
+django-debug-toolbar = "^4.2.0"
 
 [build-system]
 requires = ["poetry-core"]
@@ -70,5 +76,14 @@ env = [
     "POSTGRES_DB=evaluation-registry",
     "POSTGRES_USER=evaluation-registry",
     "POSTGRES_PASSWORD=insecure",
-    "EMAIL_BACKEND_TYPE=CONSOLE"
+    "EMAIL_BACKEND_TYPE=CONSOLE",
+    "AWS_REGION_NAME=eu-west-2",
+    "COLA_COOKIE_NAME=cookie",
+    "COLA_COOKIE_DOMAIN=google.com",
+    "COLA_COGNITO_CLIENT_ID=monster",
+    "COLA_COGNITO_USER_POOL_ID=omicron",
+    "COLA_LOGIN_URL=persei",
+    "OPENAI_KEY=vmdvmfdvdm",
+    "LOGIN_FAILURE_TEMPLATE_PATH=auth/login-error.html",
+    "CONTACT_EMAIL=test@example.com",
 ]
