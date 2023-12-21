@@ -12,12 +12,15 @@ on:
       - 'bugfix/**'
       - 'hotfix/**'
       - 'develop'
+  workflow_dispatch:
+
 
 jobs:
   check_web:
     name: Check Python
 
     runs-on: ubuntu-latest
+    environment: release
 
     steps:
     - uses: actions/checkout@v3
@@ -27,10 +30,15 @@ jobs:
       with:
         python-version: 3.11
 
+    - name: Run image
+      uses: abatilo/actions-poetry@v2
+      with:
+        poetry-version: 1.7.0
+
     - name: Install dependencies
       run: |
-        python3 -m pip install --upgrade pip setuptools
-        pip install -r requirements-dev.lock
+        poetry lock
+        poetry install
 
     - name: Run Python code checks
       run: |
@@ -40,58 +48,22 @@ jobs:
     name: Check migrations
 
     runs-on: ubuntu-latest
+    environment: release
 
     steps:
       - uses: actions/checkout@v3
-
-      - name: Set up Python 3.11
-        uses: actions/setup-python@v3
-        with:
-          python-version: 3.11
-
-      - name: Install Requirements
-        run: |
-          python3 -m pip install --upgrade pip setuptools
-          pip install -r requirements-dev.lock
-
-      - name: Run Checks
-        run: |
-          export $(cat envs/web | xargs)
-          POSTGRES_HOST=tmp python manage.py check
+      - run: |
+          make check-migrations
 
   run_tests:
     name: Run tests
 
     runs-on: ubuntu-latest
-
-    services:
-      postgres:
-        image: postgres:13
-        env:
-          POSTGRES_DB: db
-          POSTGRES_USER: evaluation-registry
-          POSTGRES_PASSWORD: insecure
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
+    environment: release
 
     steps:
     - uses: actions/checkout@v3
 
-    - name: Set up Python 3.11
-      uses: actions/setup-python@v3
-      with:
-        python-version: 3.11
-
-    - name: Install Requirements
-      run: |
-        python3 -m pip install --upgrade pip setuptools
-        pip install -r requirements-dev.lock
-
     - name: Run tests
       run: |
-        POSTGRES_HOST=localhost python -m pytest . --cov=evaluation_registry  --cov-fail-under 70
+        make test
