@@ -9,15 +9,15 @@ Migrations are run automatically at startup, and suppliers are added automatical
 ## Running locally
 
 ```commandline
-export $(cat envs/web | xargs) POSTGRES_HOST=localhost && python manage.py runserver
+export $(cat envs/web | xargs) POSTGRES_HOST=localhost && poetry run python manage.py runserver
 ```
 
 
 ## Running tests
 
 ```commandline
-docker compose up -d db
-POSTGRES_HOST=localhost pytest tests . --cov=evaluation_registry  --cov-fail-under 70
+docker-compose up -d db
+POSTGRES_HOST=localhost poetry run pytest tests . --cov=evaluation_registry  --cov-fail-under 70
 ```
 
 or
