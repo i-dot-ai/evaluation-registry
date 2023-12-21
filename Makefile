@@ -28,8 +28,8 @@ check-migrations:
 
 .PHONY: test
 test:
-	docker-compose up -d web
-	docker-compose run web python -m pytest -v
+	docker-compose up -d db
+	docker-compose run web poetry run python -m pytest -v --cov=evaluation_registry --cov-fail-under 70
 
 lint:
 	poetry run isort .
