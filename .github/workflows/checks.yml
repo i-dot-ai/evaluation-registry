@@ -57,7 +57,7 @@ jobs:
       - name: Run Checks
         run: |
           export $(cat envs/web | xargs)
-          POSTGRES_HOST=tmp python manage.py check
+          POSTGRES_HOST=tmp ENVIRONMENT=CI python manage.py check
 
   run_tests:
     name: Run tests
