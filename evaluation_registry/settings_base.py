@@ -83,6 +83,8 @@ INSTALLED_APPS = [
 if settings.DEBUG:
     INSTALLED_APPS += ["debug_toolbar"]
 
+if env.str("ENVIRONMENT", None) == "LOCAL":
+    INSTALLED_APPS.append('django_extensions')
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
