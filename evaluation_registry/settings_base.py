@@ -5,12 +5,13 @@ import subprocess
 from pathlib import Path
 
 import environ
-from django.conf import settings
 
 env = environ.Env()
 
 if env.str("ENVIRONMENT", None) != "LOCAL":
     LOCALHOST = socket.gethostbyname(socket.gethostname())
+
+DEBUG = env.bool("DEBUG", default=False)
 
 
 def get_environ_vars() -> dict:
@@ -80,7 +81,7 @@ INSTALLED_APPS = [
     "storages",
 ]
 
-if settings.DEBUG:
+if DEBUG:
     INSTALLED_APPS += ["debug_toolbar"]
 
 
@@ -100,7 +101,7 @@ MIDDLEWARE = [
     "simple_history.middleware.HistoryRequestMiddleware",
 ]
 
-if settings.DEBUG:
+if DEBUG:
     MIDDLEWARE += ["debug_toolbar.middleware.DebugToolbarMiddleware"]
 
 
