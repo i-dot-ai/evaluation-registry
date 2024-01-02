@@ -13,14 +13,14 @@
     {{csrf_input}}
     {{ formset.management_form }}
 
-    <h2 class="govuk-heading-l">Dates</h1>
+    <h1 class="govuk-heading-l">Dates</h1>
 
     {% if errors["formset"] or errors["other"] %}
       <div class="govuk-error-summary" data-module="govuk-error-summary">
         <div role="alert">
-          <h3 class="govuk-error-summary__title">
+          <h2 class="govuk-error-summary__title">
             There is a problem
-          </h3>
+          </h2>
           <div class="govuk-error-summary__body">
             <ul class="govuk-list govuk-error-summary__list">
               {% for form_errors in errors["formset"] %}
@@ -45,7 +45,7 @@
     {% endif %}
 
     {% if existing_date_count %}
-      <h3 class="govuk-heading-m">Existing Dates</h3>
+      <h2 class="govuk-heading-m">Existing Dates</h2>
       {% for date_key in range(0, existing_date_count) %}
         {{ macros.formset_eventdate_input(
           date_key,
@@ -57,7 +57,7 @@
         ) }}
       {% endfor %}
 
-      <h3 class="govuk-heading-m">New date information (optional)</h3>      
+      <h2 class="govuk-heading-m">New date information (optional)</h2>      
       {{ macros.formset_eventdate_input(
         existing_date_count,
         formset[existing_date_count],
@@ -68,7 +68,7 @@
       ) }}
 
     {% else %}
-      <h3 class="govuk-heading-m">Evaluation start date</h3>
+      <h2 class="govuk-heading-m">Evaluation start date</h2>
       {{ macros.formset_eventdate_input(
         '0',
         formset[0],
@@ -79,7 +79,7 @@
         categories.EVALUATION_START,
       ) }}
 
-      <h3 class="govuk-heading-m">Evaluation end date</h3>
+      <h2 class="govuk-heading-m">Evaluation end date</h2>
       {{ macros.formset_eventdate_input(
         '1',
         formset[1],
@@ -90,7 +90,7 @@
         categories.EVALUATION_END
       ) }}
 
-      <h3 class="govuk-heading-m">Publication of evaluation report</h3>
+      <h2 class="govuk-heading-m">Publication of evaluation report</h2>
       {{ macros.formset_eventdate_input(
         '2',
         formset[2],
