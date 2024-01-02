@@ -30,7 +30,7 @@ def get_environ_vars() -> dict:
     return ast.literal_eval(completed_process.stdout)
 
 
-if os.path.exists("/opt/elasticbeanstalk"):
+if "POSTGRES_HOST" not in os.environ:
     for key, value in get_environ_vars().items():
         env(key, default=value)
 
