@@ -16,7 +16,19 @@ The Evaluation Registry is where planned, ongoing or complete evaluation reports
 Migrations are run automatically at startup, and suppliers are added automatically at startup
 
 ## Running locally
+This project uses [poetry](https://python-poetry.org/) to manage its dependencies, if it is not installed then install
+now:
 
+```commandline
+curl -sSL https://install.python-poetry.org | python3 -
+```
+
+Install the necessary dependencies (if they have changed):
+```commandline
+poetry install
+```
+
+Run the server:
 ```commandline
 export $(cat envs/web | xargs) POSTGRES_HOST=localhost && poetry run python manage.py runserver
 ```
