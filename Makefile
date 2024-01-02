@@ -16,9 +16,10 @@ reset-db:
 check-python-code:
 	poetry run isort --check .
 	poetry run black --check .
-	poetry run flake8
+	poetry run flake8 evaluation_registry
 	poetry run bandit -ll -r evaluation_registry
 	poetry run mypy evaluation_registry/ --ignore-missing-imports
+	poetry run python manage.py check
 
 .PHONY: check-migrations
 check-migrations:
