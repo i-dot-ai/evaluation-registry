@@ -41,6 +41,7 @@ jobs:
 
     - name: Run Python code checks
       run: |
+        export $(cat envs/web | xargs)
         make check-python-code
 
   check_migrations:
