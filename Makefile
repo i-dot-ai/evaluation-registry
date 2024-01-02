@@ -3,7 +3,7 @@ include envs/web
 
 .PHONY: update-requirements
 update-requirements:
-	poetry update
+	docker-compose run web poetry update
 
 .PHONY: reset-db
 reset-db:
