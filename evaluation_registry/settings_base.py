@@ -6,9 +6,11 @@ from pathlib import Path
 
 import environ
 
+from .hosting_environment import HostingEnvironment
+
 env = environ.Env()
 
-if env.str("ENVIRONMENT", None) != "LOCAL":
+if HostingEnvironment.is_local():
     LOCALHOST = socket.gethostbyname(socket.gethostname())
 
 DEBUG = env.bool("DEBUG", default=False)
@@ -19,7 +21,10 @@ def get_environ_vars() -> dict:
     https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/custom-platforms-scripts.html
     """
     completed_process = subprocess.run(
-        ["/opt/elasticbeanstalk/bin/get-config", "environment"], stdout=subprocess.PIPE, text=True, check=True
+        ["/opt/elasticbeanstalk/bin/get-config", "environment"],
+        stdout=subprocess.PIPE,
+        text=True,
+        check=True,
     )
 
     return ast.literal_eval(completed_process.stdout)
@@ -47,7 +52,7 @@ ALLOWED_HOSTS = [
     "dev.evaluation-registry.cabinetoffice.gov.uk",
 ]
 
-if env.str("ENVIRONMENT", None) != "LOCAL":
+if HostingEnvironment.is_local():
     ALLOWED_HOSTS = ALLOWED_HOSTS + [LOCALHOST]
 
 # CSRF settings
@@ -84,6 +89,8 @@ INSTALLED_APPS = [
 if DEBUG:
     INSTALLED_APPS += ["debug_toolbar"]
 
+if HostingEnvironment.is_local():
+    INSTALLED_APPS.append("django_extensions")
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
