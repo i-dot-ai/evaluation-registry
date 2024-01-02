@@ -1,4 +1,7 @@
 {% extends "base.html" %}
+{% block head_title %}
+  {% if evaluation.title %}{{ evaluation.title }}{% else %}Untitled Evaluation{% endif %} saved
+{% endblock %}
 
 {% block content %}
   <div class="govuk-grid-row">
