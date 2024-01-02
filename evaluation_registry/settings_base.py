@@ -10,9 +10,6 @@ from .hosting_environment import HostingEnvironment
 
 env = environ.Env()
 
-if HostingEnvironment.is_local():
-    LOCALHOST = socket.gethostbyname(socket.gethostname())
-
 DEBUG = env.bool("DEBUG", default=False)
 
 
@@ -41,8 +38,6 @@ SECRET_KEY = env.str("DJANGO_SECRET_KEY")
 
 # Add AWS URLS to ALLOWED_HOSTS once known
 ALLOWED_HOSTS = [
-    "localhost",
-    "127.0.0.1",
     "evaluationregistry-dev.eba-iummijp7.eu-west-2.elasticbeanstalk.com",
     "evaluationregistry-prod.eba-iummijp7.eu-west-2.elasticbeanstalk.com",
     "evaluation-registry.cabinetoffice.gov.uk",
@@ -53,7 +48,8 @@ ALLOWED_HOSTS = [
 ]
 
 if HostingEnvironment.is_local():
-    ALLOWED_HOSTS = ALLOWED_HOSTS + [LOCALHOST]
+    localhost = socket.gethostbyname(socket.gethostname())
+    ALLOWED_HOSTS += [localhost, "localhost", "127.0.0.1"]
 
 # CSRF settings
 CSRF_COOKIE_HTTPONLY = True
