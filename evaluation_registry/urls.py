@@ -44,9 +44,9 @@ other_urlpatterns = [
     path("accounts/", include("allauth.urls")),
 ]
 
-development_urlpatterns = [path("__debug__/", include("debug_toolbar.urls"))]
 
 urlpatterns = info_urlpatterns + share_urlpatterns + other_urlpatterns + cola_url_patterns
 
 if settings.DEBUG:
+    development_urlpatterns = [path("__debug__/", include("debug_toolbar.urls"))]
     urlpatterns += development_urlpatterns
