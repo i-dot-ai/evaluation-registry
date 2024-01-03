@@ -100,8 +100,10 @@
       </div>
     </div>
     <div class="govuk-width-container ">
-      {% if request.META.HTTP_REFERER %}
-        <a href="{{request.META.HTTP_REFERER}}" class="govuk-back-link">Back</a>
+      {% if request.user.is_authenticated %}
+        {% if back_link(request.META.HTTP_REFERER) and not hide_back_link %}
+          <a href="{{back_link(request.META.HTTP_REFERER)}}" class="govuk-back-link">Back</a>
+        {% endif %}
       {% endif %}
     </div>
     <main class="govuk-main-wrapper" id="main-content" role="main">

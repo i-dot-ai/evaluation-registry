@@ -126,7 +126,7 @@ def share_user_confirmation_view(request, evaluation, next_page):
 @require_http_methods(["GET", "POST"])
 @login_required
 def share_confirmation_view(request, evaluation, next_page):
-    return render(request, "share-form/confirmation.html", {"evaluation": evaluation})
+    return render(request, "share-form/confirmation.html", {"evaluation": evaluation, "hide_back_link": True})
 
 
 @require_http_methods(["GET", "POST"])

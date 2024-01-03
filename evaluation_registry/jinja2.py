@@ -1,7 +1,9 @@
 import datetime
+from urllib.parse import urlsplit
 
 import humanize
 import jinja2
+from django.conf import settings
 from django.templatetags.static import static
 from django.urls import reverse
 from markdown_it import MarkdownIt
@@ -59,6 +61,19 @@ def humanize_timedelta(minutes=0, hours_limit=200, too_large_msg=""):
         return humanize.precisedelta(delta, minimum_unit="minutes")
 
 
+def back_link(origin):
+    '''
+    Returns a link for the back button from the request referrer, checking that:
+        - there was a request referrer
+        - the request came from within the site
+    '''
+    if not origin:
+        return
+    origin_host = urlsplit(origin).hostname
+    if origin_host in settings.ALLOWED_HOSTS:
+        return origin
+
+
 def environment(**options):
     extra_options = dict()
     env = jinja2.Environment(  # nosec B701
@@ -75,6 +90,7 @@ def environment(**options):
             "url": url,
             "remove_query_param": remove_query_param,
             "humanize_timedelta": humanize_timedelta,
+            "back_link": back_link,
         }
     )
     return env
