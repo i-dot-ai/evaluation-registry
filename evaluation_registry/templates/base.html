@@ -54,12 +54,12 @@
           <a href="/" class="govuk-header__link govuk-header__service-name">
             Evaluation Registry
           </a>
-          <nav aria-label="Menu" class="govuk-header__navigation">
-            <button type="button" class="govuk-header__menu-button govuk-js-header-toggle"
-                    aria-controls="navigation" aria-label="Show or hide menu" hidden>Menu
-            </button>
-            <ul id="navigation" class="govuk-header__navigation-list">
-              {% if request.user.is_authenticated %}
+          {% if request.user.is_authenticated %}
+            <nav aria-label="Menu" class="govuk-header__navigation">
+              <button type="button" class="govuk-header__menu-button govuk-js-header-toggle"
+                      aria-controls="navigation" aria-label="Show or hide menu" hidden>Menu
+              </button>
+              <ul id="navigation" class="govuk-header__navigation-list">
                 <li class="govuk-header__navigation-item">
                   <a class="govuk-header__link" href="{{ url('homepage') }}">
                     Home
@@ -74,15 +74,9 @@
                   {{ request.user.email }} logged in
                   at {{ request.user.last_login.strftime("%d-%b-%Y %H:%M") }}
                 </li>
-              {% else %}
-                <li class="govuk-header__navigation-item">
-                  <a class="govuk-header__link" href="{{ url('login') }}">
-                    Sign in
-                  </a>
-                </li>
-              {% endif %}
-            </ul>
-          </nav>
+              </ul>
+            </nav>
+          {% endif %}
         </div>
       </div>
     </header>
@@ -124,7 +118,7 @@
               </li>
               <li class="govuk-footer__inline-list-item">
                 <a class="govuk-footer__link" href="{{ url('faq') }}">
-                  FAQ's
+                  FAQs
                 </a>
               </li>
             </ul>
