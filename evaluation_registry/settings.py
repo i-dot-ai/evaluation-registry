@@ -1,6 +1,4 @@
 # flake8: noqa
-import socket
-
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
 
@@ -122,5 +120,8 @@ OPENAI_KEY = env.str("OPENAI_KEY", default=None)
 # Django debug toolbar
 # https://django-debug-toolbar.readthedocs.io/en/latest/installation.html#configure-internal-ips
 if DEBUG:
-    hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
-    INTERNAL_IPS = [ip[: ip.rfind(".")] + ".1" for ip in ips] + ["127.0.0.1", "10.0.2.2"]
+    try:
+        _hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
+        INTERNAL_IPS = ["127.0.0.1", "10.0.2.2"] + [ip[: ip.rfind(".")] + ".1" for ip in ips]
+    except socket.gaierror:
+        INTERNAL_IPS = ["127.0.0.1", "10.0.2.2"]
