@@ -48,6 +48,10 @@ WSGI_APPLICATION = "evaluation_registry.wsgi.application"
 
 INSTALLED_APPS = [
     "health_check",
+    "health_check.db",
+    "health_check.contrib.migrations",
+    "health_check.cache",
+    "health_check.storage",
     "evaluation_registry.evaluations",
     "automatilib.core.apps.IdotAIConfig",
     "automatilib.cola.apps.ColaAuthConfig",
