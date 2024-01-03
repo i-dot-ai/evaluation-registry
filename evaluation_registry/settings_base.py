@@ -1,7 +1,4 @@
-import ast
-import os
 import socket
-import subprocess
 from pathlib import Path
 
 import environ
@@ -10,30 +7,7 @@ from .hosting_environment import HostingEnvironment
 
 env = environ.Env()
 
-if HostingEnvironment.is_local():
-    LOCALHOST = socket.gethostbyname(socket.gethostname())
-
 DEBUG = env.bool("DEBUG", default=False)
-
-
-def get_environ_vars() -> dict:
-    """get env vars from ec2
-    https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/custom-platforms-scripts.html
-    """
-    completed_process = subprocess.run(
-        ["/opt/elasticbeanstalk/bin/get-config", "environment"],
-        stdout=subprocess.PIPE,
-        text=True,
-        check=True,
-    )
-
-    return ast.literal_eval(completed_process.stdout)
-
-
-if "POSTGRES_HOST" not in os.environ:
-    for key, value in get_environ_vars().items():
-        env(key, default=value)
-
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -52,8 +26,13 @@ ALLOWED_HOSTS = [
     "dev.evaluation-registry.cabinetoffice.gov.uk",
 ]
 
-if HostingEnvironment.is_local():
+if HostingEnvironment.is_beanstalk():
+    LOCALHOST = socket.gethostbyname(socket.gethostname())
     ALLOWED_HOSTS = ALLOWED_HOSTS + [LOCALHOST]
+
+    for key, value in HostingEnvironment.get_beanstalk_environ_vars().items():
+        env(key, default=value)
+
 
 # CSRF settings
 CSRF_COOKIE_HTTPONLY = True
