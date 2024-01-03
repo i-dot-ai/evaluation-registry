@@ -99,7 +99,11 @@
         </p>
       </div>
     </div>
-    <!-- TODO: add breadcrumbs? -->
+    <div class="govuk-width-container ">
+      {% if request.META.HTTP_REFERER %}
+        <a href="{{request.META.HTTP_REFERER}}" class="govuk-back-link">Back</a>
+      {% endif %}
+    </div>
     <main class="govuk-main-wrapper" id="main-content" role="main">
       <div class="govuk-width-container ">
         {% block content %} {% endblock %}
@@ -112,7 +116,6 @@
             <h2 class="govuk-visually-hidden">Support links</h2>
             <ul class="govuk-footer__inline-list">
               <li class="govuk-footer__inline-list-item">
-                <!-- TODO: set link -->
                 <a class="govuk-footer__link" href="{{ url('privacy-notice') }}">
                   Privacy Notice
                 </a>
