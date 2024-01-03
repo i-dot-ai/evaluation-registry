@@ -48,8 +48,9 @@ make test
 ```
 
 ## Checking code
-
-    make check-python-code
+```commandline
+make check-python-code
+```
 
 ## Database schema
 
@@ -57,3 +58,9 @@ Regenerate this diagram after running `migrate` by invoking `manage.py generate_
 
 ![](docs/erd.png)
 
+## Updating the front end build
+```commandline
+cd web
+npm install
+npm run build
+```
