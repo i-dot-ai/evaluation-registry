@@ -62,11 +62,11 @@ def humanize_timedelta(minutes=0, hours_limit=200, too_large_msg=""):
 
 
 def back_link(origin):
-    '''
+    """
     Returns a link for the back button from the request referrer, checking that:
         - there was a request referrer
         - the request came from within the site
-    '''
+    """
     if not origin:
         return
     origin_host = urlsplit(origin).hostname
