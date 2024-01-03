@@ -11,7 +11,7 @@ The Evaluation Registry is where planned, ongoing or complete evaluation reports
 
 1. [Install Docker](https://docs.docker.com/get-docker/) on your machine
 2. `docker-compose up --build --force-recreate web`
-3. It's now available at: http://localhost:8020/
+3. It's now available at: http://localhost:8000/
 
 Migrations are run automatically at startup, and suppliers are added automatically at startup
 
