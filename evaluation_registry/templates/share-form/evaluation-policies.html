@@ -1,4 +1,7 @@
 {% extends "base.html" %}
+{% block head_title %}
+  Record evaluation policy areas
+{% endblock %}
 
 {% block content %}
   <div class ="govuk-grid-row">
@@ -29,9 +32,9 @@
       <div class="govuk-form-group {% if errors['policies'] %}govuk-form-group--error{% endif %}"  id="autofilter"  data-filter-element="filter-policy">
         <fieldset class="govuk-fieldset" aria-describedby="policies-hint">
           <legend class="govuk-fieldset__legend autofilter-legend govuk-fieldset__legend--l">
-            <h2 class="govuk-fieldset__heading">
+            <h1 class="govuk-fieldset__heading">
               Selected topics
-            </h2>
+            </h1>
           </legend>
           <div id="policies-hint" class="govuk-hint">
             Search for topic options

@@ -1,4 +1,7 @@
 {% extends "base.html" %}
+{% block head_title %}
+  Record basic evaluation details
+{% endblock %}
 {% import 'macros.html' as macros with context %}
 
 {% block content %}
@@ -7,9 +10,9 @@
     {{csrf_input}}
     <input type="hidden" id="status" name="status" value="{{status}}" />
 
-    <h2 class="govuk-heading-l">
+    <h1 class="govuk-heading-l">
       About the evaluation
-    </h2>
+    </h1>
 
     {% if errors %}
       <div class="govuk-error-summary" data-module="govuk-error-summary">

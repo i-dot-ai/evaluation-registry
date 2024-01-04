@@ -1,12 +1,15 @@
 {% extends "base.html" %}
+{% block head_title %}
+  {% if evaluation.title %}{{ evaluation.title }}{% else %}Untitled Evaluation{% endif %} saved
+{% endblock %}
 
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       <div class="govuk-panel govuk-panel--confirmation">
-        <h2 class="govuk-panel__title">
+        <h1 class="govuk-panel__title">
           Evaluation recorded
-        </h2>
+        </h1>
         <div class="govuk-panel__body">
           Your evaluation <br><strong>{{evaluation.title}}</strong>
         </div>

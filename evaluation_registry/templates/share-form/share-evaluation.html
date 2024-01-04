@@ -1,4 +1,7 @@
 {% extends "base.html" %}
+{% block head_title %}
+  Record evaluation data sources
+{% endblock %}
 {% import 'macros.html' as macros with context %}
 
 {% block content %}
@@ -7,9 +10,9 @@
     {{csrf_input}}
     <input type="hidden" id="status" name="status" value="{{status}}" />
 
-    <h2 class="govuk-heading-l">
+    <h1 class="govuk-heading-l">
       Share your completed evaluation report
-    </h2>
+    </h1>
     <p>Please share either a link to a published strategy, plan or framework of your evaluation and where the full report will be published.</p>
 
     {% if errors %}

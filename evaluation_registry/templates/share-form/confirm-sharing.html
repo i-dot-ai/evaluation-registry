@@ -1,4 +1,7 @@
 {% extends "base.html" %}
+{% block head_title %}
+  Confirm sharing
+{% endblock %}
 
 {% block content %}
 <div class="govuk-grid-row">
@@ -29,17 +32,17 @@
         </div>
       {% endif %}
 
-      <h2 class="govuk-heading-l">
+      <h1 class="govuk-heading-l">
         {% if evaluation.status == complete %}
           Confirm sharing the evaluation
         {% else %}
           Share your planned or ongoing evaluation
         {% endif %}
-      </h2>
+      </h1>
 
       <input type="hidden" id="visibility" name="visibility" value="public" />
 
-    <h3>Confirmation</h3>
+    <h2>Confirmation</h2>
     <div class="govuk-form-group {% if errors['permission'] %}govuk-form-group--error{% endif %}">
       {% if errors['permission'] %}
         <p id="permission-error" class="govuk-error-message">
