@@ -18,6 +18,7 @@ from evaluation_registry.evaluations.forms import (
     EvaluationBasicDetailsForm,
     EvaluationDesignTypeDetailForm,
     EvaluationShareForm,
+    EvaluationVisibilityForm,
     EventDateForm,
 )
 from evaluation_registry.evaluations.models import (
@@ -537,6 +538,14 @@ def evaluation_update_cost_view(request, uuid):
 
 @require_http_methods(["GET", "POST"])
 @login_required
+def evaluation_update_sharing_permission_view(request, uuid):
+    evaluation = check_evaluation_and_user(request, uuid)
+
+    return share_user_confirmation_view(request, evaluation)
+
+
+@require_http_methods(["GET", "POST"])
+@login_required
 def evaluation_update_title_department_view(request, uuid):
     evaluation = check_evaluation_and_user(request, uuid)
     errors = {}
@@ -605,5 +614,36 @@ def evaluation_update_title_department_view(request, uuid):
             "departments": departments,
             "data": data,
             "errors": errors,
+        },
+    )
+
+
+@require_http_methods(["GET", "POST"])
+@login_required
+def share_user_confirmation_view(request, evaluation, next_page=None):
+    if request.method == "POST":
+        form = EvaluationVisibilityForm(request.POST, instance=evaluation)
+
+        if form.is_valid():
+            form.save()
+            if next_page:
+                return redirect("share", uuid=evaluation.id, page_number=next_page)
+            return redirect("evaluation-detail", uuid=evaluation.id)
+
+        else:
+            errors = form.errors.as_data()
+
+    else:
+        form = EvaluationVisibilityForm(instance=evaluation)
+        errors = {}
+
+    return render(
+        request,
+        "share-form/confirm-sharing.html",
+        {
+            "evaluation": evaluation,
+            "form": form,
+            "errors": errors,
+            "complete": Evaluation.Status.COMPLETE,
         },
     )

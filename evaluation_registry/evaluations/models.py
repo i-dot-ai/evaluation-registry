@@ -157,6 +157,7 @@ class Evaluation(TimeStampedModel):
     )
     reasons_unpublished_details = models.TextField(blank=True, null=True, max_length=4096)
     cost = models.CharField(blank=True, null=True, max_length=50)
+    is_sharing_permission_obtained = models.BooleanField(null=True, blank=True, default=False)
 
     history = HistoricalRecords()
 
